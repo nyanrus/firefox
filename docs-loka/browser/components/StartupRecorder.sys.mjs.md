@@ -5,34 +5,34 @@ source-hash: 2f0f1dff85cc85a7806ca449e4904a27c22e4a73
 lines: 250
 
 ## <module>
-- 役割: (未記入)
+- 役割: 起動の各段階で読み込み済みの ESModule とサービスを記録する StartupRecorder を定義する。起動性能テスト用で、Nightly とデバッグビルドのみ。
 - 呼び出し先: `ChromeUtils.generateQI()`, `Cm.QueryInterface()`, `XPCOMUtils.defineLazyPreferenceGetter()`
 
 ## afterPaintListener()
 - 位置: L36-68
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウの内容を canvas に drawWindow で描き、その画素データを paints に積み、プロファイラーにスクリーンショットのマーカーを残す。
+- 触るとき: 起動時のスクリーンショット記録が空になる、サイズや描画フラグを変えたいときに見る。
 - 呼び出し先: `ChromeUtils.addProfilerMarker()`, `ChromeUtils.now()`, `canvas.getContext()`, `ctx.drawWindow()`, `ctx.getImageData()`, `paints.push()`
 - 参照: `canvas.height`, `canvas.width`, `ctx.DRAWWINDOW_ASYNC_DECODE_IMAGES`, `ctx.DRAWWINDOW_DO_NOT_FLUSH`, `ctx.DRAWWINDOW_DRAW_VIEW`, `ctx.DRAWWINDOW_USE_WIDGET_LAYERS`, `ctx.getImageData(0, 0, width, height).data`, `win.innerHeight`, `win.innerWidth`
 
 ## StartupRecorder()
 - 位置: L79-92
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: コンストラクターで記録用の data(images, code, prefStats)と、記録完了を示す done の Promise を用意する。
+- 触るとき: 起動記録の出力形式や、テストが待つ done の扱いを変えるときに見る。
 - 参照: `this._resolve`, `this.data`, `this.done`, `this.wrappedJSObject`
 
 ## record()
 - 位置: L97-113
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 名前付きで Cu.loadedESModules とインスタンス化済みのサービス一覧を data.code に保存し、プロファイラーにマーカーを出す。
+- 触るとき: 起動の各地点で何が読み込まれていたかの記録内容を変えるとき、または記録が欠けると調べるときに見る。
 - 呼び出し先: `ChromeUtils.addProfilerMarker()`, `Cm.isServiceInstantiatedByContractID()`, `Object.keys()`, `Object.keys(Cc).filter()`
 - 参照: `Ci.nsISupports`, `Cu.loadedESModules`, `this.data.code`
 - XPCOM: [`nsISupports`](../../netwerk/base/nsIEncodedChannel.idl.md)
 
 ## observe()
 - 位置: L115-248
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: app-startup で監視を登録し、初回描画・セッション復元・アイドル完了などの通知ごとに record や描画記録を行い、終わったら done を解決する。
+- 触るとき: 起動記録がどの段階で取られるか、通知の順序や条件(画像記録モード、プロファイラー有効時)を変えるときに見る。
 - 呼び出し先: `Services.obs.removeObserver()`
 - 条件付き依存: `if (!lazy.BROWSER_STARTUP_RECORD && !lazy.BROWSER_STARTUP_RECORD_IMAGES)` → `this._resolve()`
 - 条件付き依存: `if (topic == "app-startup" || topic == "content-process-ready-for-script")` → `Services.obs.addObserver()`

@@ -5,13 +5,13 @@ source-hash: 0434d53806382a731d7b1c65268149e25cd11603
 lines: 249
 
 ## <module>
-- 役割: (未記入)
+- 役割: 既定ブラウザ確認のダイアログ表示と、表示するかどうかの判定を行う DefaultBrowserCheck を定義する。
 - 呼び出し先: `ChromeUtils.defineESModuleGetters()`
 
 ## prompt()
 - 位置: async L16-122
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 既定ブラウザ確認ダイアログを出し、「はい」ならタスクバーとスタートメニューへのピン留めを試したうえで既定ブラウザ設定を行う。ピン留めが必要かで文言を切り替える。
+- 触るとき: 確認ダイアログの文言やボタン番号ごとの処理を変えるとき、またはピン留めと既定設定の順序を調べるときに見る。
 - 呼び出し先: `Date.now()`, `Glean.browser.setDefaultResult.accumulateSingleSample()`, `Math.floor()`, `Math.floor(Date.now() / 1000).toString()`, `Services.prefs.setCharPref()`, `ps.asyncConfirmEx()`, `rv.get()`, `shellService.doesAppNeedPin()`, `shellService.doesAppNeedStartMenuPin()`, `win.MozXULElement.insertFTLIfNeeded()`, `win.document.l10n.formatMessages()`, `win.getShellService()`
 - 条件付き依存: `if (!(AppConstants.platform == "macosx"))` → `Services.sysinfo.getProperty()`
 - 条件付き依存: `if (buttonNumClicked == 0)` → `shellService.pinToTaskbar()`
@@ -24,8 +24,8 @@ lines: 249
 
 ## willCheckDefaultBrowser()
 - 位置: async L131-247
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 起動時かどうかと shouldCheck、既定かどうか、初回スキップ設定、回数上限を見て、今回ダイアログを出すかを返す。起動時は関連 pref と Glean 指標も更新する。
+- 触るとき: 既定ブラウザ確認が出ない、または出すぎると報告されたとき、あるいは回数上限や初回スキップの条件を変えるときに見る。
 - 呼び出し先: `Services.prefs.getBoolPref()`, `Services.prefs.getIntPref()`, `lazy.BrowserWindowTracker.getTopWindow()`, `shellService.isDefaultBrowser()`, `win.getShellService()`
 - 条件付き依存: `if (Cc["@mozilla.org/gio-service;1"])` → `Cc["@mozilla.org/gio-service;1"].getService()`
 - 条件付き依存: `if (isDefault && isStartupCheck)` → `Math.floor(Date.now() / 1000).toString()`

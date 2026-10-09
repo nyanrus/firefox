@@ -5,20 +5,20 @@ source-hash: 7ce8e235dd4dafde6ed1bfa8c81c4dc1409141f1
 lines: 5275
 
 ## <module>
-- 役割: (未記入)
+- 役割: 最上位の browser.xhtml 用ウィンドウ制御を担う。遅延ゲッターで urlbar、通知、PopupNotifications、カスタマイズモードなどを初めて参照時に生成し、pref 監視でツールバー・FxA・印刷などの表示を切り替え、履歴メニュー、アプリコマンド、ロケーション入力、ダイアログ、Shutdown・オフラインなど、ウィンドウ全体の振る舞いを定義する。
 - 呼び出し先: `Cc["@mozilla.org/widget/macuseractivityupdater;1"].getService()`, `Cc[WINTASKBAR_CONTRACTID].getService()`, `ChromeUtils.defineESModuleGetters()`, `ChromeUtils.defineLazyGetter()`, `ChromeUtils.generateQI()`, `ChromeUtils.importESModule()`, `ChromeUtils.importESModule( "resource://gre/modules/FxAccounts.sys.mjs" ).getFxAccountsSingleton()`, `Object.defineProperty()`, `Services.prefs.getIntPref()`, `Services.scriptloader.loadSubScript()`, `Services.strings.createBundle()`, `XPCOMUtils.defineLazyPreferenceGetter()`, `XPCOMUtils.defineLazyScriptGetter()`, `XPCOMUtils.defineLazyServiceGetters()`, `console.error()`, `customElements.setElementCreationCallback()`, `document.getElementById()`, `document.getElementById("notifications-toolbar").prepend()`, `element.classList.add()`, `element.setAttribute()`, `updateFxaToolbarMenu()`, `updatePrintCommands()`, `urlbar.addEventListener()`, `window.docShell.QueryInterface()`
 
 ## gLocaleChangeObserver()
 - 位置: L352-355
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: アプリのロケールが変わったとき、window.RTL_UI を現在のロケールの RTL 判定で作り直す。
+- 触るとき: 言語切替後にレイアウト方向(RTL)が追従しないとき、または RTL_UI を参照する箇所を調べるとき。
 - 参照: `Services.locale.isAppLocaleRTL`, `window.RTL_UI`
 - XPCOM: `Services.locale`
 
 ## beforeFocusOrSelect()
 - 位置: L383-413
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: urlbar の beforefocus・beforeselect で、カスタマイズ中または終了直後ならカスタマイズ終了後に focus や select を予約して既定動作を止め、フルスクリーン中ならナビゲーションツールボックスを表示する。
+- 触るとき: カスタマイズモード中にアドレスバーへ移動するとフォーカスが効かない、またはフルスクリーンでアドレスバーを選択しても見えないとき。
 - 呼び出し先: `CustomizationHandler.isCustomizing()`
 - 条件付き依存: `if ( CustomizationHandler.isCustomizing() || CustomizationHandler.isExitingCustomizeMode )` → `gNavToolbox.addEventListener()`
 - 条件付き依存: `if (event.type == "beforeselect")` → `gURLBar.select()`
@@ -29,85 +29,85 @@ lines: 5275
 
 ## shouldSuppress()
 - 位置: L451-466
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: PopupNotifications を抑止すべきか判定する。urlbar を編集中でフォーカスがある場合、読み込み中で pageproxystate が valid でない場合、shouldSuppressPopupNotifications が真の場合に true を返す。
+- 触るとき: アドレスバー操作中に通知ポップアップが出ない、または出るべき通知が隠れるとき。
 - 呼び出し先: `gURLBar.getAttribute()`, `gURLBar.hasAttribute()`, `isBlankPageURL()`, `shouldSuppressPopupNotifications()`
 - 参照: `gBrowser.currentURI.spec`, `gBrowser.selectedBrowser._awaitingSetURI`, `gURLBar.focused`
 
 ## getVisibleAnchorElement()
 - 位置: L471-496
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 通知ポップアップの anchor を決める。urlbar 側の revert 処理を挟み、anchor が見えていればそれを返し、見えなければ信頼パネル・検索切替・ID アイコンなどの fallback の最初の可視要素を返す。どれも無ければ null を返す。
+- 触るとき: 通知ポップアップが意図しない位置に出る、または anchor が隠れた状態で通知が消えるとき。
 - 呼び出し先: `anchorElement?.checkVisibility()`, `anchorElement?.dispatchEvent()`, `document.getElementById()`, `element?.checkVisibility()`, `fallback.find()`, `gURLBar.maybeHandleRevertFromPopup()`, `gURLBar.querySelector()`
 - 参照: `PopupNotifications.CHECK_VISIBILITY_OPTIONS`
 
 ## onOpenWindow()
 - 位置: L536-541
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: Windows の AeroPeek が利用可能なとき、新しいウィンドウを通知して handledOpening を立てる。
+- 触るとき: Windows のタスクバーのプレビューに新しいウィンドウを出す条件を変えるとき。
 - 条件付き依存: `if (aeroPeek)` → `aeroPeek.onOpenWindow()`
 - 参照: `this.handledOpening`
 
 ## onCloseWindow()
 - 位置: L542-546
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: handledOpening が立っている場合だけ、AeroPeek にウィンドウが閉じたことを伝える。
+- 触るとき: Windows でウィンドウを閉じたあとにタスクバープレビューが残るとき。
 - 条件付き依存: `if (this.handledOpening)` → `aeroPeek.onCloseWindow()`
 - 参照: `this.handledOpening`
 
 ## get()
 - 位置: L703-707
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: gReduceMotion の値を返す。テストが設定した gReduceMotionOverride が boolean ならそれを、そうでなければ gReduceMotionManager.setting を返す。
+- 触るとき: アニメーションを減らすかどうかの判定元を変えるとき、またはテストで動きを止めたいとき。
 - 参照: `gReduceMotionManager.setting`
 
 ## init()
 - 位置: L717-726
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: prefers-reduced-motion のメディアクエリに listener を付け、現在値を読み込んで setting に反映する。
+- 触るとき: OS の視覚効果設定に合わせた動作抑制の初期化順序を変えるとき。
 - 呼び出し先: `readSetting()`, `reduceMotionQuery.addListener()`, `window.matchMedia()`
 
 ## readSetting()
 - 位置: L721-723
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: メディアクエリの matches を gReduceMotionManager.setting に書き込む。
+- 触るとき: reduce motion の値が古いまま残るとき。
 - 参照: `reduceMotionQuery.matches`, `this.setting`
 
 ## get()
 - 位置: L734-736
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: gFindBar のゲッター。gBrowser.getCachedFindBar() でキャッシュ済みの検索バーを返し、未作成なら null を返す。
+- 触るとき: 検索バーを強制的に作らずに参照したいとき、または検索バーの有無を確認したいとき。
 - 呼び出し先: `gBrowser.getCachedFindBar()`
 
 ## get()
 - 位置: L741-743
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: gFindBarInitialized のゲッター。検索バーが初期化済みかを gBrowser.isFindBarInitialized() で返す。
+- 触るとき: 検索バーを作らずに初期化状態だけ確認したいとき。
 - 呼び出し先: `gBrowser.isFindBarInitialized()`
 
 ## get()
 - 位置: L748-750
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: gFindBarPromise のゲッター。gBrowser.getFindBar() で検索バーの取得を Promise として返し、必要なら作成する。
+- 触るとき: 検索バーが作られた後に処理したいコードを書くとき。
 - 呼び出し先: `gBrowser.getFindBar()`
 
 ## shouldSuppressPopupNotifications()
 - 位置: L753-764
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 最小化中、選択中のブラウザでタブダイアログが表示中、または gDialogBox が開いているときに true を返し、通知ポップアップを抑止させる。
+- 触るとき: 最小化やタブダイアログの表示時に通知が前面に出る問題を調べるとき。
 - 呼び出し先: `gBrowser?.selectedBrowser.hasAttribute()`
 - 参照: `gDialogBox?.isOpen`, `window.STATE_MINIMIZED`, `window.windowState`
 
 ## gLazyFindCommand()
 - 位置: async L766-772
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 検索バーの Promise を待ち、検索バーに指定の関数があれば引数を渡して呼ぶ。待機中にウィンドウが閉じた場合は何もしない。
+- 触るとき: キーボード操作などから検索バーのコマンドを遅延実行したいとき。
 - 条件付き依存: `if (fb && fb[cmd])` → `fb[cmd].apply()`
 
 ## isInitialPage()
 - 位置: L795-806
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: URL を nsIURI に変換し、プレフィックスとパスが初期ページ一覧か新しいタブの URL と一致するかを返す。変換に失敗すると false を返す。
+- 触るとき: about:newtab や about:home など初期ページの判定基準を増やすとき、またはそのページで特別な処理が効かないとき。
 - 呼び出し先: `gInitialPages.includes()`
 - 条件付き依存: `if (!(url instanceof Ci.nsIURI))` → `Services.io.newURI()`
 - 参照: `Ci.nsIURI`, `url.filePath`, `url.prePath`
@@ -115,34 +115,34 @@ lines: 5275
 
 ## browserWindows()
 - 位置: L808-810
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: navigator:browser のウィンドウ列挙子を返す。
+- 触るとき: 開いているブラウザウィンドウを順に調べる処理を書くとき。
 - 呼び出し先: `Services.wm.getEnumerator()`
 - XPCOM: `Services.wm`
 
 ## updateBookmarkToolbarVisibility()
 - 位置: L812-820
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ブックマークツールバーの空メッセージを更新し、gBookmarksToolbarVisibility の設定に合わせてツールバーの表示を切り替える。
+- 触るとき: ブックマークツールバーの表示設定が変わっても表示が追従しないとき。
 - 呼び出し先: `BookmarkingUI.updateEmptyToolbarMessage()`, `setToolbarVisibility()`
 - 参照: `BookmarkingUI.toolbar`
 
 ## getString()
 - 位置: L825-827
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: gBrowserBundle から指定キーの文字列を取り出す。
+- 触るとき: browser.properties の文字列を JS から読むとき。
 - 呼び出し先: `gBrowserBundle.GetStringFromName()`
 
 ## getFormattedString()
 - 位置: L828-830
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: gBrowserBundle から指定キーの文字列を引数で埋めて返す。
+- 触るとき: browser.properties の書式付き文字列を JS から読むとき。
 - 呼び出し先: `gBrowserBundle.formatStringFromName()`
 
 ## updateFxaToolbarMenu()
 - 位置: L833-873
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: アカウント(FxA)の状態を fxastatus に推測して設定する。sync と FxA が有効でタスクバータブでなければ fxatoolbarmenu を visible にし、初回以外は sync の UI を更新する。条件に合わなければ属性を外す。
+- 触るとき: FxA ツールバーメニューが出ない・消えないとき、またはサインイン状態の初期表示を変えるとき。
 - 呼び出し先: `Services.prefs.getBoolPref()`, `Services.prefs.getStringPref()`, `mainWindowEl.hasAttribute()`, `mainWindowEl.setAttribute()`
 - 条件付き依存: `if (enable && syncEnabled && !taskbarTab)` → `mainWindowEl.setAttribute()`
 - 条件付き依存: `if (!isInitialUpdate)` → `gSync.maybeUpdateUIState()`
@@ -152,8 +152,8 @@ lines: 5275
 
 ## UpdateBackForwardCommands()
 - 位置: L875-901
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 渡された webNavigation の canGoBack と canGoForward に合わせて、Browser:Back と Browser:Forward の disabled 属性を変化したときだけ更新する。
+- 触るとき: 戻る・進むボタンの有効無効が履歴と合わないとき。
 - 呼び出し先: `backCommand.hasAttribute()`, `document.getElementById()`, `forwardCommand.hasAttribute()`
 - 条件付き依存: `if (backDisabled)` → `backCommand.removeAttribute()`
 - 条件付き依存: `if (!(backDisabled))` → `backCommand.setAttribute()`
@@ -163,8 +163,8 @@ lines: 5275
 
 ## updatePrintCommands()
 - 位置: L903-914
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 印刷と印刷プレビューのコマンドの disabled 属性を、enabled の値に合わせて設定する。
+- 触るとき: print.enabled 設定で印刷メニューが切り替わらないとき。
 - 呼び出し先: `document.getElementById()`
 - 条件付き依存: `if (enabled)` → `printCommand.removeAttribute()`
 - 条件付き依存: `if (enabled)` → `printPreviewCommand.removeAttribute()`
@@ -173,27 +173,27 @@ lines: 5275
 
 ## SetClickAndHoldHandlers()
 - 位置: L920-949
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 戻ると進むのボタンに履歴メニューのクローンを差し込み、command で gotoHistoryIndex を、popupshowing で FillHistoryMenu を呼ぶよう設定し、長押しハンドラーの対象に登録する。
+- 触るとき: 戻る・進むボタンの長押しメニューの項目や動作を変えるとき。
 - 呼び出し先: `backButton.prepend()`, `backButton.setAttribute()`, `document.getElementById()`, `document.getElementById("backForwardMenu").cloneNode()`, `forwardButton.prepend()`, `forwardButton.setAttribute()`, `gClickAndHoldListenersOnElement.add()`, `popup.addEventListener()`, `popup.cloneNode()`, `popup.removeAttribute()`, `popup.setAttribute()`
 
 ## backForwardMenuCommand()
 - 位置: L927-933
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選ばれた履歴項目で gotoHistoryIndex を呼び、クリックがボタン側へ伝播しないよう stopPropagation する。
+- 触るとき: 履歴メニューの項目を選んだときに別のボタン動作が走ってしまうとき。
 - 呼び出し先: `BrowserCommands.gotoHistoryIndex()`, `event.stopPropagation()`
 
 ## _mousedownHandler()
 - 位置: L954-972
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 左ボタンで押され、メニューが開いておらず無効でもなければ、メニューを一時的に隠して 500ms 後に開くタイマーを予約し、mouseout と mouseup を監視する。
+- 触るとき: 戻る・進むボタンを押し続けたときに履歴メニューが開くタイミングを変えるとき。
 - 呼び出し先: `aEvent.currentTarget.addEventListener()`, `setTimeout()`, `this._openMenu()`, `this._timers.set()`
 - 参照: `aEvent.button`, `aEvent.currentTarget`, `aEvent.currentTarget.disabled`, `aEvent.currentTarget.menupopup.hidden`, `aEvent.currentTarget.open`
 
 ## _clickHandler()
 - 位置: L974-1010
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 左クリックで、ボタン自身がターゲットで、メニューが開いておらず隠れたままのとき、command イベントを発火させて既定の click を打ち消す。長押しで開いたメニューの mouseup と二重処理しないよう除外する。
+- 触るとき: 戻る・進むボタンのクリックで command が二重に飛ぶ、または一度も飛ばないとき。
 - 条件付き依存: `if ( aEvent.button == 0 && aEvent.target == aEvent.currentTarget && !aEvent.currentTarget.open && !aEvent.currentTarget.disabled && // When menupopup is not hidd...)` → `document.createEvent()`
 - 条件付き依存: `if ( aEvent.button == 0 && aEvent.target == aEvent.currentTarget && !aEvent.currentTarget.open && !aEvent.currentTarget.disabled && // When menupopup is not hidd...)` → `cmdEvent.initCommandEvent()`
 - 条件付き依存: `if ( aEvent.button == 0 && aEvent.target == aEvent.currentTarget && !aEvent.currentTarget.open && !aEvent.currentTarget.disabled && // When menupopup is not hidd...)` → `aEvent.currentTarget.dispatchEvent()`
@@ -202,15 +202,15 @@ lines: 5275
 
 ## _openMenu()
 - 位置: L1012-1016
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 保留中のタイマーを取り消し、メニューを表示して open 状態にする。
+- 触るとき: 長押しで開く履歴メニューの表示処理を変えるとき。
 - 呼び出し先: `this._cancelHold()`
 - 参照: `aButton.firstElementChild.hidden`, `aButton.open`
 
 ## _mouseoutHandler()
 - 位置: L1018-1029
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ボタンの矩形の下端より下へマウスが出たときは _openMenu でメニューを開き、それ以外は保留を取り消す。
+- 触るとき: 押したままドラッグして履歴メニューを開く操作の判定を調整するとき。
 - 呼び出し先: `aEvent.currentTarget.getBoundingClientRect()`
 - 条件付き依存: `if ( aEvent.clientX >= buttonRect.left && aEvent.clientX <= buttonRect.right && aEvent.clientY >= buttonRect.bottom )` → `this._openMenu()`
 - 条件付き依存: `if (!( aEvent.clientX >= buttonRect.left && aEvent.clientX <= buttonRect.right && aEvent.clientY >= buttonRect.bottom ))` → `this._cancelHold()`
@@ -218,55 +218,55 @@ lines: 5275
 
 ## _mouseupHandler()
 - 位置: L1031-1033
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: mouseup で保留中の長押しを取り消す。
+- 触るとき: ボタンを離した後にメニューが開く不具合を調べるとき。
 - 呼び出し先: `this._cancelHold()`
 - 参照: `aEvent.currentTarget`
 
 ## _cancelHold()
 - 位置: L1035-1039
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 保留中のタイマーを消し、mouseout と mouseup の監視を外す。
+- 触るとき: 長押しの後始末が漏れてメニューが勝手に開くとき。
 - 呼び出し先: `aButton.removeEventListener()`, `clearTimeout()`, `this._timers.get()`
 
 ## _keypressHandler()
 - 位置: L1041-1049
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: Space か Enter で既定動作を止め、target の click を呼ぶ。type=menu では command が飛ばないため、クリックと同じ経路で処理する。
+- 触るとき: キーボードで戻る・進むのメニューを開閉できないとき。
 - 条件付き依存: `if (aEvent.key == " " || aEvent.key == "Enter")` → `aEvent.preventDefault()`
 - 条件付き依存: `if (aEvent.key == " " || aEvent.key == "Enter")` → `aEvent.target.click()`
 - 参照: `aEvent.key`
 
 ## handleEvent()
 - 位置: L1051-1073
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: mouseout、mousedown、click、mouseup、keypress の各イベントを対応する内部ハンドラーへ振り分ける。keypress は既定動作が止められていないときだけ処理する。
+- 触るとき: 長押しハンドラーにイベント種類を追加するとき。
 - 呼び出し先: `this._clickHandler()`, `this._mousedownHandler()`, `this._mouseoutHandler()`, `this._mouseupHandler()`
 - 条件付き依存: `if (!e.defaultPrevented)` → `this._keypressHandler()`
 - 参照: `e.defaultPrevented`, `e.type`
 
 ## remove()
 - 位置: L1075-1079
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ボタンからキャプチャ付きの mousedown、click、keypress リスナーを外す。
+- 触るとき: 長押し機能を要素から外す処理を変えるとき。
 - 呼び出し先: `aButton.removeEventListener()`
 
 ## add()
 - 位置: L1081-1087
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 保留中のタイマーを消し、ボタンにキャプチャ付きで mousedown、click、keypress の監視を付ける。
+- 触るとき: 長押し機能を新しいボタンに付けるとき。
 - 呼び出し先: `aElm.addEventListener()`, `this._timers.delete()`
 
 ## observe()
 - 位置: L1091-1103
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: browser:purge-session-history を受けて、戻る・進むを disabled にし、URL バーの undo 履歴を消す。
+- 触るとき: 履歴の消去後にも戻る・進むが有効に見える、または URL バーの undo が残るとき。
 - 呼び出し先: `backCommand.setAttribute()`, `document.getElementById()`, `fwdCommand.setAttribute()`, `gURLBar.editor.clearUndoRedo()`
 
 ## observe()
 - 位置: async L1109-1181
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: QuotaManager の StoragePressure 通知を受け、既に通知が出ていたり最小間隔内なら何もしない。そうでなければ使用量が閾値未満か以上かでメッセージを選び、設定ボタン付きの storage-permissions 通知を出す。
+- 触るとき: ストレージ不足の警告の文言、表示間隔、閾値を変えるとき。
 - 呼び出し先: `Date.now()`, `MozXULElement.insertFTLIfNeeded()`, `Services.prefs.getIntPref()`, `document.createDocumentFragment()`, `document.createElement()`, `document.l10n.translateFragment()`, `gNotificationBox.appendNotification()`, `gNotificationBox.getNotificationWithValue()`, `messageFragment.appendChild()`, `subject.QueryInterface()`
 - 条件付き依存: `if (usage < USAGE_THRESHOLD_BYTES)` → `document.l10n.setAttributes()`
 - 条件付き依存: `if (!(usage < USAGE_THRESHOLD_BYTES))` → `document.l10n.setAttributes()`
@@ -276,29 +276,29 @@ lines: 5275
 
 ## callback()
 - 位置: L1160-1164
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ストレージ通知の設定ボタンが押されたとき、サイトデータのプライバシー設定を開く。
+- 触るとき: ストレージ警告からの設定画面の遷移先を変えるとき。
 - 呼び出し先: `openPreferences()`
 
 ## check()
 - 位置: L1185-1298
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: キーワード検索になった URL を非同期の DNS 照会にかけ、ホストとして解決できる可能性があれば infobar での移動提案を準備する。既定の DNS 優先設定などで条件を満たさないときは何もしない。
+- 触るとき: アドレスバーの検索語がホストとして解決される場合の案内を変えるとき、または誤って検索に切り替わるとき。
 - 呼び出し先: `Cu.getWeakReference()`, `Services.uriFixup.checkHost()`, `UrlbarPrefs.get()`
 - 参照: `browser.contentPrincipal`, `browser.currentURI`, `contentPrincipal.originAttributes`, `fixedURI.asciiHost`, `fixedURI.displayHost`, `fixedURI.host`
 - XPCOM: `Services.uriFixup`
 
 ## onLookupComplete()
 - 位置: async L1222-1286
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: DNS 照会が成功し、ブラウザがまだ元のページか検索先にいる場合に限り、keyword-uri-fixup の infobar を追加する。別ページへ移動済みなら表示しない。
+- 触るとき: ホスト移動の案内が古いタブに出る、または出るべき場面で出ないとき。
 - 呼び出し先: `Components.isSuccessCode()`, `currentURI.equals()`, `gBrowser.getNotificationBox()`, `gNavigatorBundle.getFormattedString()`, `gNavigatorBundle.getString()`, `notificationBox.appendNotification()`, `notificationBox.getNotificationWithValue()`, `weakBrowser.get()`
 - 参照: `browserRef.currentURI`, `notification.persistence`, `notificationBox.PRIORITY_INFO_HIGH`
 
 ## callback()
 - 位置: L1259-1274
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: infobar の移動ボタンが押されたら、非プライベートなら browser.fixup.domainwhitelist.<ホスト> を true にして、修正後の URL を現在のタブで開く。
+- 触るとき: ホストの許可リストの保存条件や移動先を変えるとき。
 - 呼び出し先: `PrivateBrowsingUtils.isWindowPrivate()`, `openTrustedLinkIn()`
 - 条件付き依存: `if (!PrivateBrowsingUtils.isWindowPrivate(window))` → `prefHost.indexOf()`
 - 条件付き依存: `if (prefHost.indexOf(".") == prefHost.length - 1)` → `prefHost.slice()`
@@ -308,24 +308,24 @@ lines: 5275
 
 ## observe()
 - 位置: L1300-1309
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: fixupInfo の consumer から、このウィンドウのブラウザ要素を取り出せた場合だけ check を呼ぶ。
+- 触るとき: 別ウィンドウ向けの URL 修正通知が混ざるとき。
 - 呼び出し先: `fixupInfo.QueryInterface()`, `this.check()`
 - 参照: `Ci.nsIURIFixupInfo`, `browser.documentGlobal`, `fixupInfo.consumer?.top?.embedderElement`
 - XPCOM: [`nsIURIFixupInfo`](../../../docshell/base/nsIURIFixup.idl.md)
 
 ## HandleAppCommandEvent()
 - 位置: L1312-1366
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: アプリコマンド(戻る、進む、再読込、検索、ブックマーク、印刷、保存など)を、対応するブラウザコマンドへ振り分け、処理したら伝播と既定動作を止める。
+- 触るとき: マウスや多機能キーのアプリコマンドに新しい動作を追加するとき、または対応しないコマンドが無視されるとき。
 - 呼び出し先: `BrowserCommands.back()`, `BrowserCommands.closeTabOrWindow()`, `BrowserCommands.forward()`, `BrowserCommands.home()`, `BrowserCommands.openFileWindow()`, `BrowserCommands.openTab()`, `BrowserCommands.reloadSkipCache()`, `MailIntegration.sendLinkForBrowser()`, `PrintUtils.startPrintWindow()`, `SearchUIUtils.webSearch()`, `SidebarController.toggle()`, `XULBrowserWindow.stopCommand.hasAttribute()`, `evt.preventDefault()`, `evt.stopPropagation()`, `gLazyFindCommand()`, `openHelpLink()`, `saveBrowser()`
 - 条件付き依存: `if (XULBrowserWindow.stopCommand.hasAttribute("disabled"))` → `BrowserCommands.stop()`
 - 参照: `evt.command`, `gBrowser.selectedBrowser`, `gBrowser.selectedBrowser.browsingContext`
 
 ## loadOneOrMoreURIs()
 - 位置: L1368-1396
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ブラウザウィンドウ以外では URI を新しいブラウザウィンドウへ渡す。ブラウザウィンドウでは | 区切りの URI を gBrowser.loadTabs で読み込み、例外は握りつぶして起動を妨げない。
+- 触るとき: コマンドライン引数や起動時の URL 読み込みで、複数 URL の扱いを変えるとき。
 - 呼び出し先: `Services.scriptSecurityManager.getSystemPrincipal()`, `aURIString.split()`, `gBrowser.loadTabs()`
 - 条件付き依存: `if (window.location.href != AppConstants.BROWSER_CHROME_URL)` → `window.openDialog()`
 - 参照: `AppConstants.BROWSER_CHROME_URL`, `window.location.href`
@@ -333,8 +333,8 @@ lines: 5275
 
 ## openLocation()
 - 位置: L1398-1421
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ブラウザウィンドウならアドレスバーを選択して候補を開く。そうでなければ既存のブラウザウィンドウへ転送し、無ければ新しいウィンドウを新規タブで開く。
+- 触るとき: Ctrl+L などの場所を開く操作の挙動を変えるとき。
 - 呼び出し先: `URILoadingHelper.getTargetWindow()`, `window.openDialog()`
 - 条件付き依存: `if (window.location.href == AppConstants.BROWSER_CHROME_URL)` → `UrlbarUtils.getURLBarForFocus()`
 - 条件付き依存: `if (window.location.href == AppConstants.BROWSER_CHROME_URL)` → `focusTarget.select()`
@@ -345,8 +345,8 @@ lines: 5275
 
 ## path()
 - 位置: L1425-1438
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 最後に開いたディレクトリを返す。キャッシュが無効なら browser.open.lastDir から読み直し、存在しなければ null を返す。
+- 触るとき: ファイルを開くダイアログの初期ディレクトリが保存されないとき。
 - 呼び出し先: `this._lastDir.exists()`
 - 条件付き依存: `if (!this._lastDir || !this._lastDir.exists())` → `Services.prefs.getComplexValue()`
 - 条件付き依存: `if (!this._lastDir || !this._lastDir.exists())` → `this._lastDir.exists()`
@@ -355,8 +355,8 @@ lines: 5275
 
 ## path()
 - 位置: L1439-1457
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 有効なディレクトリだけを最後に開いたディレクトリとして保存し、プライベートウィンドウでなければ browser.open.lastDir に書き出す。
+- 触るとき: 最後に開いたディレクトリの保存条件を変えるとき、またはプライベートウィンドウで保存されてしまうとき。
 - 呼び出し先: `PrivateBrowsingUtils.isWindowPrivate()`, `val.clone()`, `val.isDirectory()`
 - 条件付き依存: `if (!PrivateBrowsingUtils.isWindowPrivate(window))` → `Services.prefs.setComplexValue()`
 - 参照: `Ci.nsIFile`, `this._lastDir`
@@ -364,14 +364,14 @@ lines: 5275
 
 ## reset()
 - 位置: L1458-1460
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 保持している最後に開いたディレクトリを破棄する。
+- 触るとき: ディレクトリの記憶を消す処理を追加するとき。
 - 参照: `this._lastDir`
 
 ## readFromClipboard()
 - 位置: L1463-1493
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択クリップボード(対応時)またはグローバルクリップボードから text/plain を読み、文字列を返す。取得に失敗したら空文字を返す。
+- 触るとき: 中クリックやドロップで貼り付ける内容の取得元を変えるとき。
 - 呼び出し先: `Cc["@mozilla.org/widget/transferable;1"].createInstance()`, `clipboard.isClipboardTypeSupported()`, `trans.addDataFlavor()`, `trans.getTransferData()`, `trans.init()`, `window.docShell.QueryInterface()`
 - 条件付き依存: `if (clipboard.isClipboardTypeSupported(clipboard.kSelectionClipboard))` → `clipboard.getData()`
 - 条件付き依存: `if (!(clipboard.isClipboardTypeSupported(clipboard.kSelectionClipboard)))` → `clipboard.getData()`
@@ -381,8 +381,8 @@ lines: 5275
 
 ## UpdateUrlbarSearchSplitterState()
 - 位置: L1495-1545
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: アドレスバーと検索バーの間にリサイズ用のスプリッターを、並びに応じて挿入・移動・削除する。カスタマイズ中はスプリッターを削除する。
+- 触るとき: ツールバーの並びを変えたあとにスプリッターの位置が合わないとき、またはカスタマイズ中の表示を変えるとき。
 - 呼び出し先: `document.documentElement.hasAttribute()`, `document.getElementById()`
 - 条件付き依存: `if (splitter)` → `splitter.remove()`
 - 条件付き依存: `if (!splitter)` → `document.createXULElement()`
@@ -392,16 +392,16 @@ lines: 5275
 
 ## UpdatePopupNotificationsVisibility()
 - 位置: L1547-1561
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: PopupNotifications が初期化済みなら anchor の可視性を再評価させ、PanelUI の通知表示も更新する。
+- 触るとき: ツールバー等の表示が変わったあとに通知の位置や表示が古いままのとき。
 - 呼び出し先: `Object.getOwnPropertyDescriptor()`, `PanelUI?.updateNotifications()`
 - 条件付き依存: `if (!Object.getOwnPropertyDescriptor(window, "PopupNotifications").get)` → `PopupNotifications.anchorVisibilityChange()`
 - 参照: `Object.getOwnPropertyDescriptor(window, "PopupNotifications").get`
 
 ## PageProxyClickHandler()
 - 位置: L1563-1567
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 中ボタンで、middlemouse.paste が有効なら middleMousePaste を呼ぶ。
+- 触るとき: ページアイコンなどを中クリックしたときの貼り付け動作を変えるとき。
 - 呼び出し先: `Services.prefs.getBoolPref()`
 - 条件付き依存: `if (aEvent.button == 1 && Services.prefs.getBoolPref("middlemouse.paste"))` → `middleMousePaste()`
 - 参照: `aEvent.button`
@@ -409,8 +409,8 @@ lines: 5275
 
 ## CreateContainerTabMenu()
 - 位置: L1569-1580
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: メニュー内から開かれた場合は既定動作を止めて何もしない。それ以外は new_tab_button 向けのコンテナタブ用メニューを作成する。
+- 触るとき: 新規タブボタンのコンテナメニューの表示条件を変えるとき。
 - 呼び出し先: `createUserContextMenu()`, `event.target.triggerNode?.closest()`
 - 条件付き依存: `if (event.target.triggerNode?.closest("menupopup"))` → `event.preventDefault()`
 

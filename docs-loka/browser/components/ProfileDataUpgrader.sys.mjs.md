@@ -5,27 +5,27 @@ source-hash: 6cee3dcd7de0fd2c68ec5dfce139a87db11880e2
 lines: 1148
 
 ## <module>
-- 役割: (未記入)
+- 役割: プロファイル形式のバージョン(existingDataVersion)に応じて、既存プロファイルの設定やファイルを新しい Firefox 向けに移行する ProfileDataUpgrader を定義する。
 - 呼び出し先: `ChromeUtils.defineESModuleGetters()`
 
 ## _migrateXULStoreForDocument()
 - 位置: L20-29
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: fromURL の XULStore にある全 ID と属性の値を toURL へ複写する。
+- 触るとき: XUL から XHTML へ文書 URL を変えたときに、サイドバーや places の保存状態を引き継げないと報告されたときに見る。
 - 呼び出し先: `Array.from()`, `Array.from(Services.xulStore.getAttributeEnumerator(fromURL, id)).forEach()`, `Array.from(Services.xulStore.getIDsEnumerator(fromURL)).forEach()`, `Services.xulStore.getAttributeEnumerator()`, `Services.xulStore.getIDsEnumerator()`, `Services.xulStore.getValue()`, `Services.xulStore.setValue()`
 - XPCOM: `Services.xulStore`
 
 ## _migrateHashedKeysForXULStoreForDocument()
 - 位置: L31-39
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: docUrl の XULStore で place: で始まる ID を、PlacesUIUtils のハッシュ化された ID に置き換え、open 属性を引き継ぐ。
+- 触るとき: places 系ウィンドウの開閉状態が移行後に消えるとき、またはハッシュ化の方式を変えるときに見る。
 - 呼び出し先: `Array.from()`, `Array.from(Services.xulStore.getIDsEnumerator(docUrl)) .filter()`, `Array.from(Services.xulStore.getIDsEnumerator(docUrl)) .filter(id => id.startsWith("place:")) .forEach()`, `Services.xulStore.getIDsEnumerator()`, `Services.xulStore.removeValue()`, `Services.xulStore.setValue()`, `id.startsWith()`, `lazy.PlacesUIUtils.obfuscateUrlForXulStore()`
 - XPCOM: `Services.xulStore`
 
 ## upgrade()
 - 位置: L72-1146
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: existingDataVersion ごとに「< N」の分岐で移行を順に実行し、最後に browser.migration.version を newVersion に設定する。
+- 触るとき: プロファイル移行を追加・修正するとき(新しい版の分岐を足す、APP_DATA_VERSION を上げる)や、古いプロファイルで設定が失われたと報告されたときに見る。
 - 呼び出し先: `Services.prefs.getBoolPref()`, `Services.prefs.getIntPref()`, `Services.prefs.getStringPref()`, `Services.prefs.prefHasUserValue()`, `Services.prefs.setIntPref()`
 - 条件付き依存: `if (existingDataVersion < 90)` → `this._migrateXULStoreForDocument()`
 - 条件付き依存: `if ( existingDataVersion < 91 && Services.prefs.getBoolPref("network.proxy.share_proxy_settings", false) && Services.prefs.getIntPref("network.proxy.type", 0) == 1 )` → `Services.prefs.getCharPref()`
@@ -233,8 +233,8 @@ lines: 1148
 
 ## enableProfilerButton()
 - 位置: L133-149
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: devtools.performance.popup.feature-flag を立て、旧プロファイラーアドオンが有効だった場合はメニューボタンをナビバーに追加する。
+- 触るとき: 旧 Gecko Profiler アドオンからの移行でプロファイラーボタンが出ない、または余計に出るときに見る。
 - 呼び出し先: `Services.prefs.setBoolPref()`
 - 条件付き依存: `if (wasAddonActive)` → `ChromeUtils.importESModule()`
 - 条件付き依存: `if (wasAddonActive)` → `ProfilerMenuButton.isInNavbar()`
@@ -243,8 +243,8 @@ lines: 1148
 
 ## migrateXULAttributeToStyle()
 - 位置: L484-493
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: XULStore の url/id の attr の値を取り、style に 'attr: 値px;' として書き込む。
+- 触るとき: サイドバーなどの幅を XUL 属性から CSS style へ移す migration の結果が合わないときに見る。
 - 呼び出し先: `Services.xulStore.getValue()`, `console.error()`
 - 条件付き依存: `if (value)` → `Services.xulStore.setValue()`
 - XPCOM: `Services.xulStore`
