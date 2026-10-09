@@ -5,7 +5,7 @@ source-hash: 8f9a5a9613372f3c35133a03671942b0cbb5e7ec
 
 - 継承: nsICancelable
 - 役割: Interface for persisting DOM documents and URIs to local or remote storage.
-- 実装: (未記入)
+- 実装: `nsWebBrowserPersist` (dom/webbrowserpersist/nsWebBrowserPersist.cpp)
 
 ## メソッド / 属性
 - `const unsigned long PERSIST_FLAGS_NONE`: No special persistence behaviour.

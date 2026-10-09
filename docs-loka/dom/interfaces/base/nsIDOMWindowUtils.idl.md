@@ -4,8 +4,8 @@ source: dom/interfaces/base/nsIDOMWindowUtils.idl
 source-hash: 400fb84ffc63b2a328d75a0e49779bd5f1194a01
 
 - 継承: nsISupports
-- 役割: (未記入)
-- 実装: (未記入)
+- 役割: 合成イベントがディスパッチされたときに通知を受けるコールバックのインターフェース。
+- 実装: `SynthesizedEventCallback` (dom/base/nsContentUtils.cpp)
 
 ## メソッド / 属性
 - `void onCompleteDispatch()`: Called when a synthesized event has been dispatched.
@@ -16,8 +16,8 @@ source: dom/interfaces/base/nsIDOMWindowUtils.idl
 source-hash: 400fb84ffc63b2a328d75a0e49779bd5f1194a01
 
 - 継承: nsISupports
-- 役割: (未記入)
-- 実装: (未記入)
+- 役割: DOM window に関する使用頻度の低いメソッド群を提供するインターフェース (一部は chrome 権限が必要で、DOMWindow の getInterface で取得する)。
+- 実装: `nsDOMWindowUtils` (dom/base/nsDOMWindowUtils.cpp)
 - 使っているJS: [`browser/components/tabbrowser/Tabbrowser.sys.mjs`](../../../browser/components/tabbrowser/Tabbrowser.sys.mjs.md)
 
 ## メソッド / 属性
@@ -29,75 +29,75 @@ source-hash: 400fb84ffc63b2a328d75a0e49779bd5f1194a01
 - `void updateLayerTree()`: Force a synchronous layer transaction for this window if necessary.
 - `readonly attribute unsigned long long lastTransactionId`: Get the last used layer transaction id for this window's refresh driver.
 - `void getViewportInfo(uint32_t aDisplayWidth, uint32_t aDisplayHeight, double aDefaultZoom, boolean aAllowZoom, double aMinZoom, double aMaxZoom, uint32_t aWidth, uint32_t aHeight, boolean aAutoSize)`: Information retrieved from the <meta name="viewport"> tag.
-- `AString getViewportFitInfo()`: (未記入)
+- `AString getViewportFitInfo()`: <meta name="viewport"> の viewport-fit 値から得られる情報を文字列で返す。
 - `void getDocumentViewerSize(uint32_t aDisplayWidth, uint32_t aDisplayHeight)`: Information about the window size in device pixels.
 - `void setMousewheelAutodir(Element aElement, boolean aEnabled, boolean aHonourRoot)`: For any scrollable element, this allows you to override the default
 - `void setDisplayPortForElement(float aXPx, float aYPx, float aWidthPx, float aHeightPx, Element aElement, uint32_t aPriority)`: For any scrollable element, this allows you to override the
 - `void setDisplayPortMarginsForElement(float aLeftMargin, float aTopMargin, float aRightMargin, float aBottomMargin, Element aElement, uint32_t aPriority)`: An alternate way to represent a displayport rect as a set of margins and a
-- `void setDisplayPortBaseForElement(int32_t aX, int32_t aY, int32_t aWidth, int32_t aHeight, Element aElement)`: (未記入)
+- `void setDisplayPortBaseForElement(int32_t aX, int32_t aY, int32_t aWidth, int32_t aHeight, Element aElement)`: 要素の display port の基準矩形 (x, y, width, height、app unit) を設定する。
 - `void getScrollbarSizes(Element aElement, uint32_t aVerticalScrollbarWidth, uint32_t aHorizontalScrollbarHeight)`: If |aElement| is a scroll container, returns the amount of layout
 - `void setResolutionAndScaleTo(float aResolution)`: Get/set the resolution at which rescalable web content is drawn for
-- `float getResolution()`: (未記入)
+- `float getResolution()`: 解像度を float で返す。
 - `void setRestoreResolution(float aResolution, uint32_t aDisplayWidth, uint32_t aDisplayHeight)`: Set a resolution on the presShell which is the "restored" from history.
 - `attribute boolean isFirstPaint`: Whether the next paint should be flagged as the first paint for a document.
-- `uint32_t getPresShellId()`: (未記入)
+- `uint32_t getPresShellId()`: PresShell の ID を返す。
 - `boolean isCORSSafelistedRequestHeader(ACString name, ACString value)`: Returns whether a given header and value is a CORS-safelisted request
 - `const long MODIFIER_ALT`: Following modifiers are for sent*Event() except sendNative*Event().
-- `const long MODIFIER_CONTROL`: (未記入)
-- `const long MODIFIER_SHIFT`: (未記入)
-- `const long MODIFIER_META`: (未記入)
-- `const long MODIFIER_ALTGRAPH`: (未記入)
-- `const long MODIFIER_CAPSLOCK`: (未記入)
-- `const long MODIFIER_FN`: (未記入)
-- `const long MODIFIER_FNLOCK`: (未記入)
-- `const long MODIFIER_NUMLOCK`: (未記入)
-- `const long MODIFIER_SCROLLLOCK`: (未記入)
-- `const long MODIFIER_SYMBOL`: (未記入)
-- `const long MODIFIER_SYMBOLLOCK`: (未記入)
+- `const long MODIFIER_CONTROL`: Control キーの修飾子。sent*Event() 用の修飾キー定数 (sendNative*Event 以外)。
+- `const long MODIFIER_SHIFT`: Shift キーの修飾子。sent*Event() 用の修飾キー定数 (sendNative*Event 以外)。
+- `const long MODIFIER_META`: Meta キーの修飾子。sent*Event() 用の修飾キー定数 (sendNative*Event 以外)。
+- `const long MODIFIER_ALTGRAPH`: AltGraph キーの修飾子。sent*Event() 用の修飾キー定数 (sendNative*Event 以外)。
+- `const long MODIFIER_CAPSLOCK`: CapsLock の修飾子。sent*Event() 用の修飾キー定数 (sendNative*Event 以外)。
+- `const long MODIFIER_FN`: Fn キーの修飾子。sent*Event() 用の修飾キー定数 (sendNative*Event 以外)。
+- `const long MODIFIER_FNLOCK`: FnLock の修飾子。sent*Event() 用の修飾キー定数 (sendNative*Event 以外)。
+- `const long MODIFIER_NUMLOCK`: NumLock の修飾子。sent*Event() 用の修飾キー定数 (sendNative*Event 以外)。
+- `const long MODIFIER_SCROLLLOCK`: ScrollLock の修飾子。sent*Event() 用の修飾キー定数 (sendNative*Event 以外)。
+- `const long MODIFIER_SYMBOL`: Symbol キーの修飾子。sent*Event() 用の修飾キー定数 (sendNative*Event 以外)。
+- `const long MODIFIER_SYMBOLLOCK`: SymbolLock の修飾子。sent*Event() 用の修飾キー定数 (sendNative*Event 以外)。
 - `const unsigned long WHEEL_EVENT_CAUSED_BY_NO_LINE_OR_PAGE_DELTA_DEVICE`: Synthesize a wheel event for a window. The event types supported is only
-- `const unsigned long WHEEL_EVENT_CAUSED_BY_MOMENTUM`: (未記入)
-- `const unsigned long WHEEL_EVENT_CUSTOMIZED_BY_USER_PREFS`: (未記入)
-- `const unsigned long WHEEL_EVENT_ASYNC_ENABLED`: (未記入)
-- `const unsigned long WHEEL_EVENT_EXPECTED_OVERFLOW_DELTA_X_ZERO`: (未記入)
-- `const unsigned long WHEEL_EVENT_EXPECTED_OVERFLOW_DELTA_X_POSITIVE`: (未記入)
-- `const unsigned long WHEEL_EVENT_EXPECTED_OVERFLOW_DELTA_X_NEGATIVE`: (未記入)
-- `const unsigned long WHEEL_EVENT_EXPECTED_OVERFLOW_DELTA_Y_ZERO`: (未記入)
-- `const unsigned long WHEEL_EVENT_EXPECTED_OVERFLOW_DELTA_Y_POSITIVE`: (未記入)
-- `const unsigned long WHEEL_EVENT_EXPECTED_OVERFLOW_DELTA_Y_NEGATIVE`: (未記入)
-- `void sendWheelEvent(float aX, float aY, double aDeltaX, double aDeltaY, double aDeltaZ, unsigned long aDeltaMode, long aModifiers, long aLineOrPageDeltaX, long aLineOrPageDeltaY, unsigned long aOptions, nsISynthesizedEventCallback aCallback)`: (未記入)
+- `const unsigned long WHEEL_EVENT_CAUSED_BY_MOMENTUM`: sendWheelEvent の aOptions に指定するフラグで、イベントが慣性 (momentum) によるものであることを示す。
+- `const unsigned long WHEEL_EVENT_CUSTOMIZED_BY_USER_PREFS`: sendWheelEvent の aOptions に指定するフラグで、イベントがユーザー設定 (prefs) によりカスタマイズされたものであることを示す。
+- `const unsigned long WHEEL_EVENT_ASYNC_ENABLED`: sendWheelEvent の aOptions に指定するフラグで、非同期ディスパッチを有効にする。
+- `const unsigned long WHEEL_EVENT_EXPECTED_OVERFLOW_DELTA_X_ZERO`: sendWheelEvent の aOptions に指定するフラグで、X 方向の期待されるオーバーフロー delta が 0 であることを示す。
+- `const unsigned long WHEEL_EVENT_EXPECTED_OVERFLOW_DELTA_X_POSITIVE`: sendWheelEvent の aOptions に指定するフラグで、X 方向の期待されるオーバーフロー delta が正であることを示す。
+- `const unsigned long WHEEL_EVENT_EXPECTED_OVERFLOW_DELTA_X_NEGATIVE`: sendWheelEvent の aOptions に指定するフラグで、X 方向の期待されるオーバーフロー delta が負であることを示す。
+- `const unsigned long WHEEL_EVENT_EXPECTED_OVERFLOW_DELTA_Y_ZERO`: sendWheelEvent の aOptions に指定するフラグで、Y 方向の期待されるオーバーフロー delta が 0 であることを示す。
+- `const unsigned long WHEEL_EVENT_EXPECTED_OVERFLOW_DELTA_Y_POSITIVE`: sendWheelEvent の aOptions に指定するフラグで、Y 方向の期待されるオーバーフロー delta が正であることを示す。
+- `const unsigned long WHEEL_EVENT_EXPECTED_OVERFLOW_DELTA_Y_NEGATIVE`: sendWheelEvent の aOptions に指定するフラグで、Y 方向の期待されるオーバーフロー delta が負であることを示す。
+- `void sendWheelEvent(float aX, float aY, double aDeltaX, double aDeltaY, double aDeltaZ, unsigned long aDeltaMode, long aModifiers, long aLineOrPageDeltaX, long aLineOrPageDeltaY, unsigned long aOptions, nsISynthesizedEventCallback aCallback)`: window に対して wheel イベントを合成する (座標は window からの CSS ピクセルのオフセットで、chrome 権限が必要)。
 - `const unsigned long NATIVE_MODIFIER_CAPS_LOCK`: Native modifiers for sendNativeKeyEvent and sendNativeMouseEvent.
-- `const unsigned long NATIVE_MODIFIER_NUM_LOCK`: (未記入)
-- `const unsigned long NATIVE_MODIFIER_SHIFT_LEFT`: (未記入)
-- `const unsigned long NATIVE_MODIFIER_SHIFT_RIGHT`: (未記入)
-- `const unsigned long NATIVE_MODIFIER_CONTROL_LEFT`: (未記入)
-- `const unsigned long NATIVE_MODIFIER_CONTROL_RIGHT`: (未記入)
-- `const unsigned long NATIVE_MODIFIER_ALT_LEFT`: (未記入)
-- `const unsigned long NATIVE_MODIFIER_ALT_RIGHT`: (未記入)
-- `const unsigned long NATIVE_MODIFIER_COMMAND_LEFT`: (未記入)
-- `const unsigned long NATIVE_MODIFIER_COMMAND_RIGHT`: (未記入)
-- `const unsigned long NATIVE_MODIFIER_HELP`: (未記入)
-- `const unsigned long NATIVE_MODIFIER_ALT_GRAPH`: (未記入)
-- `const unsigned long NATIVE_MODIFIER_FUNCTION`: (未記入)
-- `const unsigned long NATIVE_MODIFIER_NUMERIC_KEY_PAD`: (未記入)
+- `const unsigned long NATIVE_MODIFIER_NUM_LOCK`: NumLock を表すネイティブ修飾子。sendNativeKeyEvent と sendNativeMouseEvent 用。
+- `const unsigned long NATIVE_MODIFIER_SHIFT_LEFT`: 左 Shift を表すネイティブ修飾子。sendNativeKeyEvent と sendNativeMouseEvent 用。
+- `const unsigned long NATIVE_MODIFIER_SHIFT_RIGHT`: 右 Shift を表すネイティブ修飾子。sendNativeKeyEvent と sendNativeMouseEvent 用。
+- `const unsigned long NATIVE_MODIFIER_CONTROL_LEFT`: 左 Control を表すネイティブ修飾子。sendNativeKeyEvent と sendNativeMouseEvent 用。
+- `const unsigned long NATIVE_MODIFIER_CONTROL_RIGHT`: 右 Control を表すネイティブ修飾子。sendNativeKeyEvent と sendNativeMouseEvent 用。
+- `const unsigned long NATIVE_MODIFIER_ALT_LEFT`: 左 Alt を表すネイティブ修飾子。sendNativeKeyEvent と sendNativeMouseEvent 用。
+- `const unsigned long NATIVE_MODIFIER_ALT_RIGHT`: 右 Alt を表すネイティブ修飾子。sendNativeKeyEvent と sendNativeMouseEvent 用。
+- `const unsigned long NATIVE_MODIFIER_COMMAND_LEFT`: 左 Command を表すネイティブ修飾子。sendNativeKeyEvent と sendNativeMouseEvent 用。
+- `const unsigned long NATIVE_MODIFIER_COMMAND_RIGHT`: 右 Command を表すネイティブ修飾子。sendNativeKeyEvent と sendNativeMouseEvent 用。
+- `const unsigned long NATIVE_MODIFIER_HELP`: Help を表すネイティブ修飾子。sendNativeKeyEvent と sendNativeMouseEvent 用。
+- `const unsigned long NATIVE_MODIFIER_ALT_GRAPH`: AltGraph を表すネイティブ修飾子。sendNativeKeyEvent と sendNativeMouseEvent 用。
+- `const unsigned long NATIVE_MODIFIER_FUNCTION`: Function (Fn) を表すネイティブ修飾子。sendNativeKeyEvent と sendNativeMouseEvent 用。
+- `const unsigned long NATIVE_MODIFIER_NUMERIC_KEY_PAD`: テンキー を表すネイティブ修飾子。sendNativeKeyEvent と sendNativeMouseEvent 用。
 - `void sendNativeKeyEvent(long aNativeKeyboardLayout, long aNativeKeyCode, unsigned long aModifierFlags, AString aCharacters, AString aUnmodifiedCharacters, nsISynthesizedEventCallback aCallback)`: See nsIWidget::SynthesizeNativeKeyEvent
 - `const unsigned long NATIVE_MOUSE_MESSAGE_BUTTON_DOWN`: See nsIWidget::SynthesizeNativeMouseEvent
-- `const unsigned long NATIVE_MOUSE_MESSAGE_BUTTON_UP`: (未記入)
-- `const unsigned long NATIVE_MOUSE_MESSAGE_MOVE`: (未記入)
-- `const unsigned long NATIVE_MOUSE_MESSAGE_ENTER_WINDOW`: (未記入)
-- `const unsigned long NATIVE_MOUSE_MESSAGE_LEAVE_WINDOW`: (未記入)
-- `void sendNativeMouseEvent(long aScreenX, long aScreenY, unsigned long aNativeMessage, short aButton, unsigned long aModifierFlags, Element aElementOnWidget, nsISynthesizedEventCallback aCallback)`: (未記入)
+- `const unsigned long NATIVE_MOUSE_MESSAGE_BUTTON_UP`: sendNativeMouseEvent の aNativeMessage に指定する値で、ボタンを離すを表す。
+- `const unsigned long NATIVE_MOUSE_MESSAGE_MOVE`: sendNativeMouseEvent の aNativeMessage に指定する値で、移動を表す。
+- `const unsigned long NATIVE_MOUSE_MESSAGE_ENTER_WINDOW`: sendNativeMouseEvent の aNativeMessage に指定する値で、ウィンドウへの進入を表す。
+- `const unsigned long NATIVE_MOUSE_MESSAGE_LEAVE_WINDOW`: sendNativeMouseEvent の aNativeMessage に指定する値で、ウィンドウからの退出を表す。
+- `void sendNativeMouseEvent(long aScreenX, long aScreenY, unsigned long aNativeMessage, short aButton, unsigned long aModifierFlags, Element aElementOnWidget, nsISynthesizedEventCallback aCallback)`: スクリーン座標 (aScreenX, aScreenY) にネイティブのマウスイベントを合成する (イベントは非同期に発火され、完了時に aCallback へ通知される)。
 - `void suppressAnimation(boolean aSuppress)`: Suppress animations that are applied to a window by OS when
 - `const unsigned long MOUSESCROLL_PREFER_WIDGET_AT_POINT`: The values for sendNativeMouseScrollEvent's aAdditionalFlags.
 - `const unsigned long MOUSESCROLL_SCROLL_LINES`: Interpret the scroll delta values as lines rather than pixels.
 - `const unsigned long MOUSESCROLL_WIN_SCROLL_LPARAM_NOT_NULL`: The platform specific values of aAdditionalFlags.  Must be over 0x00010000.
 - `void sendNativeMouseScrollEvent(long aScreenX, long aScreenY, unsigned long aNativeMessage, double aDeltaX, double aDeltaY, double aDeltaZ, unsigned long aModifierFlags, unsigned long aAdditionalFlags, Element aElement, nsISynthesizedEventCallback aCallback)`: See nsIWidget::SynthesizeNativeMouseScrollEvent
 - `const long TOUCH_HOVER`: Touch states for sendNativeTouchPoint. These values match
-- `const long TOUCH_CONTACT`: (未記入)
-- `const long TOUCH_REMOVE`: (未記入)
-- `const long TOUCH_CANCEL`: (未記入)
+- `const long TOUCH_CONTACT`: sendNativeTouchPoint のタッチ状態で、ポインターがデジタイザに接触していることを示す。
+- `const long TOUCH_REMOVE`: sendNativeTouchPoint のタッチ状態で、ポインターがデジタイザの検出領域から外れたことを示す。
+- `const long TOUCH_CANCEL`: sendNativeTouchPoint のタッチ状態で、タッチのキャンセルを示す。
 - `const long PHASE_BEGIN`: Phase states for sendNativeTouchPadPinch.
-- `const long PHASE_UPDATE`: (未記入)
-- `const long PHASE_END`: (未記入)
+- `const long PHASE_UPDATE`: sendNativeTouchPadPinch のフェーズ状態で、更新 (update) を示す。
+- `const long PHASE_END`: sendNativeTouchPadPinch のフェーズ状態で、終了 (end) を示す。
 - `void sendNativeTouchPoint(unsigned long aPointerId, unsigned long aTouchState, long aScreenX, long aScreenY, double aPressure, unsigned long aOrientation, nsISynthesizedEventCallback aCallback, Element aElement)`: Create a new or update an existing touch point on the digitizer.
 - `void sendNativeTouchpadPinch(unsigned long aEventPhase, float aScale, long aScreenX, long aScreenY, long aModifierFlags)`: These values indicate touchpad pinch phase states :
 - `void sendNativeTouchTap(long aScreenX, long aScreenY, boolean aLongTap, nsISynthesizedEventCallback aCallback)`: Simulates native touch based taps on the input digitizer. Events
@@ -118,8 +118,8 @@ source-hash: 400fb84ffc63b2a328d75a0e49779bd5f1194a01
 - `NodeList nodesFromRect(float aX, float aY, float aTopSize, float aRightSize, float aBottomSize, float aLeftSize, boolean aIgnoreRootScrollFrame, boolean aFlushLayout, boolean aOnlyVisible, float aTransparencyThreshold)`: Retrieve all nodes that intersect a rect in the window's document.
 - `uint32_t compareCanvases(nsISupports aCanvas1, nsISupports aCanvas2, unsigned long aMaxDifference)`: Compare the two canvases, returning the number of differing pixels and
 - `readonly attribute boolean isMozAfterPaintPending`: Returns true if a MozAfterPaint event has been queued but not yet
-- `readonly attribute boolean isWindowFullyOccluded`: (未記入)
-- `readonly attribute boolean isCompositorPaused`: (未記入)
+- `readonly attribute boolean isWindowFullyOccluded`: ウィンドウが完全に隠れているかどうかを返す読み取り専用属性。
+- `readonly attribute boolean isCompositorPaused`: コンポジタが一時停止中かどうかを返す読み取り専用属性。
 - `readonly attribute boolean isInputTaskManagerSuspended`: Returns true if the InputTaskManager is suspended.
 - `void suppressEventHandling(boolean aSuppress)`: Suppresses/unsuppresses user initiated event handling in window's document
 - `void disableNonTestMouseEvents(boolean aDisable)`: Disable or enable non synthetic test mouse events on *all* windows.
@@ -129,10 +129,10 @@ source-hash: 400fb84ffc63b2a328d75a0e49779bd5f1194a01
 - `DOMRect getBoundsWithoutFlushing(Element aElement)`: Returns the given element's bounds without flushing pending layout changes.
 - `Array<DOMRect> getWidgetOpaqueRegion()`: Returns the opaque region, for testing
 - `const long UPDATE_TYPE_RESTORE`: Scroll the visual viewport to the given coordinates, relative to the
-- `const long UPDATE_TYPE_MAIN_THREAD`: (未記入)
-- `const long SCROLL_MODE_INSTANT`: (未記入)
-- `const long SCROLL_MODE_SMOOTH`: (未記入)
-- `void scrollToVisual(float aOffsetX, float aOffsetY, long aUpdateType, long aScrollMode)`: (未記入)
+- `const long UPDATE_TYPE_MAIN_THREAD`: scrollToVisual の aUpdateType に指定する更新種別の一つ (UPDATE_TYPE_RESTORE と並ぶ)。
+- `const long SCROLL_MODE_INSTANT`: scrollToVisual の aScrollMode に指定する値で、即時スクロールを示す。
+- `const long SCROLL_MODE_SMOOTH`: scrollToVisual の aScrollMode に指定する値で、スムーズスクロールを示す。
+- `void scrollToVisual(float aOffsetX, float aOffsetY, long aUpdateType, long aScrollMode)`: visual viewport を、ドキュメント原点基準の座標へスクロールする (root content document の window のみ対象。すぐには反映されず、次のトランザクションで APZ に送られる)。
 - `void getVisualViewportOffsetRelativeToLayoutViewport(float aOffsetX, float aOffsetY)`: Returns the offset of the window's visual viewport relative to the
 - `void getVisualViewportOffset(long aOffsetX, long aOffsetY)`: Returns the scroll position of the window's visual viewport.
 - `DOMRect transformRectLayoutToVisual(float aX, float aY, float aWidth, float aHeight)`: Transforms the passed in rect from layout relative coords (relative to
@@ -142,9 +142,9 @@ source-hash: 400fb84ffc63b2a328d75a0e49779bd5f1194a01
 - `DOMRect toTopLevelWidgetRect(float aX, float aY, float aWidth, float aHeight)`: Transform a rectangle given in coordinates relative to the top level widget
 - `DOMRect convertFromParentProcessWidgetToLocal(float aX, float aY, float aWidth, float aHeight)`: Transform a rectangle given in coordinates relative to the top level
 - `void setDynamicToolbarMaxHeight(uint32_t aHeightInScreen)`: Sets the maximum height of the dynamic toolbar in Screen pixel units.
-- `const long FLUSH_NONE`: (未記入)
-- `const long FLUSH_STYLE`: (未記入)
-- `const long FLUSH_LAYOUT`: (未記入)
+- `const long FLUSH_NONE`: フラッシュ種別で、保留中のスタイルをフラッシュしないことを示す。
+- `const long FLUSH_STYLE`: フラッシュ種別で、保留中のスタイルをフラッシュすることを示す。
+- `const long FLUSH_LAYOUT`: フラッシュ種別で、レイアウトをフラッシュすることを示す。
 - `boolean needsFlush(long aFlushtype)`: Returns true if a flush of the given type is needed.
 - `void flushLayoutWithoutThrottledAnimations()`: Flush pending layout-type notification without flushing throttled
 - `DOMRect getRootBounds()`: Returns the bounds of the window's currently loaded document. This will
@@ -155,8 +155,8 @@ source-hash: 400fb84ffc63b2a328d75a0e49779bd5f1194a01
 - `readonly attribute unsigned long IMEStatus`: Get IME status, see above IME_STATUS_* definitions.
 - `readonly attribute nsIURI inputContextURI`: Get the document URI which may be retrieved by native IME.
 - `const unsigned long INPUT_CONTEXT_ORIGIN_MAIN`: Get whether current input context (including IME status) in the widget
-- `const unsigned long INPUT_CONTEXT_ORIGIN_CONTENT`: (未記入)
-- `readonly attribute unsigned long inputContextOrigin`: (未記入)
+- `const unsigned long INPUT_CONTEXT_ORIGIN_CONTENT`: inputContextOrigin の値で、入力コンテキストが content によって設定されたことを示す。
+- `readonly attribute unsigned long inputContextOrigin`: widget の現在の入力コンテキスト (IME の状態を含む) が content によって設定されたかどうかを返す読み取り専用属性。
 - `readonly attribute Node nodeObservedByIMEContentObserver`: Get a root node which is observed by IMEContentObserver.
 - `boolean dispatchDOMEventViaPresShellForTesting(Node aTarget, Event aEvent)`: Dispatches aEvent as a synthesized trusted event for tests via the
 - `boolean dispatchEventToChromeOnly(EventTarget aTarget, Event aEvent)`: Sets WidgetEvent::mFlags::mOnlyChromeDispatch to true to ensure that
@@ -164,14 +164,14 @@ source-hash: 400fb84ffc63b2a328d75a0e49779bd5f1194a01
 - `const unsigned long CONTENT_COMMAND_FLAG_PREVENT_SET_SELECTION`: If sendContentCommanedEvent()'s aAdditionalFlags argument has no
 - `boolean sendContentCommandEvent(AString aType, nsITransferable aTransferable, AString aString, uint32_t aOffset, AString aReplaceSrcString, unsigned long aAdditionalFlags)`: Generate a content command event.
 - `const unsigned long QUERY_CONTENT_FLAG_SELECTION_SPELLCHECK`: sendQueryContentEvent()'s aAdditionalFlags may have one of following
-- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_IME_RAWINPUT`: (未記入)
-- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_IME_SELECTEDRAWTEXT`: (未記入)
-- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_IME_CONVERTEDTEXT`: (未記入)
-- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_IME_SELECTEDCONVERTEDTEXT`: (未記入)
-- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_ACCESSIBILITY`: (未記入)
-- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_FIND`: (未記入)
-- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_URLSECONDARY`: (未記入)
-- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_URLSTRIKEOUT`: (未記入)
+- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_IME_RAWINPUT`: sendQueryContentEvent の aAdditionalFlags に指定する選択種別フラグ (aType が QUERY_SELECTED_TEXT のとき)。設定すると、IME_RAWINPUT 種別の最初の範囲が結果になる。
+- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_IME_SELECTEDRAWTEXT`: sendQueryContentEvent の aAdditionalFlags に指定する選択種別フラグ (aType が QUERY_SELECTED_TEXT のとき)。設定すると、IME_SELECTEDRAWTEXT 種別の最初の範囲が結果になる。
+- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_IME_CONVERTEDTEXT`: sendQueryContentEvent の aAdditionalFlags に指定する選択種別フラグ (aType が QUERY_SELECTED_TEXT のとき)。設定すると、IME_CONVERTEDTEXT 種別の最初の範囲が結果になる。
+- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_IME_SELECTEDCONVERTEDTEXT`: sendQueryContentEvent の aAdditionalFlags に指定する選択種別フラグ (aType が QUERY_SELECTED_TEXT のとき)。設定すると、IME_SELECTEDCONVERTEDTEXT 種別の最初の範囲が結果になる。
+- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_ACCESSIBILITY`: sendQueryContentEvent の aAdditionalFlags に指定する選択種別フラグ (aType が QUERY_SELECTED_TEXT のとき)。設定すると、ACCESSIBILITY 種別の最初の範囲が結果になる。
+- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_FIND`: sendQueryContentEvent の aAdditionalFlags に指定する選択種別フラグ (aType が QUERY_SELECTED_TEXT のとき)。設定すると、FIND 種別の最初の範囲が結果になる。
+- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_URLSECONDARY`: sendQueryContentEvent の aAdditionalFlags に指定する選択種別フラグ (aType が QUERY_SELECTED_TEXT のとき)。設定すると、URLSECONDARY 種別の最初の範囲が結果になる。
+- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_URLSTRIKEOUT`: sendQueryContentEvent の aAdditionalFlags に指定する選択種別フラグ (aType が QUERY_SELECTED_TEXT のとき)。設定すると、URLSTRIKEOUT 種別の最初の範囲が結果になる。
 - `const unsigned long QUERY_CONTENT_FLAG_OFFSET_RELATIVE_TO_INSERTION_POINT`: One of sendQueryContentEvent()'s aAdditionalFlags.  If this is specified,
 - `nsIQueryContentEventResult sendQueryContentEvent(unsigned long aType, long long aOffset, unsigned long aLength, long aX, long aY, unsigned long aAdditionalFlags)`: Synthesize a query content event. Note that the result value returned here
 - `const unsigned long QUERY_SELECTED_TEXT`: QUERY_SELECTED_TEXT queries the first selection range's information.
@@ -188,21 +188,21 @@ source-hash: 400fb84ffc63b2a328d75a0e49779bd5f1194a01
 - `const unsigned long SELECTION_SET_FLAG_REVERSE`: If SELECTION_SET_FLAG_REVERSE is set, the selection is set from
 - `const unsigned long SELECTION_EXPAND_TO_CLUSTER_BOUNDARY`: If SELECTION_EXPAND_TO_CLUSTER_BOUNDARY is set, the selection range
 - `boolean sendSelectionSetEvent(unsigned long aOffset, unsigned long aLength, unsigned long aAdditionalFlags)`: Synthesize a selection set event to the window.
-- `const unsigned long SELECT_CHARACTER`: (未記入)
-- `const unsigned long SELECT_CLUSTER`: (未記入)
-- `const unsigned long SELECT_WORD`: (未記入)
-- `const unsigned long SELECT_LINE`: (未記入)
-- `const unsigned long SELECT_BEGINLINE`: (未記入)
-- `const unsigned long SELECT_ENDLINE`: (未記入)
-- `const unsigned long SELECT_PARAGRAPH`: (未記入)
-- `const unsigned long SELECT_WORDNOSPACE`: (未記入)
+- `const unsigned long SELECT_CHARACTER`: 選択動作の単位で、文字を表す (nsIFrame の nsSelectionAmount 定数に対応)。
+- `const unsigned long SELECT_CLUSTER`: 選択動作の単位で、クラスタを表す (nsIFrame の nsSelectionAmount 定数に対応)。
+- `const unsigned long SELECT_WORD`: 選択動作の単位で、単語を表す (nsIFrame の nsSelectionAmount 定数に対応)。
+- `const unsigned long SELECT_LINE`: 選択動作の単位で、行を表す (nsIFrame の nsSelectionAmount 定数に対応)。
+- `const unsigned long SELECT_BEGINLINE`: 選択動作の単位で、行頭を表す (nsIFrame の nsSelectionAmount 定数に対応)。
+- `const unsigned long SELECT_ENDLINE`: 選択動作の単位で、行末を表す (nsIFrame の nsSelectionAmount 定数に対応)。
+- `const unsigned long SELECT_PARAGRAPH`: 選択動作の単位で、段落を表す (nsIFrame の nsSelectionAmount 定数に対応)。
+- `const unsigned long SELECT_WORDNOSPACE`: 選択動作の単位で、空白を含まない単語を表す (nsIFrame の nsSelectionAmount 定数に対応)。
 - `boolean selectAtPoint(float aX, float aY, unsigned long aSelectBehavior)`: Select content at a client point based on a selection behavior if the
 - `AString getVisitedDependentComputedStyle(Element aElement, AString aPseudoElement, AString aPropertyName)`: Perform the equivalent of:
 - `void enterModalState()`: Put the window into a state where scripts are frozen and events
 - `void leaveModalState()`: Resume normal window state, where scripts can run and events are
 - `boolean isInModalState()`: Is the window is in a modal state? [See enterModalState()]
 - `void suspendTimeouts()`: Suspend/resume timeouts on this window and its descendant windows.
-- `void resumeTimeouts()`: (未記入)
+- `void resumeTimeouts()`: このウィンドウとその子孫ウィンドウのタイムアウトを再開する (suspendTimeouts と対)。
 - `readonly attribute AString layerManagerType`: What type of layer manager the widget associated with this window is
 - `readonly attribute boolean layerManagerRemote`: True if the layer manager for the widget associated with this window is
 - `readonly attribute boolean isWebRenderRequested`: True if webrender was requested by the user (via pref or env-var), false
@@ -211,8 +211,8 @@ source-hash: 400fb84ffc63b2a328d75a0e49779bd5f1194a01
 - `Promise defaultDevicesRoundTripLatency()`: Returns the mean round trip latency in seconds for the default input and
 - `readonly attribute unsigned long currentPreferredSampleRate`: Returns the preferred sample rate of the current audio device.
 - `const unsigned short AUDIO_INPUT`: Returns all the audio input/output devices.
-- `const unsigned short AUDIO_OUTPUT`: (未記入)
-- `nsIArray audioDevices(unsigned short aSide)`: (未記入)
+- `const unsigned short AUDIO_OUTPUT`: audioDevices の aSide に指定する値で、オーディオ出力デバイスを示す。
+- `nsIArray audioDevices(unsigned short aSide)`: すべてのオーディオ入出力デバイスを返す (aSide で AUDIO_INPUT / AUDIO_OUTPUT を指定する)。
 - `void startFrameTimeRecording(unsigned long startIndex)`: Record (and return) frame-intervals for frames which were presented
 - `Array<float> stopFrameTimeRecording(unsigned long startIndex)`: Returns array of frame intervals since the time when the given startIndex
 - `readonly attribute float displayDPI`: The DPI of the display
@@ -242,7 +242,7 @@ source-hash: 400fb84ffc63b2a328d75a0e49779bd5f1194a01
 - `long long getFileId(jsval aFile)`: Get internal id of the stored blob, file or file handle.
 - `AString getFilePath(jsval aFile)`: Get internal file path of the stored file or file handle.
 - `boolean getFileReferences(AString aDatabaseName, long long aId, long aRefCnt, long aDBRefCnt)`: Get file ref count info for given database and file id.
-- `void flushPendingFileDeletions()`: (未記入)
+- `void flushPendingFileDeletions()`: 保留中のファイル削除をフラッシュする。
 - `void startPCCountProfiling()`: Begin opcode-level profiling of all JavaScript execution in the window's
 - `void stopPCCountProfiling()`: Stop opcode-level profiling of JavaScript execution in the runtime, and
 - `void purgePCCounts()`: Purge collected PC counters.
@@ -252,12 +252,12 @@ source-hash: 400fb84ffc63b2a328d75a0e49779bd5f1194a01
 - `readonly attribute boolean paintingSuppressed`: Returns true if painting is suppressed for this window and false
 - `void setVisualViewportSize(float aWidth, float aHeight)`: Set the viewport size for the purposes of clamping scroll positions for
 - `void disableDialogs()`: These are used to control whether dialogs (alert, prompt, confirm) are
-- `void enableDialogs()`: (未記入)
-- `boolean areDialogsEnabled()`: (未記入)
-- `void resetDialogAbuseState()`: (未記入)
-- `const unsigned long AGENT_SHEET`: (未記入)
-- `const unsigned long USER_SHEET`: (未記入)
-- `const unsigned long AUTHOR_SHEET`: (未記入)
+- `void enableDialogs()`: ダイアログ (alert, prompt, confirm) を許可する。
+- `boolean areDialogsEnabled()`: ダイアログ (alert, prompt, confirm) が許可されているかどうかを返す。
+- `void resetDialogAbuseState()`: ダイアログがブロックされているかを制御する内部状態をリセットする。
+- `const unsigned long AGENT_SHEET`: スタイルシートの種別で、エージェントシートを示す。
+- `const unsigned long USER_SHEET`: スタイルシートの種別で、ユーザーシートを示す。
+- `const unsigned long AUTHOR_SHEET`: スタイルシートの種別で、オーサーシートを示す。
 - `void loadSheet(nsIURI sheetURI, unsigned long type)`: Synchronously loads a style sheet from |sheetURI| and adds it to the list
 - `void loadSheetUsingURIString(ACString sheetURI, unsigned long type)`: Same as the above method but allows passing the URI as a string.
 - `void addSheet(nsIPreloadedStyleSheet sheet, unsigned long type)`: Adds a style sheet to the list of additional style sheets of the document.
@@ -268,11 +268,11 @@ source-hash: 400fb84ffc63b2a328d75a0e49779bd5f1194a01
 - `void allowScriptsToClose()`: After calling the method, the window for which this DOMWindowUtils
 - `readonly attribute boolean isParentWindowMainWidgetVisible`: Is the parent window's main widget visible?  If it isn't, we probably
 - `boolean isNodeDisabledForEvents(Node aNode)`: In certain cases the event handling of nodes, form controls in practice,
-- `AString getOMTAStyle(Element aElement, AString aProperty, AString aPseudoElement)`: (未記入)
+- `AString getOMTAStyle(Element aElement, AString aProperty, AString aPseudoElement)`: コンポジタスレッド上でアニメーション中のプロパティの現在値を返す (アニメーション中でなければ空文字列)。
 - `nsIJSRAIIHelper setHandlingUserInput(boolean aHandlingInput)`: If aHandlingInput is true, this informs the event state manager that
 - `boolean isKeyboardEventUserActivity(Event aKeyboardEvent)`: Returns true if a keyboard event qualifies as "user activity" such that
 - `jsval getContentAPZTestData(Element aElement)`: Get the content- and compositor-side APZ test data instances.
-- `jsval getCompositorAPZTestData(Element aElement)`: (未記入)
+- `jsval getCompositorAPZTestData(Element aElement)`: コンポジタ側の APZ テストデータを返す (aElement は APZ が有効なポップアップウィンドウ用の任意引数)。
 - `void sendMozMouseHitTestEvent(float aX, float aY, Element aElement)`: Send a MozMouseHittest event hit on the given (x, y) on this window.
 - `void postRestyleSelfEvent(Element aElement)`: Posts an RestyleHint::RESTYLE_SELF restyle event for the given element.
 - `void xpconnectArgument(nsISupports aObj)`: This method doesn't do anything useful.  It was solely added for the
@@ -285,7 +285,7 @@ source-hash: 400fb84ffc63b2a328d75a0e49779bd5f1194a01
 - `void setCustomTitlebar(boolean aCustomTitlebar)`: Controls whether we paint to the titlebar of the window.
 - `void setResizeMargin(int32_t aResizeMargin)`: Controls the amount of space on each edge of the window that can be
 - `jsval getFrameUniformityTestData()`: Returns a JSObject which contains a list of frame uniformities
-- `void enterChaosMode()`: (未記入)
+- `void enterChaosMode()`: chaos mode の活性化レベルを上げる (元の状態に戻すには同じ回数の leaveChaosMode が必要で、レベルが 0 でなければ chaos mode の全機能が有効になる)。
 - `void leaveChaosMode()`: Decrease the chaos mode activation level. See enterChaosMode().
 - `void triggerDeviceReset()`: Alerts Gecko of a device reset
 - `boolean hasRuleProcessorUsedByMultipleStyleSets(unsigned long aSheetType)`: Returns whether the document's style set's rule processor for the
@@ -299,9 +299,9 @@ source-hash: 400fb84ffc63b2a328d75a0e49779bd5f1194a01
 - `void ensureDirtyRootFrame()`: Calls FrameNeedsReflow on that root frame so that a layout flush
 - `void wrCapture()`: Capture the contents of the current WebRender frame and
 - `const uint32_t WR_CAPTURE_SCENE`: Flag bits for use in |wrStartCaptureSequence|'s |aFlags| argument.
-- `const uint32_t WR_CAPTURE_FRAME`: (未記入)
-- `const uint32_t WR_CAPTURE_TILE_CACHE`: (未記入)
-- `const uint32_t WR_CAPTURE_EXTERNAL_RESOURCES`: (未記入)
+- `const uint32_t WR_CAPTURE_FRAME`: wrStartCaptureSequence の aFlags に指定するビットフラグで、フレームのキャプチャを示す。
+- `const uint32_t WR_CAPTURE_TILE_CACHE`: wrStartCaptureSequence の aFlags に指定するビットフラグで、タイルキャッシュのキャプチャを示す。
+- `const uint32_t WR_CAPTURE_EXTERNAL_RESOURCES`: wrStartCaptureSequence の aFlags に指定するビットフラグで、外部リソースのキャプチャを示す。
 - `void wrStartCaptureSequence(uint32_t aFlags)`: Start capturing each WebRender frame to disk.
 - `void wrStopCaptureSequence()`: Stop a capture begun with |wrStartCaptureSequence|.
 - `Promise setCompositionRecording(boolean aValue)`: Toggle recording of composition on and off.
@@ -309,36 +309,36 @@ source-hash: 400fb84ffc63b2a328d75a0e49779bd5f1194a01
 - `Promise stopCompositionRecording(boolean aWriteToDisk)`: Stop the composition recorder.
 - `boolean isCssPropertyRecordedInUseCounter(ACString aProperty)`: Returns whether the document we're associated to has recorded a given CSS
 - `void resetMobileViewportManager()`: Calls SetInitialViewport on the MobileViewportManager, which effectively
-- `boolean isCoepCredentialless()`: (未記入)
+- `boolean isCoepCredentialless()`: COEP が credentialless かどうかを返す。
 - `void setHiDPIMode(boolean aHiDPI)`: Change the DPI setting for the primary monitor.
 - `void restoreHiDPIMode()`: Restore the modified HiDPI mode.
 - `attribute ACString systemFont`: NOTE: Currently works only on GTK+.
 - `readonly attribute unsigned long long paintCount`: Returns the number of times this document for this window has
-- `const long DEFAULT_MOUSE_POINTER_ID`: (未記入)
-- `const long DEFAULT_PEN_POINTER_ID`: (未記入)
-- `const long DEFAULT_TOUCH_POINTER_ID`: (未記入)
-- `const long MOUSE_BUTTON_LEFT_BUTTON`: (未記入)
-- `const long MOUSE_BUTTON_MIDDLE_BUTTON`: (未記入)
-- `const long MOUSE_BUTTON_RIGHT_BUTTON`: (未記入)
-- `const long MOUSE_BUTTONS_NO_BUTTON`: (未記入)
-- `const long MOUSE_BUTTONS_LEFT_BUTTON`: (未記入)
-- `const long MOUSE_BUTTONS_RIGHT_BUTTON`: (未記入)
-- `const long MOUSE_BUTTONS_MIDDLE_BUTTON`: (未記入)
-- `const long MOUSE_BUTTONS_4TH_BUTTON`: (未記入)
-- `const long MOUSE_BUTTONS_5TH_BUTTON`: (未記入)
-- `const long DIRECTION_LTR`: (未記入)
-- `const long DIRECTION_RTL`: (未記入)
-- `const long DIRECTION_NOT_SET`: (未記入)
-- `void syncFlushCompositor()`: (未記入)
-- `unsigned long long getLayersId(Element aElement)`: (未記入)
-- `readonly attribute boolean effectivelyThrottlesFrameRequests`: (未記入)
-- `readonly attribute AString webrtcRawDeviceId`: (未記入)
-- `readonly attribute boolean suspendedByBrowsingContextGroup`: (未記入)
-- `readonly attribute boolean hasScrollLinkedEffect`: (未記入)
-- `readonly attribute uint32_t orientationLock`: (未記入)
-- `Element getWheelScrollTarget()`: (未記入)
-- `readonly attribute nsIDragSession dragSession`: (未記入)
-- `attribute unsigned long microTaskLevel`: (未記入)
+- `const long DEFAULT_MOUSE_POINTER_ID`: マウスの既定のポインター ID (テスト専用の定数)。
+- `const long DEFAULT_PEN_POINTER_ID`: ペンの既定のポインター ID (テスト専用の定数)。
+- `const long DEFAULT_TOUCH_POINTER_ID`: タッチの既定のポインター ID (テスト専用の定数)。
+- `const long MOUSE_BUTTON_LEFT_BUTTON`: mozilla::MouseButton に一致する値で、左ボタンを示す。
+- `const long MOUSE_BUTTON_MIDDLE_BUTTON`: mozilla::MouseButton に一致する値で、中ボタンを示す。
+- `const long MOUSE_BUTTON_RIGHT_BUTTON`: mozilla::MouseButton に一致する値で、右ボタンを示す。
+- `const long MOUSE_BUTTONS_NO_BUTTON`: DOM の buttons 属性に対応するビット値で、ボタンが押されていないことを示す。
+- `const long MOUSE_BUTTONS_LEFT_BUTTON`: DOM の buttons 属性に対応するビット値で、左ボタンを示す。
+- `const long MOUSE_BUTTONS_RIGHT_BUTTON`: DOM の buttons 属性に対応するビット値で、右ボタンを示す。
+- `const long MOUSE_BUTTONS_MIDDLE_BUTTON`: DOM の buttons 属性に対応するビット値で、中ボタンを示す。
+- `const long MOUSE_BUTTONS_4TH_BUTTON`: DOM の buttons 属性に対応するビット値で、4 番目のボタンを示す。
+- `const long MOUSE_BUTTONS_5TH_BUTTON`: DOM の buttons 属性に対応するビット値で、5 番目のボタンを示す。
+- `const long DIRECTION_LTR`: getDirectionFromText の戻り値で、左から右 (LTR) を示す。
+- `const long DIRECTION_RTL`: getDirectionFromText の戻り値で、右から左 (RTL) を示す。
+- `const long DIRECTION_NOT_SET`: getDirectionFromText の戻り値で、方向が設定されていないことを示す。
+- `void syncFlushCompositor()`: コンポジタを同期的にフラッシュする。
+- `unsigned long long getLayersId(Element aElement)`: layers ID (unsigned long long) を返す (aElement は APZ が有効なポップアップウィンドウ用の任意引数)。
+- `readonly attribute boolean effectivelyThrottlesFrameRequests`: フレームリクエストが実質的にスロットルされているかどうかを返す。
+- `readonly attribute AString webrtcRawDeviceId`: ウィンドウの下層にある widget の ID を返す (nsIMediaDevice の rawId と比較して共有中か判定できる。親プロセス専用で、他のプロセスからアクセスすると意図的にクラッシュする)。
+- `readonly attribute boolean suspendedByBrowsingContextGroup`: suspend 状態を確認するためのテスト用の読み取り専用属性。
+- `readonly attribute boolean hasScrollLinkedEffect`: このドキュメントに scroll-linked effect があるかどうかを返す (スクロールイベントのコールバックで何かを変更しようとした後、次の refresh driver tick までの間のみ意味を持つ)。
+- `readonly attribute uint32_t orientationLock`: browsing context の現在の orientation lock 値を返す (値は hal/HalScreenConfiguration.h で定義)。
+- `Element getWheelScrollTarget()`: 現在ホイールでスクロール中の要素を返す。
+- `readonly attribute nsIDragSession dragSession`: この window の widget における現在のドラッグセッション (なければ null) を返す読み取り専用属性。
+- `attribute unsigned long microTaskLevel`: microtask レベルを取得・設定する属性 (microtask の仕組みを理解していない場合は使わないこと)。
 
 # nsIJSRAIIHelper (dom/interfaces/base/nsIDOMWindowUtils.idl)
 
@@ -347,7 +347,7 @@ source-hash: 400fb84ffc63b2a328d75a0e49779bd5f1194a01
 
 - 継承: nsISupports
 - 役割: JS doesn't do RAII very well. We can use this interface to make remembering
-- 実装: (未記入)
+- 実装: `HandlingUserInputHelper` (dom/base/nsDOMWindowUtils.cpp)
 
 ## メソッド / 属性
-- `void destruct()`: (未記入)
+- `void destruct()`: 保持しているオブジェクトを破棄する (finally 節などで必ず呼ぶ)。

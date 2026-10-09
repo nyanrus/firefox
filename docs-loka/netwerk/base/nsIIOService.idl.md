@@ -5,7 +5,7 @@ source-hash: b349ed351c30ffc5b26d8908d88027fe22aa27a4
 
 - 継承: nsISupports
 - 役割: nsIIOService provides a set of network utility functions.  This interface
-- 実装: (未記入)
+- 実装: `nsIOService` (netwerk/base/nsIOService.cpp)
 
 ## メソッド / 属性
 - `nsIProtocolHandler getProtocolHandler(string aScheme)`: Returns a protocol handler for a given URI scheme.
@@ -16,7 +16,7 @@ source-hash: b349ed351c30ffc5b26d8908d88027fe22aa27a4
 - `nsIURI newFileURI(nsIFile aFile)`: This method constructs a new URI from a nsIFile.
 - `nsIURI createExposableURI(nsIURI aURI)`: Converts an internal URI (e.g. one that has a username and password in
 - `nsIChannel newChannelFromURI(nsIURI aURI, Node aLoadingNode, nsIPrincipal aLoadingPrincipal, nsIPrincipal aTriggeringPrincipal, unsigned long aSecurityFlags, nsContentPolicyType aContentPolicyType)`: Creates a channel for a given URI.
-- `nsresult NewChannelFromURIWithClientAndController(nsIURI aURI, Node aLoadingNode, nsIPrincipal aLoadingPrincipal, nsIPrincipal aTriggeringPrincipal, const_MaybeClientInfoRef aLoadingClientInfo, const_MaybeServiceWorkerDescriptorRef aController, unsigned long aSecurityFlags, nsContentPolicyType aContentPolicyType, unsigned long aSandboxFlags, unsigned long long aAssociatedBrowsingContextID, nsIChannel aResult)`: (未記入)
+- `nsresult NewChannelFromURIWithClientAndController(nsIURI aURI, Node aLoadingNode, nsIPrincipal aLoadingPrincipal, nsIPrincipal aTriggeringPrincipal, const_MaybeClientInfoRef aLoadingClientInfo, const_MaybeServiceWorkerDescriptorRef aController, unsigned long aSecurityFlags, nsContentPolicyType aContentPolicyType, unsigned long aSandboxFlags, unsigned long long aAssociatedBrowsingContextID, nsIChannel aResult)`: aLoadingClientInfo と aController (ServiceWorker) を指定して、URI から nsIChannel を生成する (C++ 専用)。
 - `nsIChannel newChannelFromURIWithProxyFlagsAndLoadInfo(nsIURI aURI, nsIURI aProxyURI, unsigned long aProxyFlags, nsILoadInfo aLoadInfo)`: Equivalent to newChannelFromURIWithLoadInfo(aURI, aLoadInfo), but also
 - `nsIChannel newChannelFromURIWithLoadInfo(nsIURI aURI, nsILoadInfo aLoadInfo)`: Equivalent to newChannelFromURI(aURI, aLoadingNode, ...)
 - `nsIChannel newChannel(AUTF8String aSpec, string aOriginCharset, nsIURI aBaseURI, Node aLoadingNode, nsIPrincipal aLoadingPrincipal, nsIPrincipal aTriggeringPrincipal, unsigned long aSecurityFlags, nsContentPolicyType aContentPolicyType)`: Equivalent to newChannelFromURI(newURI(...))
@@ -32,7 +32,7 @@ source-hash: b349ed351c30ffc5b26d8908d88027fe22aa27a4
 - `ACString extractScheme(AUTF8String urlString)`: Utility to extract the scheme from a URL string, consistently and
 - `boolean hostnameIsLocalIPAddress(nsIURI aURI)`: Checks if a URI host is a local IPv4 or IPv6 address literal.
 - `boolean hostnameIsSharedIPAddress(nsIURI aURI)`: Checks if a URI host is a shared IPv4 address literal.
-- `boolean hostnameIsIPAddressAny(nsIURI aURI)`: (未記入)
+- `boolean hostnameIsIPAddressAny(nsIURI aURI)`: URI のホスト名が INADDR_ANY かどうかを返す。
 - `boolean isValidHostname(AUTF8String hostname)`: Checks if characters not allowed in DNS are present in the hostname
 - `attribute boolean manageOfflineStatus`: While this is set, IOService will monitor an nsINetworkLinkService
 - `nsIChannel newChannelFromURIWithProxyFlags(nsIURI aURI, nsIURI aProxyURI, unsigned long aProxyFlags, Node aLoadingNode, nsIPrincipal aLoadingPrincipal, nsIPrincipal aTriggeringPrincipal, unsigned long aSecurityFlags, nsContentPolicyType aContentPolicyType)`: Creates a channel for a given URI.
@@ -53,8 +53,8 @@ source: netwerk/base/nsIIOService.idl
 source-hash: b349ed351c30ffc5b26d8908d88027fe22aa27a4
 
 - 継承: nsISupports
-- 役割: (未記入)
-- 実装: (未記入)
+- 役割: ContentChild などから呼ばれる、nsIIOService の内部用メソッド (接続状態の設定、スリープ復帰時の通知) を提供するインターフェース。
+- 実装: `nsIOService` (netwerk/base/nsIOService.cpp)
 
 ## メソッド / 属性
 - `void SetConnectivity(boolean connectivity)`: This is an internal method that should only be called from ContentChild

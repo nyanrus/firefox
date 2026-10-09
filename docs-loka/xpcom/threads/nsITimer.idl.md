@@ -4,11 +4,11 @@ source: xpcom/threads/nsITimer.idl
 source-hash: 9bd1691aee363839282d68042a48b9dfbb1fe645
 
 - 継承: nsISupports
-- 役割: (未記入)
+- 役割: タイマーが満了したときに notify で呼び出されるコールバックのインターフェース。
 - 実装: (未記入)
 
 ## メソッド / 属性
-- `void notify(nsITimer timer)`: @param aTimer the timer which has expired
+- `void notify(nsITimer timer)`: 満了したタイマー (aTimer) を引数に呼び出される。
 
 # nsITimer (xpcom/threads/nsITimer.idl)
 
@@ -17,7 +17,7 @@ source-hash: 9bd1691aee363839282d68042a48b9dfbb1fe645
 
 - 継承: nsISupports
 - 役割: nsITimer instances must be initialized by calling one of the "init" methods
-- 実装: (未記入)
+- 実装: `nsTimer` (xpcom/threads/nsTimerImpl.cpp)
 - 使っているJS: [`browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs`](../../browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs.md)
 
 ## メソッド / 属性
@@ -38,9 +38,9 @@ source-hash: 9bd1691aee363839282d68042a48b9dfbb1fe645
 - `readonly attribute voidPtr closure`: The opaque pointer passed to initWithNamedFuncCallback.
 - `readonly attribute nsITimerCallback callback`: The nsITimerCallback object passed to initWithCallback.
 - `attribute nsIEventTarget target`: The nsIEventTarget where the callback will be dispatched. Note that this
-- `readonly attribute ACString name`: (未記入)
+- `readonly attribute ACString name`: タイマーの名前 (ACString) を返す読み取り専用属性。
 - `readonly attribute unsigned long allowedEarlyFiringMicroseconds`: The number of microseconds this nsITimer implementation can possibly
-- `size_t sizeOfIncludingThis(MallocSizeOf aMallocSizeOf)`: (未記入)
+- `size_t sizeOfIncludingThis(MallocSizeOf aMallocSizeOf)`: aMallocSizeOf を用いて、このタイマーオブジェクト自身を含むメモリ使用量を計測する。
 
 # nsITimerManager (xpcom/threads/nsITimer.idl)
 
@@ -48,8 +48,8 @@ source: xpcom/threads/nsITimer.idl
 source-hash: 9bd1691aee363839282d68042a48b9dfbb1fe645
 
 - 継承: nsISupports
-- 役割: (未記入)
-- 実装: (未記入)
+- 役割: 現在存在するタイマー (nsITimer) の一覧を取得するためのインターフェース。
+- 実装: `nsTimerManager` (xpcom/threads/nsTimerImpl.cpp)
 
 ## メソッド / 属性
 - `Array<nsITimer> getTimers()`: Returns a read-only list of nsITimer objects, implementing only the name,

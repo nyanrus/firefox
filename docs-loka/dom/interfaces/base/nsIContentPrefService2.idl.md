@@ -4,7 +4,7 @@ source: dom/interfaces/base/nsIContentPrefService2.idl
 source-hash: a42a77396fdaa288f08642e9dcc1fd412d6a64c3
 
 - 継承: nsISupports
-- 役割: (未記入)
+- 役割: コンテンツ設定が設定または削除されたときに通知を受けるオブザーバー。
 - 実装: (未記入)
 
 ## メソッド / 属性
@@ -18,7 +18,7 @@ source-hash: a42a77396fdaa288f08642e9dcc1fd412d6a64c3
 
 - 継承: nsISupports
 - 役割: Content Preferences
-- 実装: (未記入)
+- 実装: `ContentPrefService2` (toolkit/components/contentprefs/ContentPrefService2.sys.mjs)
 - 使っているJS: [`browser/components/tabbrowser/content/browser-fullZoom.js`](../../../browser/components/tabbrowser/content/browser-fullZoom.js.md)
 
 ## メソッド / 属性
@@ -58,8 +58,8 @@ source-hash: a42a77396fdaa288f08642e9dcc1fd412d6a64c3
 - `void handleResult(nsIContentPref pref)`: For the retrieval methods, this is called once for each retrieved
 - `void handleError(nsresult error)`: Called when an error occurs.  This may be called multiple times before
 - `void handleCompletion(unsigned short reason)`: Called when the method finishes.  This will be called exactly once for
-- `const unsigned short COMPLETE_OK`: (未記入)
-- `const unsigned short COMPLETE_ERROR`: (未記入)
+- `const unsigned short COMPLETE_OK`: handleCompletion の reason に渡される値で、メソッドが正常に完了したことを示す。
+- `const unsigned short COMPLETE_ERROR`: handleCompletion の reason に渡される値で、メソッドがエラーで完了したことを示す。
 
 # nsIContentPref (dom/interfaces/base/nsIContentPrefService2.idl)
 
@@ -67,10 +67,10 @@ source: dom/interfaces/base/nsIContentPrefService2.idl
 source-hash: a42a77396fdaa288f08642e9dcc1fd412d6a64c3
 
 - 継承: nsISupports
-- 役割: (未記入)
-- 実装: (未記入)
+- 役割: ドメイン・名前・値を持つ 1 件のコンテンツ設定を表す。
+- 実装: `ContentPref` (toolkit/components/contentprefs/ContentPrefUtils.sys.mjs)
 
 ## メソッド / 属性
-- `readonly attribute AString domain`: (未記入)
-- `readonly attribute AString name`: (未記入)
-- `readonly attribute nsIVariant value`: (未記入)
+- `readonly attribute AString domain`: コンテンツ設定のドメイン (AString) を返す読み取り専用属性。
+- `readonly attribute AString name`: コンテンツ設定の名前 (AString) を返す読み取り専用属性。
+- `readonly attribute nsIVariant value`: コンテンツ設定の値 (nsIVariant) を返す読み取り専用属性。

@@ -5,7 +5,7 @@ source-hash: c6fdf87520ed4adece8a0feaf714bf907fb0f03c
 
 - 継承: nsISupports
 - 役割: Interface indicating what we found/corrected when fixing up a URI
-- 実装: (未記入)
+- 実装: `URIFixupInfo` (docshell/base/URIFixup.sys.mjs)
 
 ## メソッド / 属性
 - `attribute BrowsingContext consumer`: Consumer that asked for fixed up URI.
@@ -26,15 +26,15 @@ source-hash: c6fdf87520ed4adece8a0feaf714bf907fb0f03c
 
 - 継承: nsISupports
 - 役割: Interface implemented by objects capable of fixing up strings into URIs
-- 実装: (未記入)
+- 実装: `URIFixup` (docshell/base/URIFixup.sys.mjs)
 - 使っているJS: [`browser/components/tabbrowser/Tabbrowser.sys.mjs`](../../browser/components/tabbrowser/Tabbrowser.sys.mjs.md)
 
 ## メソッド / 属性
 - `const unsigned long FIXUP_FLAG_NONE`: No fixup flags.
 - `const unsigned long FIXUP_FLAG_ALLOW_KEYWORD_LOOKUP`: Allow the fixup to use a keyword lookup service to complete the URI.
 - `const unsigned long FIXUP_FLAGS_MAKE_ALTERNATE_URI`: Tell the fixup to make an alternate URI from the input URI, for example
-- `const unsigned long FIXUP_FLAG_PRIVATE_CONTEXT`: (未記入)
-- `const unsigned long FIXUP_FLAG_FIX_SCHEME_TYPOS`: (未記入)
+- `const unsigned long FIXUP_FLAG_PRIVATE_CONTEXT`: プライベートコンテキストで fixup する場合に指定するフラグ (使われる検索エンジンが異なる場合がある)。
+- `const unsigned long FIXUP_FLAG_FIX_SCHEME_TYPOS`: よくあるスキームの綴り間違いを修正するフラグ。
 - `const unsigned long FIXUP_FLAG_FORCE_KEYWORD_LOOKUP`: Like FIXUP_FLAG_ALLOW_KEYWORD_LOOKUP, but does the lookup even when
 - `nsIURIFixupInfo getFixupURIInfo(AUTF8String aURIText, unsigned long aFixupFlags)`: Tries to converts the specified string into a URI, first attempting
 - `unsigned long webNavigationFlagsToFixupFlags(AUTF8String aURIText, unsigned long aDocShellFlags)`: Convert load flags from nsIWebNavigation to URI fixup flags for use in

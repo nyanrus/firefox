@@ -5,7 +5,7 @@ source-hash: d5271dfedb404850797391de661c4aa2aac1880a
 
 - 継承: nsISupports
 - 役割: The nsIWebNavigation interface defines an interface for navigating the web.
-- 実装: (未記入)
+- 実装: `nsDocShell` (docshell/base/nsDocShell.cpp)
 - 使っているJS: [`browser/components/tabbrowser/Tabbrowser.sys.mjs`](../../browser/components/tabbrowser/Tabbrowser.sys.mjs.md)
 
 ## メソッド / 属性
@@ -36,7 +36,7 @@ source-hash: d5271dfedb404850797391de661c4aa2aac1880a
 - `const unsigned long LOAD_FLAGS_FORCE_ALLOW_DATA_URI`: Allows a top-level data: navigation to occur. E.g. view-image
 - `const unsigned long LOAD_FLAGS_IS_REDIRECT`: This load is the result of an HTTP redirect.
 - `const unsigned long LOAD_FLAGS_DISABLE_TRR`: These flags force TRR_DISABLED_MODE or TRR_ONLY_MODE on the
-- `const unsigned long LOAD_FLAGS_FORCE_TRR`: (未記入)
+- `const unsigned long LOAD_FLAGS_FORCE_TRR`: LOAD_FLAGS_DISABLE_TRR と対になり、browsingContext の defaultLoadFlags に TRR_DISABLED_MODE または TRR_ONLY_MODE を強制するフラグ群の一つ。
 - `const unsigned long LOAD_FLAGS_BYPASS_LOAD_URI_DELEGATE`: This load should bypass the LoadURIDelegate.loadUri.
 - `const unsigned long LOAD_FLAGS_USER_ACTIVATION`: This load has a user activation. (e.g: reload button was clicked)
 - `void loadURI(nsIURI aURI, jsval aLoadURIOptions)`: Loads a given URI.  This will give priority to loading the requested URI

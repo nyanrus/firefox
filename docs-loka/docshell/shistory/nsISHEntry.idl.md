@@ -4,8 +4,8 @@ source: docshell/shistory/nsISHEntry.idl
 source-hash: 01e766b8126d3cfb6e14086be58d6f084b96aca4
 
 - 継承: nsISupports
-- 役割: (未記入)
-- 実装: (未記入)
+- 役割: セッション履歴内の各ドキュメントまたはサブフレームに対応し、履歴からそのドキュメントを再構築するのに必要な情報をすべて保持するエントリ。
+- 実装: `SessionHistoryEntry` (docshell/shistory/SessionHistoryEntry.cpp)
 
 ## メソッド / 属性
 - `attribute nsIURI URI`: The URI of the current entry.
@@ -19,10 +19,10 @@ source-hash: 01e766b8126d3cfb6e14086be58d6f084b96aca4
 - `attribute boolean hasUserInteraction`: Whether the user interacted with the page while this entry was active.
 - `attribute boolean hasUserActivation`: Whether the load that created this entry was triggered by user activation.
 - `attribute nsIReferrerInfo referrerInfo`: Referrer Info
-- `readonly attribute boolean isInBFCache`: (未記入)
+- `readonly attribute boolean isInBFCache`: このエントリが bfcache に入っているかどうかを返す読み取り専用属性。
 - `attribute boolean sticky`: Whether the content viewer is marked "sticky"
 - `attribute nsIInputStream postData`: Post Data for the document
-- `readonly attribute boolean hasPostData`: (未記入)
+- `readonly attribute boolean hasPostData`: このエントリが POST データを持つかどうかを返す読み取り専用属性。
 - `attribute nsILayoutHistoryState layoutHistoryState`: LayoutHistoryState for scroll position and form values
 - `attribute nsISHEntry parent`: parent of this entry
 - `attribute unsigned long loadType`: The loadType for this entry. This is typically loadHistory except
@@ -48,12 +48,12 @@ source-hash: 01e766b8126d3cfb6e14086be58d6f084b96aca4
 - `boolean isTransient()`: A transient entry will be replaced if a new entry is added for it's
 - `void setTransient()`: Flag the entry to be replaced if a new entry is added for it's
 - `void setScrollPosition(long x, long y)`: Set/Get the visual viewport scroll position if session history is
-- `void getScrollPosition(long x, long y)`: (未記入)
+- `void getScrollPosition(long x, long y)`: アンカーナビゲーションや pushState でセッション履歴が変わったときの visual viewport のスクロール位置を、out 引数 x, y に取得する。
 - `void getViewerBounds(nsIntRect bounds)`: Saved position and dimensions of the content viewer; we must adjust the
-- `void setViewerBounds(nsIntRect bounds)`: (未記入)
+- `void setViewerBounds(nsIntRect bounds)`: content viewer の位置と寸法を保存する (プレゼンテーション復元時に変化していれば root view の widget を調整するため)。
 - `nsILayoutHistoryState initLayoutHistoryState()`: Initialises `layoutHistoryState` if it doesn't already exist
 - `void create(nsIURI URI, AString title, nsIInputStream inputStream, unsigned long cacheKey, ACString contentType, nsIPrincipal triggeringPrincipal, nsIPrincipal principalToInherit, nsIPrincipal partitionedPrincipalToInherit, nsIPolicyContainer policyContainer, nsIDRef docshellID, boolean dynamicCreation, nsIURI originalURI, nsIURI resultPrincipalURI, nsIURI unstrippedURI, boolean loadReplace, nsIReferrerInfo referrerInfo, AString srcdoc, boolean srcdocEntry, nsIURI baseURI, boolean saveLayoutState, boolean expired, boolean userActivation)`: Additional ways to create an entry
-- `nsISHEntry clone()`: (未記入)
+- `nsISHEntry clone()`: このエントリの複製 (nsISHEntry) を返す。
 - `boolean isDynamicallyAdded()`: Returns true if the related docshell was added because of
 - `boolean hasDynamicallyAddedChild()`: Returns true if any of the child entries returns true
 - `boolean hasBFCacheEntry(SHEntrySharedParentStatePtr aEntry)`: Does this SHEntry point to the given BFCache entry? If so, evicting
@@ -66,7 +66,7 @@ source-hash: 01e766b8126d3cfb6e14086be58d6f084b96aca4
 - `void ReplaceChild(nsISHEntry aNewChild)`: Replaces a child which is for the same docshell as aNewChild
 - `void ClearEntry()`: Remove all children of this entry and call abandonBFCacheEntry.
 - `nsDocShellLoadStatePtr CreateLoadInfo()`: Create nsDocShellLoadState and fill it with information.
-- `readonly attribute unsigned long long bfcacheID`: (未記入)
+- `readonly attribute unsigned long long bfcacheID`: このエントリの bfcache ID (unsigned long long) を返す読み取り専用属性。
 - `void SyncTreesForSubframeNavigation(nsISHEntry aEntry, BrowsingContext aTopBC, BrowsingContext aIgnoreBC)`: Sync up the docshell and session history trees for subframe navigation.
 - `attribute jsval wireframe`: If browser.history.collectWireframes is true, this will get populated
 - `attribute nsIDRef navigationKey`: https://html.spec.whatwg.org/#she-navigation-api-key

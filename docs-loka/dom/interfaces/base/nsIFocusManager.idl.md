@@ -5,7 +5,7 @@ source-hash: 33b7f04f48cae484351fd32ee0c42b4293e84bdd
 
 - 継承: nsISupports
 - 役割: The focus manager deals with all focus related behaviour. Only one element
-- 実装: (未記入)
+- 実装: `nsFocusManager` (dom/base/nsFocusManager.cpp)
 - 使っているJS: [`browser/components/tabbrowser/content/browser-ctrlTab.js`](../../../browser/components/tabbrowser/content/browser-ctrlTab.js.md)
 
 ## メソッド / 属性
@@ -22,7 +22,7 @@ source-hash: 33b7f04f48cae484351fd32ee0c42b4293e84bdd
 - `Element getFocusedElementForWindow(mozIDOMWindowProxy aWindow, boolean aDeep, mozIDOMWindowProxy aFocusedWindow)`: Returns the currently focused element within aWindow. If aWindow is equal
 - `void moveCaretToFocus(mozIDOMWindowProxy aWindow)`: Moves the selection caret within aWindow to the current focus.
 - `boolean elementIsFocusable(Element aElement, unsigned long aFlags)`: Check if given element (or potentially a descendant, see setFocus) is
-- `const unsigned long FLAG_RAISE`: (未記入)
+- `const unsigned long FLAG_RAISE`: フォーカスの切り替え時にウィンドウを前面に出すフラグ。
 - `const unsigned long FLAG_NOSCROLL`: Do not scroll the element to focus into view.
 - `const unsigned long FLAG_NOSWITCHFRAME`: If attempting to change focus in a window that is not focused, do not
 - `const unsigned long FLAG_NOPARENTFRAME`: This flag is only used when passed to moveFocus. If set, focus is never

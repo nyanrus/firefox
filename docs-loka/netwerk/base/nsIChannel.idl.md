@@ -31,9 +31,9 @@ source-hash: b8985434483ccc45de01411abd6210c74f1d3922
 - `const unsigned long LOAD_EXPLICIT_CREDENTIALS`: Set to let explicitely provided credentials be used over credentials
 - `const unsigned long LOAD_BYPASS_SERVICE_WORKER`: Set to force bypass of any service worker interception of the channel.
 - `attribute unsigned long contentDisposition`: Access to the type implied or stated by the Content-Disposition header
-- `const unsigned long DISPOSITION_INLINE`: (未記入)
-- `const unsigned long DISPOSITION_ATTACHMENT`: (未記入)
-- `const unsigned long DISPOSITION_FORCE_INLINE`: (未記入)
+- `const unsigned long DISPOSITION_INLINE`: contentDisposition の値で、インライン表示を示す。
+- `const unsigned long DISPOSITION_ATTACHMENT`: contentDisposition の値で、添付ファイル扱いを示す。
+- `const unsigned long DISPOSITION_FORCE_INLINE`: contentDisposition の値で、Content-Disposition ヘッダを使わずに強制的にインライン扱いにする。
 - `attribute AString contentDispositionFilename`: Access to the filename portion of the Content-Disposition header if
 - `readonly attribute ACString contentDispositionHeader`: Access to the raw Content-Disposition header if available and applicable.
 - `attribute nsILoadInfo loadInfo`: The LoadInfo object contains information about a network load, why it
@@ -46,7 +46,7 @@ source: netwerk/base/nsIChannel.idl
 source-hash: b8985434483ccc45de01411abd6210c74f1d3922
 
 - 継承: nsIChannel
-- 役割: (未記入)
+- 役割: 親子プロセス間で共有されるチャンネル固有の ID (channelId) を持たせる nsIChannel の拡張インターフェース。
 - 実装: (未記入)
 
 ## メソッド / 属性
