@@ -5,5 +5,5 @@ source-hash: d594f603f0ed5b759d9ae89d448c1ef0634c2384
 lines: 104
 
 ## <module>
-- 役割: (未記入)
+- 役割: Smart Form Fill で使う定数を定義する。対応入力型、選択タブ数の上限、フォームレビューの状態・操作・エラー種別の列挙と、その有効値の一覧。
 - 呼び出し先: `Object.freeze()`, `Object.values()`

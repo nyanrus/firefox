@@ -5,7 +5,7 @@ source-hash: fe44c8924c1ba510091ef875787b1d5f2341efc5
 lines: 490
 
 ## <module>
-- 役割: Mozilla アカウントと Sync の起動時イベント(端末の接続・切断、受信タブ、タブの遠隔クローズ、アカウントバッジ)を扱う AccountsGlue を定義する。BrowserGlue から分離されたもの。
+- 役割: Mozilla アカウントと Sync の起動時イベント(端末接続、受信タブ、遠隔のタブ閉じ、バッジ)を扱う AccountsGlue を定義する。
 - 呼び出し先: `ChromeUtils.defineESModuleGetters()`, `ChromeUtils.defineLazyGetter()`, `ChromeUtils.generateQI()`, `Components.Constructor()`, `XPCOMUtils.defineLazyPreferenceGetter()`, `XPCOMUtils.defineLazyServiceGetter()`
 
 ## init()

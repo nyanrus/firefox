@@ -5,7 +5,7 @@ source-hash: 4ceb32d5517d39074842e78c4f48b06c48e0881d
 lines: 1124
 
 ## <module>
-- 役割: Fission 対応の JS プロセスアクターとウィンドウアクターの登録表を持ち、起動時に ActorManagerParent へ一括登録する DesktopActorRegistry を定義する。
+- 役割: Fission 対応のアクター登録表を持ち、起動時に ActorManagerParent へ一括登録する DesktopActorRegistry を定義する。
 - 呼び出し先: `ChromeUtils.defineESModuleGetters()`
 
 ## onPreferenceChanged()
@@ -17,7 +17,7 @@ lines: 1124
 
 ## onPreferenceChanged()
 - 位置: L409-418
-- 役割: CanonicalURL の tabs.notes 設定が変わったとき、CanonicalURL:ActorRegistered か CanonicalURL:ActorUnregistered を observer で通知する。
+- 役割: tabs.notes の切り替えを受け、CanonicalURL の登録・解除を observer で通知する。
 - 触るとき: ノート機能の切り替え後に canonical URL 連携が働かない、または通知名を変えるときに見る。
 - 条件付き依存: `if (isEnabled)` → `Services.obs.notifyObservers()`
 - 条件付き依存: `if (!(isEnabled))` → `Services.obs.notifyObservers()`
@@ -41,7 +41,7 @@ lines: 1124
 
 ## onAddActor()
 - 位置: L965-992
-- 役割: SmartFormFill アクターについて、browser.smartwindow.enabled と smartformfill.enabled の両方が真なら登録し、そうでなければ解除する。
+- 役割: smartwindow と smartformfill の両方が有効なら SmartFormFill を登録し、無効なら解除する。
 - 触るとき: スマートウィンドウ版のフォーム補完が有効にならない、または無効化しても動き続けるときに見る。
 - 呼び出し先: `Services.prefs.addObserver()`, `maybeRegister()`
 - XPCOM: `Services.prefs`

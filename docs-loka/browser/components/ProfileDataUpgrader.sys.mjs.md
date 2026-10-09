@@ -5,7 +5,7 @@ source-hash: 6cee3dcd7de0fd2c68ec5dfce139a87db11880e2
 lines: 1148
 
 ## <module>
-- 役割: プロファイル形式のバージョン(existingDataVersion)に応じて、既存プロファイルの設定やファイルを新しい Firefox 向けに移行する ProfileDataUpgrader を定義する。
+- 役割: existingDataVersion に応じて、古いプロファイルの設定やファイルを新しい版向けに移行する。
 - 呼び出し先: `ChromeUtils.defineESModuleGetters()`
 
 ## _migrateXULStoreForDocument()

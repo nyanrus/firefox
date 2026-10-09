@@ -10,7 +10,7 @@ lines: 212
 
 ## getBrowser()
 - 位置: L19-145
-- 役割: webext-panels-browser が無ければ作成して返す。サイドバーならヘッダーを設定し、remote なら XULFrameLoaderCreated を待ってから初期化する。
+- 役割: webext-panels-browser を取得し、無ければ作る。サイドバーならヘッダーを設定し、リモートなら生成完了を待つ。
 - 触るとき: 拡張のパネルを表示する際の browser 生成が失敗する、ズームや閉じる挙動がずれる、リモートプロセスの割り当てを変えるときに見る。
 - 呼び出し先: `browser.addEventListener()`, `browser.setAttribute()`, `document.createXULElement()`, `document.getElementById()`, `event.stopPropagation()`, `readyPromise.then()`, `stack.appendChild()`
 - 条件付き依存: `if (browser)` → `Promise.resolve()`

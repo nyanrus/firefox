@@ -54,7 +54,7 @@ lines: 154
 
 ## window.AWSendEventTelemetry()
 - 位置: L44-72
-- 役割: CONFIG.metrics が block なら送らず、write_in_microsurvey のときは feedbackData を組み込んでから TELEMETRY_EVENT を親へ送る。
+- 役割: metrics が block なら送らず、microsurvey では feedbackData を付けてから TELEMETRY_EVENT を親へ送る。
 - 触るとき: telemetry が出ない、または microsurvey のフィードバックが期待どおりに付かないときに見る。
 - 呼び出し先: `telemetryMessageHandler()`
 - 参照: `CONFIG.feedbackData`, `CONFIG?.feedbackData`, `CONFIG?.metrics`, `CONFIG?.write_in_microsurvey`, `data.event`, `data.event_context`, `data.event_context.contentToggleState`, `data.event_context.smart_window_user_feedback_data`, `data.event_context.source`, `data.event_context.write_in_microsurvey`, `feedbackDataToSend.chat`

@@ -32,7 +32,7 @@ lines: 1793
 
 ## needHomepageOverride()
 - 位置: L157-212
-- 役割: 保存された mstone と buildID を現在の値と比べ、新規プロファイル、メジャー更新、同一メジャーのビルド更新のどれかを返す。updateMilestones が真なら記録も更新する。
+- 役割: 保存済みの mstone と buildID を今の値と比べ、新規プロファイル、メジャー更新、ビルド更新のどれかを返す。
 - 触るとき: 初回起動や更新後にホームページの上書きが出る・出ないを調べるとき、または判定の条件を変えるときに見る。
 - 呼び出し先: `Services.prefs.getCharPref()`
 - 条件付き依存: `if (savedmstone)` → `Services.prefs.setBoolPref()`
@@ -42,7 +42,7 @@ lines: 1793
 
 ## getPostUpdateOverridePage()
 - 位置: L228-263
-- 役割: 更新情報の actions に応じて、更新後に開くページを決める。silent や showURL の欠如、ポリシー、Nimbus の URL、update の openURL の順に判定する。
+- 役割: 更新の actions と openURL、ポリシー、Nimbus の URL から、更新後に開くページを決める。
 - 触るとき: 更新後の What's New ページが出ない、または想定外の URL が出るときに見る。
 - 呼び出し先: `Services.policies.isAllowed()`, `actions.includes()`, `update.QueryInterface()`, `update.getProperty()`
 - 参照: `Ci.nsIWritablePropertyBag`
@@ -50,7 +50,7 @@ lines: 1793
 
 ## openBrowserWindow()
 - 位置: L294-410
-- 役割: 初回起動なら起動用の空ウィンドウを置き換え、そうでなければ新規ウィンドウを作る。URL の指定形式に応じて引数を組み、BrowserWindowTracker.openWindow に渡す。
+- 役割: 起動時は空白ウィンドウを流用し、そうでなければ新規ウィンドウを開く。URL の形式に応じて引数を組む。
 - 触るとき: 新しいウィンドウを開く経路(ホームページ、URL、スマートウィンドウ、プライベート)の引数を変えるときに見る。
 - 呼び出し先: `canOpenAsSmartWindow()`, `gBrowserContentHandler.getFeatures()`, `lazy.BrowserWindowTracker.openWindow()`
 - 条件付き依存: `if (isStartup)` → `gBrowserContentHandler.getFirstWindowArgs()`
@@ -115,7 +115,7 @@ lines: 1793
 
 ## bch_handle()
 - 位置: L494-736
-- 役割: コマンドラインのフラグ(kiosk、browser、new-window、new-tab、data、chrome、preferences、private-window、search、private、setDefaultBrowser、first-startup、file など)を順に処理し、対応するウィンドウを開く。
+- 役割: 起動フラグ(kiosk、browser、new-window、new-tab、data、chrome、private-window など)を順に処理する。
 - 触るとき: 起動オプションを追加・変更するとき、または特定のフラグが効かないと報告されたときに見る。
 - 呼び出し先: `cmdLine.handleFlag()`, `cmdLine.handleFlagWithParam()`, `console.error()`, `handURIToExistingBrowser()`, `openBrowserWindow()`, `resolveURIInternal()`, `shouldLoadURI()`, `uri.schemeIs()`
 - 条件付き依存: `if ( cmdLine.handleFlag("kiosk", false) || cmdLine.handleFlagWithParam("kiosk-monitor", false) )` → `Glean.browserStartup.kioskMode.set()`
@@ -184,7 +184,7 @@ lines: 1793
 
 ## getNewWindowArgs()
 - 位置: L778-820
-- 役割: LaterRun の URL、browser.startup.page で選んだホームページ、about:home の代わりのスマートウィンドウ URL を '|' で連結し、空なら about:blank を返す。
+- 役割: LaterRun と browser.startup.page のホームページを '|' でつないだ URL を返す。空なら about:blank。
 - 触るとき: 新規ウィンドウで開く URL の組み立てを変えるとき、またはスマートウィンドウ時の URL 置換を調べるときに見る。
 - 呼び出し先: `canOpenAsSmartWindow()`, `console.error()`, `lazy.LaterRun.getURL()`, `prefb.getIntPref()`
 - 条件付き依存: `if (choice == 1 || choice == 3)` → `lazy.HomePage.get()`
@@ -193,7 +193,7 @@ lines: 1793
 
 ## getFirstWindowArgs()
 - 位置: L826-1142
-- 役割: 初回起動時の最初のウィンドウで開く URL を決める。一時的なプライベートモードならプライベートの空白ページ、更新後や新規プロファイルなら上書きページを、通常のページより前に並べる。
+- 役割: 初回起動の最初のウィンドウで開く URL を決める。WNP や新規プロファイルの案内ページを前に並べる。
 - 触るとき: 起動時に最初に出るページ(WNP、ようこそ、ホーム)が想定と違うとき、または上書きの条件を変えるときに見る。
 - 呼び出し先: `Services.prefs.getCharPref()`, `needHomepageOverride()`, `prefb.getBoolPref()`, `prefb.prefHasUserValue()`, `this.getNewWindowArgs()`
 - 条件付き依存: `if (override != OVERRIDE_NONE)` → `Services.urlFormatter.formatURLPref()`
@@ -248,7 +248,7 @@ lines: 1793
 
 ## bch_features()
 - 位置: L1146-1187
-- 役割: --width、--height、--left、--top と一時的なプライベートモードに応じたウィンドウの feature 文字列を作り、キャッシュする。最初のウィンドウでは suppressanimation を足す。
+- 役割: --width などの指定と一時プライベートモードから feature 文字列を作り、キャッシュする。
 - 触るとき: 新しいウィンドウの大きさや位置の指定が効かないとき、またはプライベートの feature を変えるときに見る。
 - 条件付き依存: `if (cmdLine)` → `cmdLine.handleFlagWithParam()`
 - 条件付き依存: `if (this.mFeatures === null)` → `Services.prefs.getBoolPref()`
@@ -375,7 +375,7 @@ lines: 1793
 
 ## handleNotificationImpl()
 - 位置: async L1515-1618
-- 役割: 通知を Windows のアラートサービスで処理し、Web 通知なら origin のハンドラーに返す。Messaging System の通知なら SpecialMessageActions でアクションを実行する。
+- 役割: Windows の通知を処理する。Web 通知は origin のハンドラーへ、Messaging System の通知はアクションとして実行する。
 - 触るとき: 通知のクリックで正しいページやアクションが開かないときに見る。
 - 呼び出し先: `JSON.parse()`, `alertService.handleWindowsTag()`, `console.error()`, `lazy.BrowserWindowTracker.getTopWindow()`
 - 条件付き依存: `if (notificationData?.opaqueRelaunchData)` → `JSON.parse()`
@@ -393,7 +393,7 @@ lines: 1793
 
 ## dch_handle()
 - 位置: L1621-1789
-- 役割: 既定のハンドラー。Windows と macOS のプロファイル未選択の扱い、--url、--screenshot、URI の引数、ウィンドウが無いときの新規ウィンドウや Windows のタブレットモードを処理する。
+- 役割: ファイルや URL の引数を開く既定のハンドラー。ウィンドウが無いときは新規ウィンドウを開く。
 - 触るとき: ファイルや URL を渡したときに開く先が違う、または何も開かないときに見る。
 - 呼び出し先: `cmdLine.findFlag()`, `cmdLine.getArgument()`, `cmdLine.handleFlagWithParam()`, `console.error()`, `curarg.match()`, `principalList.push()`, `resolveURIInternal()`, `this.handleNotification()`, `urilist.push()`
 - 条件付き依存: `if ( cmdLine.state == Ci.nsICommandLine.STATE_INITIAL_LAUNCH && Services.startup.wasSilentlyStarted )` → `Services.startup.enterLastWindowClosingSurvivalArea()`

@@ -10,7 +10,7 @@ lines: 58
 
 ## readAndClearUninstalledValue()
 - 位置: L14-43
-- 役割: Windows でのみ動く。HKCU の Software\Mozilla\Firefox にある Uninstalled-<チャンネル> 値を読んで削除し、値が True で削除に成功したときに true を返す。browser.disableResetPrompt が true か、チャンネル取得に失敗した場合は false。
+- 役割: Windows で HKCU の Uninstalled-<チャンネル> 値を読んで削除し、True なら再インストール扱いにする。
 - 触るとき: 再インストール後のリセット案内が出ない、または余計に出るときに見る。レジストリ値の名前や削除条件を変えるときも見る。
 - 呼び出し先: `ChromeUtils.importESModule()`, `Services.prefs.getBoolPref()`
 - 条件付き依存: `if (updateChannel)` → `lazy.WindowsRegistry.readRegKey()`

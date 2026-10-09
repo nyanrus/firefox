@@ -23,7 +23,7 @@ lines: 578
 
 ## init()
 - 位置: async L73-230
-- 役割: ダイアログの開かれ方(clearOnShutdown、clearSiteData、ブラウザウィンドウ内)を判定し、不要なグループを削除して OK ボタンの文言を決め、サイズ取得と警告表示を開始する。
+- 役割: ダイアログの開かれ方を判定して不要なグループを消し、OK ボタンの文言を決め、サイズ取得と警告表示を始める。
 - 触るとき: 設定画面やシャットダウン時消去など開き方ごとに表示が違うとき、または初期化時の順序を変えるときに見る。
 - 呼び出し先: `Intl.DateTimeFormat()`, `Intl.DateTimeFormat(navigator.language, { hour: "numeric", minute: "numeric", }).format()`, `document .getElementById()`, `document .getElementById("sanitizeDurationChoice") .addEventListener()`, `document.addEventListener()`, `document.getElementById()`, `document.l10n.setAttributes()`, `document.querySelector()`, `document.querySelectorAll()`, `new Date().setHours()`, `this._dialog.getButton()`, `this.getAndUpdateDataSizes()`, `this.registerSyncFromPrefListeners()`, `this.selectByTimespan()`, `this.showLoadingSpinners()`
 - 条件付き依存: `if (arg.inBrowserWindow)` → `this._dialog.setAttribute()`

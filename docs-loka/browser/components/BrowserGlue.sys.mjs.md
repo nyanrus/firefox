@@ -145,7 +145,7 @@ lines: 1720
 
 ## BG__onFirstWindowLoaded()
 - 位置: L716-754
-- 役割: 最初のウィンドウ読み込み後に、リモート診断の WebChannel、古いビルドの更新確認、Sync 初期化、browser-first-window-ready のモジュール呼び出し、計測を行う。
+- 役割: 最初のウィンドウ読み込み後に、診断用 WebChannel、古いビルドの更新確認、Sync、カテゴリーの初期化を行う。
 - 触るとき: 最初のウィンドウで起動すべき処理が走らない、またはリモート診断の応答が変わったときに見る。
 - 呼び出し先: `Services.prefs.prefHasUserValue()`, `channel.listen()`, `lazy.BrowserUtils.callModulesFromCategory()`, `this._checkForOldBuildUpdates()`, `this._firstWindowTelemetry()`
 - 条件付き依存: `if (data.command == "request")` → `ChromeUtils.importESModule()`
@@ -472,7 +472,7 @@ lines: 1720
 
 ## _migrateUI()
 - 位置: L1509-1525
-- 役割: プロファイルの移行バージョン(APP_DATA_VERSION = 183)を見て、新規ならバージョンを記録し、古ければ ProfileDataUpgrader.upgrade を呼ぶ。
+- 役割: APP_DATA_VERSION(183) と比べ、新規なら版を記録し、古ければ ProfileDataUpgrader.upgrade を呼ぶ。
 - 触るとき: プロファイル移行の対象バージョンを上げるとき、または移行が走らないときに見る。
 - 呼び出し先: `Services.prefs.getIntPref()`
 - 条件付き依存: `if (this._isNewProfile)` → `Services.prefs.setIntPref()`
@@ -506,7 +506,7 @@ lines: 1720
 
 ## _maybeShowDefaultBrowserPrompt()
 - 位置: async L1600-1696
-- 役割: アップグレードダイアログを出せるかを判定し、出せなければ既定ブラウザの確認やスポットライトを表示する。最後に ASRouter の defaultBrowserCheck トリガーを送る。
+- 役割: アップグレードダイアログを出せるか判定し、出せなければ既定ブラウザの確認かスポットライトを出す。
 - 触るとき: 既定ブラウザの確認やアップグレードダイアログの出る順序や条件を変えるときに見る。
 - 呼び出し先: `Glean.upgradeDialog.triggerReason.record()`, `Services.policies.isAllowed()`, `Services.prefs.getDefaultBranch()`, `Services.prefs.getIntPref()`, `await()`, `defaultPrefs.getBoolPref()`, `lazy.ASRouter.sendTriggerMessage()`, `lazy.BrowserWindowTracker.getTopWindow()`, `lazy.DefaultBrowserCheck.willCheckDefaultBrowser()`, `lazy.NimbusFeatures.upgradeDialog.getVariable()`, `lazy.TelemetryReportingPolicy.ensureUserIsNotified()`
 - 条件付き依存: `if (!dialogReason)` → `Services.prefs.setIntPref()`

@@ -10,7 +10,7 @@ lines: 605
 
 ## get()
 - 位置: L42-74
-- 役割: BROWSER_NEW_TAB_URL の getter。プライベートウィンドウなら about:privatebrowsing、AI ウィンドウなら AIWindow.newTabURL、それ以外は AboutNewTab.newTabURL を返す。
+- 役割: BROWSER_NEW_TAB_URL の getter。プライベートや AI ウィンドウでは専用の URL、それ以外は新規タブ URL を返す。
 - 触るとき: 新しいタブの URL が想定と違うとき、またはプライベートウィンドウや AI ウィンドウでの新規タブの扱いを変えるときに見る。
 - 呼び出し先: `AIWindow.isAIWindowActive()`, `PrivateBrowsingUtils.isWindowPrivate()`
 - 条件付き依存: `if (PrivateBrowsingUtils.isWindowPrivate(window))` → `Services.prefs.getBoolPref()`
@@ -131,7 +131,7 @@ lines: 605
 
 ## eventMatchesKey()
 - 位置: L346-379
-- 役割: キーイベントの key と、キー要素の key と modifiers 属性が一致するかを判定する。accel は macOS では Meta、それ以外では Control として扱う。
+- 役割: キーイベントの key と修飾キーが、キー要素の定義と一致するかを判定する。accel は macOS で Meta、他で Control。
 - 触るとき: 新しいショートカットを追加するとき、または修飾キーの判定が想定と違うときに見る。
 - 呼び出し先: `(aKey.getAttribute("key") || "").toLowerCase()`, `aEvent.getModifierState()`, `aKey.getAttribute()`, `modifiers.filter()`
 - 条件付き依存: `if (keyModifiers)` → `keyModifiers.split()`
