@@ -5,46 +5,46 @@ source-hash: be3252ae5f20fdd94e266372a5ccb1eec234fb6d
 lines: 1495
 
 ## <module>
-- 役割: (未記入)
+- 役割: タブのコンテキストメニューの構成定義と、表示時の項目更新や各操作を持つ TabContextMenu オブジェクトを定義する。
 - 呼び出し先: `ChromeUtils.defineESModuleGetters()`, `XPCOMUtils.defineLazyPreferenceGetter()`
 
 ## _ensureMenuArranged()
 - 位置: L355-390
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 初回表示時と代替構成 pref の変更後に、宣言済みのセクション構成へメニュー項目を並べ替える。
+- 触るとき: メニュー項目の並びや classic と代替構成の切り替えを変えるとき。
 - 呼び出し先: `console.error()`, `new this.MenuSectionLayout(layout, { dynamicItemSelectors: this.DYNAMIC_MENU_ITEM_SELECTORS, }).arrange()`, `this._hideUnusedSectionItems()`, `this._updateL10nIds()`
 - 条件付き依存: `if (!this._altTabContextMenuPrefObserved)` → `XPCOMUtils.defineLazyPreferenceGetter()`
 
 ## _updateL10nIds()
 - 位置: L397-409
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 代替構成の有無に応じて、対象項目の data-l10n-id を代替用と元の ID で切り替える。
+- 触るとき: 代替構成でメニュー文言が変わらない、または戻らないとき。
 - 呼び出し先: `aPopupMenu.querySelectorAll()`
 - 条件付き依存: `if (item._classicL10nId == null)` → `item.getAttribute()`
 - 条件付き依存: `if (id)` → `item.setAttribute()`
 
 ## _hideUnusedSectionItems()
 - 位置: L412-426
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: レイアウトで unused に置かれた項目をすべて非表示にする。
+- 触るとき: 代替構成で特定項目を隠したい、または意図せず隠れるとき。
 - 呼び出し先: `document.querySelector()`, `this.MenuSectionLayout.placementsFor()`
 
 ## _updateMoveTabToFlattenedVisibility()
 - 位置: L438-479
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 「タブを移動」サブメニューの共有ノードと区切り線の表示を、classic と代替構成に合わせて毎回設定する。
+- 触るとき: 移動サブメニュー内のグループ項目や区切り線の表示がおかしいとき。
 - 呼び出し先: `byId()`
 
 ## byId()
 - 位置: L443-443
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ID から要素を取得する局所ヘルパー。
+- 触るとき: 移動サブメニューの表示制御で要素取得の仕方を変えるとき。
 - 呼び出し先: `document.getElementById()`
 
 ## _updateToggleMuteMenuItems()
 - 位置: L481-493
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブの muted と soundplaying 属性をミュート切替項目の属性へ反映する。
+- 触るとき: ミュート項目の表示状態が実際のタブ状態とずれるとき。
 - 呼び出し先: `["muted", "soundplaying"].forEach()`, `aConditionFn()`
 - 条件付き依存: `if (!aConditionFn || aConditionFn(attr))` → `aTab.hasAttribute()`
 - 条件付き依存: `if (aTab.hasAttribute(attr))` → `aTab.toggleMuteMenuItem.setAttribute()`
@@ -54,8 +54,8 @@ lines: 1495
 
 ## updateContextMenu()
 - 位置: L495-1114
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: メニュー表示のたびに対象タブを決め、各項目の表示・無効・文言・グループ一覧などを状態に応じて更新する。
+- 触るとき: コンテキストメニューの項目の出し分けや有効条件を追加・修正するとき。
 - 呼び出し先: `JSON.stringify()`, `PrivateBrowsingUtils.isWindowPrivate()`, `Services.prefs.getBoolPref()`, `SessionStore.getLastClosedTabCount()`, `SharingUtils.ensureShareMenu()`, `TabContextMenu.AIWindow.isAIWindowActiveAndEnabled()`, `TabContextMenu.TabStateFlusher.flush()`, `["http", "https"].includes()`, `aPopupMenu.addEventListener()`, `aPopupMenu.getElementsByAttribute()`, `aPopupMenu.triggerNode.closest()`, `contextMoveTabOptions.setAttribute()`, `document .getElementById()`, `document .getElementById("History:UndoCloseTab") .toggleAttribute()`, `document .getElementById("context_closeTab") .setAttribute()`, `document.getElementById()`, `document.l10n.setArgs()`, `document.l10n.setAttributes()`, `gBrowser._getTabsToTheEndFrom()`, `gBrowser._getTabsToTheStartFrom()`, `gBrowser.allTabsSelected()`, `gBrowser.getDuplicateTabsToClose()`, `gBrowser.openTabs.filter()`, `gBrowser.tabs.filter()`, `gSync.updateTabContextMenu()`, `selectedTabs.every()`, `showFullScreenViewContextMenuItems()`, `this._ensureMenuArranged()`, `this._updateMoveTabToFlattenedVisibility()`, `this._updateToggleMuteMenuItems()`, `this.contextTab.addEventListener()`, `this.contextTab.hasAttribute()`, `this.contextTab.splitview.tabs.at()`, `this.contextTabs.at()`, `this.contextTabs.every()`, `this.contextTabs.map()`, `this.contextTabs.some()`, `visibleOrCollapsedTabs.at()`, `visibleOrCollapsedTabs.every()`
 - 条件付き依存: `if (tab.splitview)` → `splitViews.add()`
 - 条件付き依存: `if (TabContextMenu.Tabbrowser.prefs.tabGroupsEnabled)` → `this.contextTabs.map(t => t.group).filter()`
@@ -115,8 +115,8 @@ lines: 1495
 
 ## _createTabGroupMenuItem()
 - 位置: L1116-1151
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブグループ(開いている/保存済み)用のメニュー項目を、名前とグループ色付きで作る。
+- 触るとき: グループ移動メニューの項目の見た目や名前表示を変えるとき。
 - 呼び出し先: `document.createXULElement()`, `item.classList.add()`, `item.setAttribute()`, `item.style.setProperty()`
 - 条件付き依存: `if (label)` → `item.setAttribute()`
 - 条件付き依存: `if (!(label))` → `document.l10n.setAttributes()`
@@ -124,28 +124,28 @@ lines: 1495
 
 ## handleEvent()
 - 位置: L1153-1170
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: popuphidden で保持中のタブ参照を解放し、TabAttrModified でミュート項目を更新する。
+- 触るとき: メニューを閉じた後の後始末や、表示中のタブ属性変化への追従を調べるとき。
 - 呼び出し先: `aEvent.detail.changed.includes()`, `this._updateToggleMuteMenuItems()`
 - 条件付き依存: `if (aEvent.target.id == "tabContextMenu")` → `this.contextTab.removeEventListener()`
 
 ## createReopenInContainerMenu()
 - 位置: L1172-1178
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 「コンテナで開き直す」サブメニューを、現在のコンテナを除いて生成する。
+- 触るとき: コンテナ再オープンのサブメニュー内容を変えるとき。
 - 呼び出し先: `createUserContextMenu()`, `this.contextTab.getAttribute()`
 
 ## duplicateSelectedTabs()
 - 位置: L1179-1188
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 対象タブを複製し、最後の対象タブの直後に並べて配置する。
+- 触るとき: タブ複製の位置やグループ内複製の telemetry を調べるとき。
 - 呼び出し先: `SessionStore.duplicateTab()`, `gBrowser.moveTabTo()`, `this.contextTabs.at()`
 - 条件付き依存: `if (tab.group)` → `Glean.tabgroup.tabInteractions.duplicate.add()`
 
 ## reopenInContainer()
 - 位置: L1189-1255
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 対象タブを指定コンテナの新しいタブとして開き直し、選択状態とミュート状態を引き継ぐ。
+- 触るとき: コンテナ再オープン時の principal の扱いや引き継ぎ内容を調べるとき。
 - 呼び出し先: `Glean.containers.tabAssignedContainer.record()`, `event.target.getAttribute()`, `gBrowser.addTab()`, `parseInt()`, `tab.getAttribute()`
 - 条件付き依存: `if (!(tab.linkedPanel))` → `JSON.parse()`
 - 条件付き依存: `if (!(tab.linkedPanel))` → `SessionStore.getTabState()`
@@ -157,8 +157,8 @@ lines: 1495
 
 ## closeContextTabs()
 - 位置: L1257-1272
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 複数選択なら選択タブ全部、そうでなければ対象タブを閉じる。
+- 触るとき: メニューからのタブを閉じる動作や metrics を変えるとき。
 - 条件付き依存: `if (this.contextTab.multiselected)` → `gBrowser.removeMultiSelectedTabs()`
 - 条件付き依存: `if (this.contextTab.multiselected)` → `gBrowser.TabMetrics.userTriggeredContext()`
 - 条件付き依存: `if (!(this.contextTab.multiselected))` → `gBrowser.removeTab()`
@@ -166,20 +166,20 @@ lines: 1495
 
 ## explicitUnloadTabs()
 - 位置: L1274-1276
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 対象タブをアンロードするよう gBrowser に依頼する。
+- 触るとき: メニューからのタブのアンロード動作を調べるとき。
 - 呼び出し先: `gBrowser.explicitUnloadTabs()`
 
 ## moveTabsToNewGroup()
 - 位置: L1278-1304
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 対象タブで新しいタブグループを作り、挿入位置を決めて、すべてタブパネルを閉じる。
+- 触るとき: 新規グループ作成時の挿入位置や選択の挙動を変えるとき。
 - 呼び出し先: `gBrowser.TabMetrics.userTriggeredContext()`, `gBrowser.addTabGroup()`, `gTabsPanel.hideAllTabsPanel()`
 
 ## moveSplitViewToNewGroup()
 - 位置: L1306-1337
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 対象タブを、分割ビューはまとめて1単位として新しいタブグループにする。
+- 触るとき: 分割ビューを含むグループ化を調べるとき。contextTab.splitView の綴りが他箇所の splitview と異なる(要確認)。
 - 呼び出し先: `gBrowser.TabMetrics.userTriggeredContext()`, `gBrowser.addTabGroup()`, `gTabsPanel.hideAllTabsPanel()`
 - 条件付き依存: `if (contextTab.splitView)` → `tabsAndSplitViews.includes()`
 - 条件付き依存: `if (!tabsAndSplitViews.includes(contextTab.splitView))` → `tabsAndSplitViews.push()`
@@ -187,14 +187,14 @@ lines: 1495
 
 ## moveTabsToGroup()
 - 位置: L1342-1354
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 対象タブ(分割ビューは丸ごと)を既存のタブグループに追加する。
+- 触るとき: 既存グループへの移動動作を変えるとき。
 - 呼び出し先: `Array.from()`, `elementsToMove.add()`, `elementsToMove.values()`, `gBrowser.TabMetrics.userTriggeredContext()`, `group.addTabs()`, `group.documentGlobal.focus()`
 
 ## addTabsToSavedGroup()
 - 位置: L1356-1385
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 対象タブ(分割ビューの全タブを含む)を保存済みグループに追加し、元のタブを閉じる。
+- 触るとき: 保存済みグループへの追加と閉じる動作を調べるとき。
 - 呼び出し先: `SessionStore.addTabsToSavedGroup()`, `gBrowser.TabMetrics.userTriggeredContext()`, `gBrowser.removeTabs()`
 - 条件付き依存: `if (tab.splitview)` → `seen.has()`
 - 条件付き依存: `if (!seen.has(splitTab))` → `seen.add()`
@@ -205,8 +205,8 @@ lines: 1495
 
 ## ungroupTabsAndSplitViews()
 - 位置: L1387-1397
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 対象のタブと分割ビューをタブグループから外す。
+- 触るとき: グループ解除メニューの動作を変えるとき。
 - 呼び出し先: `splitViews.has()`
 - 条件付き依存: `if (tab.splitview && !splitViews.has(tab.splitview))` → `splitViews.add()`
 - 条件付き依存: `if (tab.splitview && !splitViews.has(tab.splitview))` → `gBrowser.ungroupSplitView()`
@@ -214,8 +214,8 @@ lines: 1495
 
 ## moveTabsToSplitView()
 - 位置: L1399-1431
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 対象タブで分割ビューを作り、1枚だけなら about:opentabs の新タブと組にする。
+- 触るとき: メニューからの分割ビュー作成の動作や telemetry の trigger を変えるとき。
 - 呼び出し先: `gBrowser.addTabSplitView()`, `tabsToAdd.indexOf()`, `this.contextTabs.includes()`
 - 条件付き依存: `if (selectedTabIndex > -1 && selectedTabIndex != 0)` → `tabsToAdd.splice()`
 - 条件付き依存: `if (selectedTabIndex > -1 && selectedTabIndex != 0)` → `tabsToAdd.unshift()`
@@ -223,24 +223,24 @@ lines: 1495
 
 ## unsplitTabs()
 - 位置: L1433-1438
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 対象タブが属する分割ビューをすべて分割解除する。
+- 触るとき: メニューからの分割解除を調べるとき。
 - 呼び出し先: `splitview.unsplitTabs()`, `splitviews.forEach()`, `this.contextTabs.map()`, `this.contextTabs.map(tab => tab.splitview).filter()`
 
 ## reverseSplitView()
 - 位置: L1440-1442
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 対象タブの分割ビューの左右順を入れ替える。
+- 触るとき: メニューからの分割ビュー入れ替えを調べるとき。
 - 呼び出し先: `this.contextTab.splitview?.reverseTabs()`
 
 ## addNewBadge()
 - 位置: L1447-1453
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: メニュー項目に「新規」バッジの属性とクラスを付ける。
+- 触るとき: 新機能バッジの表示を追加・変更するとき。
 - 呼び出し先: `gBrowser.tabLocalization.formatValueSync()`, `menuItem.classList.add()`, `menuItem.setAttribute()`
 
 ## removeNewBadge()
 - 位置: L1458-1461
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: メニュー項目から「新規」バッジの属性とクラスを外す。
+- 触るとき: 新機能バッジの除去が効かないとき。
 - 呼び出し先: `menuItem.classList.remove()`, `menuItem.removeAttribute()`

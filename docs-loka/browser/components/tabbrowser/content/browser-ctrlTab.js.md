@@ -5,38 +5,38 @@ source-hash: 3878a29a91aef0911f0260082847ed416ddf16d4
 lines: 859
 
 ## <module>
-- 役割: (未記入)
+- 役割: Ctrl+Tab のサムネイル取得(tabPreviews)とプレビューパネル(ctrlTab)を定義する。
 - 呼び出し先: `ChromeUtils.defineESModuleGetters()`, `Math.max()`, `Math.min()`, `XPCOMUtils.defineLazyPreferenceGetter()`
 
 ## aspectRatio()
 - 位置: L9-16
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: サムネイルサイズから縦横比を計算し、初回のみ値として固定する。
+- 触るとき: プレビューの縦横比がおかしいとき。
 - 呼び出し先: `ChromeUtils.importESModule()`, `PageThumbUtils.getThumbnailSize()`
 
 ## tabPreviews_loadImage()
 - 位置: async L27-49
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ページ URL の保存済みサムネイル画像を最大1秒待って読み込み、失敗時は null を返す。
+- 触るとき: サムネイル画像の読み込み待ちや失敗時の扱いを調べるとき。
 - 呼び出し先: `PageThumbs.getThumbnailURL()`, `finish()`, `img.addEventListener()`, `setTimeout()`
 
 ## finish()
 - 位置: L36-40
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タイマーとリスナーを片付けて値で解決する。
+- 触るとき: loadImage の待機終了処理を調べるとき。
 - 呼び出し先: `clearTimeout()`, `controller.abort()`, `resolve()`
 
 ## tabPreviews_get()
 - 位置: async L70-93
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブのキャッシュ済みサムネイルを返し、無ければ保存画像の読み込みか新規キャプチャを行う。
+- 触るとき: プレビュー画像の取得経路やキャッシュ無効化を調べるとき。
 - 呼び出し先: `aTab.hasAttribute()`, `this.capture()`
 - 条件付き依存: `if (!browser.browsingContext)` → `this.loadImage()`
 
 ## tabPreviews_capture()
 - 位置: async L110-144
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブのサムネイルを canvas に取得し、条件が合えば保存・キャッシュする。
+- 触るとき: サムネイルの撮影・保存処理を調べるとき。
 - 呼び出し先: `PageThumbs.captureToCanvas()`, `PageThumbs.createCanvas()`, `PageThumbs.shouldStoreThumbnail()`, `console.error()`
 - 条件付き依存: `if (doStore && aShouldCache)` → `PageThumbs.captureAndStore()`
 - 条件付き依存: `if (doStore && aShouldCache)` → `this.loadImage()`
@@ -45,32 +45,32 @@ lines: 859
 
 ## opening()
 - 位置: L148-156
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: プレビューパネルを表示可能にし、表示・非表示用ハンドラを登録して直前のフォーカスを記録する。
+- 触るとき: パネル表示開始時の共通処理を調べるとき。
 - 呼び出し先: `host.panel.addEventListener()`, `this._generateHandler()`
 
 ## _generateHandler()
 - 位置: L157-165
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: パネル自身のポップアップイベントを一度だけ対応する処理へ振り分けるリスナーを作る。
+- 触るとき: パネルのイベント処理の仕組みを調べるとき。
 
 ## listener()
 - 位置: L159-164
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: パネルのイベントなら自身を外して _popupshown か _popuphiding を呼ぶ。
+- 触るとき: ポップアップイベントの振り分けを調べるとき。
 - 条件付き依存: `if (event.target == host.panel)` → `host.panel.removeEventListener()`
 - 条件付き依存: `if (event.target == host.panel)` → `self["_" + event.type]()`
 
 ## _popupshown()
 - 位置: L166-170
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ホストに setupGUI があれば呼ぶ。
+- 触るとき: パネル表示直後の初期化を調べるとき。
 - 条件付き依存: `if ("setupGUI" in host)` → `host.setupGUI()`
 
 ## _popuphiding()
 - 位置: L171-195
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: パネルを閉じる際に GUI を片付け、フォーカスを戻し、選択予定のタブがあれば選択する。
+- 触るとき: パネルを閉じた後のフォーカスやタブ選択を調べるとき。
 - 条件付き依存: `if ("suspendGUI" in host)` → `host.suspendGUI()`
 - 条件付き依存: `if (host._prevFocus)` → `Services.focus.setFocus()`
 - 条件付き依存: `if (!(host._prevFocus))` → `gBrowser.selectedBrowser.focus()`
@@ -80,97 +80,97 @@ lines: 859
 
 ## panel()
 - 位置: L203-206
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ctrlTab-panel 要素を取得して初回のみ保持する。
+- 触るとき: パネル要素の参照元を調べるとき。
 - 呼び出し先: `document.getElementById()`
 
 ## previewsContainer()
 - 位置: L207-211
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ctrlTab-previews 要素を取得して初回のみ保持する。
+- 触るとき: プレビュー配置先の参照元を調べるとき。
 - 呼び出し先: `document.getElementById()`
 
 ## showAllButton()
 - 位置: L212-223
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 「すべてのタブ」ボタンを作って各リスナーを付けコンテナに追加し、初回のみ保持する。
+- 触るとき: すべて表示ボタンの生成を調べるとき。
 - 呼び出し先: `document .getElementById()`, `document .getElementById("ctrlTab-showAll-container") .appendChild()`, `document.createXULElement()`, `this.showAllButton.addEventListener()`
 
 ## previews()
 - 位置: L224-228
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: プレビュー要素の配列を初回に構築して返す。
+- 触るとき: プレビュー要素の生成タイミングを調べるとき。
 - 呼び出し先: `this._buildPreviews()`
 
 ## keys()
 - 位置: L229-240
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じる・検索・全選択のショートカット文字コードを取得して保持する。
+- 触るとき: パネル内ショートカットキーの判定を調べるとき。
 - 呼び出し先: `["close", "find", "selectAll"].forEach()`, `document .getElementById()`, `document .getElementById("key_" + key) .getAttribute()`, `document .getElementById("key_" + key) .getAttribute("key") .toLocaleLowerCase()`, `document .getElementById("key_" + key) .getAttribute("key") .toLocaleLowerCase() .charCodeAt()`
 
 ## selected()
 - 位置: L242-246
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 現在選択中のプレビュー、フォーカスがパネル内ならフォーカス中の要素を返す。
+- 触るとき: 選択中のプレビューの判定を調べるとき。
 
 ## isOpen()
 - 位置: L247-251
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: パネルが開いている、開く途中、または遅延タイマー待ちかを返す。
+- 触るとき: 開閉状態の判定を調べるとき。
 
 ## tabCount()
 - 位置: L252-254
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 最近使ったタブ一覧の件数を返す。
+- 触るとき: 対象タブ数の算出を調べるとき。
 
 ## tabPreviewCount()
 - 位置: L255-257
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: プレビューの最大数とタブ数の小さい方を返す。
+- 触るとき: 表示するプレビュー数を調べるとき。
 - 呼び出し先: `Math.min()`
 
 ## previewColumnCount()
 - 位置: L262-264
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: プレビューの列数(1行の最大数)を返す。
+- 触るとき: プレビューの列数やパネル幅を調べるとき。
 - 呼び出し先: `Math.min()`
 
 ## tabList()
 - 位置: L266-268
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 最近使った順のタブ配列を返す。
+- 触るとき: MRU 順タブ一覧の参照元を調べるとき。
 
 ## ctrlTab_init()
 - 位置: L270-275
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 未初期化なら最近使ったタブ一覧を作り、イベント登録を有効にする。
+- 触るとき: Ctrl+Tab 機能の有効化を調べるとき。
 - 条件付き依存: `if (!this._recentlyUsedTabs)` → `this._initRecentlyUsedTabs()`
 - 条件付き依存: `if (!this._recentlyUsedTabs)` → `this._init()`
 
 ## ctrlTab_uninit()
 - 位置: L277-282
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブ一覧を破棄してイベント登録を解除する。
+- 触るとき: Ctrl+Tab 機能の無効化を調べるとき。
 - 条件付き依存: `if (this._recentlyUsedTabs)` → `this._init()`
 
 ## ctrlTab_observePref()
 - 位置: L286-289
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 設定項目の監視を始めて現在値を読む。
+- 触るとき: pref の監視開始を調べるとき。
 - 呼び出し先: `Services.prefs.addObserver()`, `this.readPref()`
 - XPCOM: `Services.prefs`
 
 ## ctrlTab_stopObservingPref()
 - 位置: L291-294
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 設定項目の監視を止めて無効化する。
+- 触るとき: pref の監視停止を調べるとき。
 - 呼び出し先: `Services.prefs.removeObserver()`, `this.uninit()`
 - XPCOM: `Services.prefs`
 
 ## ctrlTab_readPref()
 - 位置: L296-309
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: MRU 並び替え pref とスクリーンリーダー向け除外 pref を見て有効・無効を切り替える。
+- 触るとき: pref による有効条件を変えるとき。
 - 呼び出し先: `Services.prefs.getBoolPref()`
 - 条件付き依存: `if (enable)` → `this.init()`
 - 条件付き依存: `if (!(enable))` → `this.uninit()`
@@ -178,32 +178,32 @@ lines: 859
 
 ## observe()
 - 位置: L310-312
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: pref 変更通知を受けて設定を読み直す。
+- 触るとき: pref 変更への追従を調べるとき。
 - 呼び出し先: `this.readPref()`
 
 ## _buildPreviews()
 - 位置: L314-323
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 最大数のプレビュー要素と末尾のすべて表示ボタンを作り直す。
+- 触るとき: プレビュー要素群の構築を調べるとき。
 - 呼び出し先: `this._makePreview()`, `this.previews.push()`, `this.previewsContainer.appendChild()`, `this.previewsContainer.replaceChildren()`
 
 ## _makePreview()
 - 位置: L325-355
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: canvas・favicon・ラベルを持つプレビューボタン一つを作る。
+- 触るとき: プレビュー一つの DOM 構造を変えるとき。
 - 呼び出し先: `document.createXULElement()`, `faviconContainer.appendChild()`, `label.setAttribute()`, `preview.addEventListener()`, `preview.appendChild()`, `preview.setAttribute()`, `previewInner.appendChild()`
 
 ## ctrlTab_updatePreviews()
 - 位置: L357-373
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 列数を設定し、全プレビューを更新して、すべて表示ボタンの文言と表示可否を設定する。
+- 触るとき: プレビュー一覧全体の更新を調べるとき。
 - 呼び出し先: `document.l10n.setAttributes()`, `this.previewsContainer.style.setProperty()`, `this.updatePreview()`
 
 ## ctrlTab_updatePreview()
 - 位置: L375-419
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: プレビュー一つにタブのサムネイル・ラベル・favicon を反映し、タブが無ければ空にして隠す。
+- 触るとき: 個々のプレビューの表示内容を調べるとき。
 - 呼び出し先: `aPreview._canvas.replaceChildren()`, `aPreview._label.setAttribute()`, `aPreview.setAttribute()`, `console.error()`, `tabPreviews .get()`, `tabPreviews .get(aTab) .then()`
 - 条件付き依存: `if (!aTab)` → `aPreview._canvas.replaceChildren()`
 - 条件付き依存: `if (!aTab)` → `aPreview._label.removeAttribute()`
@@ -216,14 +216,14 @@ lines: 859
 
 ## _makePlaceholder()
 - 位置: L421-428
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: サムネイル枠の大きさを保つ透明な画像要素を作る。
+- 触るとき: サムネイル未取得時の枠のずれを調べるとき。
 - 呼び出し先: `document.createElement()`, `placeholder.setAttribute()`
 
 ## ctrlTab_advanceFocus()
 - 位置: L430-457
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 非表示を飛ばして次/前のプレビューへ選択を進め、タブを温め、待機中なら即パネルを開く。
+- 触るとき: Tab キー送りの選択移動を調べるとき。
 - 呼び出し先: `this.previews.indexOf()`
 - 条件付き依存: `if (this._selectedIndex == -1)` → `this.previews[selectedIndex].focus()`
 - 条件付き依存: `if (this.previews[selectedIndex]._tab)` → `gBrowser.warmupTab()`
@@ -232,27 +232,27 @@ lines: 859
 
 ## ctrlTab_pick()
 - 位置: L459-471
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択したプレビューを確定し、すべて表示なら一覧を開き、タブならそのタブを選んで閉じる。
+- 触るとき: プレビュー確定時の動作を調べるとき。
 - 条件付き依存: `if (select == this.showAllButton)` → `this.showAllTabs()`
 - 条件付き依存: `if (!(select == this.showAllButton))` → `this.close()`
 
 ## ctrlTab_showAllTabs()
 - 位置: L473-476
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: Ctrl+Tab パネルを閉じて、すべてのタブパネルを開く。
+- 触るとき: すべてのタブ表示への遷移を調べるとき。
 - 呼び出し先: `gTabsPanel.showAllTabsPanel()`, `this.close()`
 
 ## ctrlTab_remove()
 - 位置: L478-482
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: プレビューに対応するタブを閉じる。
+- 触るとき: パネルからのタブ閉じを調べるとき。
 - 条件付き依存: `if (aPreview._tab)` → `gBrowser.removeTab()`
 
 ## ctrlTab_attachTab()
 - 位置: L484-502
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じ中や非選択の非表示タブを除き、タブを最近使った順一覧の指定位置に入れる。
+- 触るとき: MRU 一覧への追加規則を調べるとき。
 - 呼び出し先: `this.detachTab()`
 - 条件付き依存: `if (aPos == 0)` → `this._recentlyUsedTabs.unshift()`
 - 条件付き依存: `if (aPos)` → `this._recentlyUsedTabs.splice()`
@@ -260,28 +260,28 @@ lines: 859
 
 ## ctrlTab_detachTab()
 - 位置: L504-509
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブを最近使った順一覧から取り除く。
+- 触るとき: MRU 一覧からの削除を調べるとき。
 - 呼び出し先: `this._recentlyUsedTabs.indexOf()`
 - 条件付き依存: `if (i >= 0)` → `this._recentlyUsedTabs.splice()`
 
 ## ctrlTab_open()
 - 位置: L511-533
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: プレビューを準備して初期選択を設定し、200ms 後にパネルを開く予約をする。
+- 触るとき: Ctrl+Tab 押下から表示までの流れを調べるとき。
 - 呼び出し先: `Math.ceil()`, `Math.round()`, `gBrowser.warmupTab()`, `setTimeout()`, `this._openPanel()`, `this.updatePreviews()`
 - 条件付き依存: `if (this.previews.length != this.maxTabPreviews + 1)` → `this._buildPreviews()`
 
 ## ctrlTab_openPanel()
 - 位置: L535-550
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: パネル幅と位置を計算して画面中央付近にポップアップを開く。
+- 触るとき: パネルの大きさや表示位置を変えるとき。
 - 呼び出し先: `Math.ceil()`, `Math.min()`, `tabPreviewPanelHelper.opening()`, `this.panel.openPopupAtScreen()`
 
 ## ctrlTab_close()
 - 位置: L552-574
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 待機中ならタイマーを止めて直接タブを選び、表示中ならパネルを閉じて選択予定のタブを設定する。
+- 触るとき: パネルを閉じるときのタブ選択を調べるとき。
 - 呼び出し先: `this.panel.hidePopup()`
 - 条件付き依存: `if (this._timer)` → `clearTimeout()`
 - 条件付き依存: `if (this._timer)` → `this.suspendGUI()`
@@ -290,20 +290,20 @@ lines: 859
 
 ## ctrlTab_setupGUI()
 - 位置: L576-579
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択中のプレビューにフォーカスを移し、内部の選択位置を解除する。
+- 触るとき: 表示直後のフォーカス設定を調べるとき。
 - 呼び出し先: `this.selected.focus()`
 
 ## ctrlTab_suspendGUI()
 - 位置: L581-585
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 全プレビューを空にして片付ける。
+- 触るとき: パネルを閉じた後のプレビューの後始末を調べるとき。
 - 呼び出し先: `this.updatePreview()`
 
 ## onKeyDown()
 - 位置: L587-628
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブ循環のキーを受け、パネル表示中はフォーカスを進め、そうでなければ開くか2枚なら直接切り替える。
+- 触るとき: Ctrl+Tab のキー押下処理を調べるとき。
 - 呼び出し先: `ShortcutUtils.getSystemActionForEvent()`, `document.addEventListener()`, `event.preventDefault()`, `event.stopPropagation()`, `this.KeyboardLockUtils.mustWaitForKeyboardLockRequestedReply()`
 - 条件付き依存: `if (this.isOpen)` → `this.advanceFocus()`
 - 条件付き依存: `if (event.shiftKey)` → `this.showAllTabs()`
@@ -313,15 +313,15 @@ lines: 859
 
 ## onKeyPress()
 - 位置: L630-654
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: パネル表示中の Ctrl 付きキーで、閉じる・検索・全選択・Delete に対応する操作を行う。
+- 触るとき: パネル内のショートカット動作を変えるとき。
 - 呼び出し先: `event.preventDefault()`, `event.stopPropagation()`, `this.remove()`, `this.showAllTabs()`
 - 条件付き依存: `if (event.keyCode == event.DOM_VK_DELETE)` → `this.remove()`
 
 ## ctrlTab_removeClosingTabFromUI()
 - 位置: L656-681
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じられるタブをパネルから外し、残りが少なければ閉じ、選択やフォーカスを調整する。
+- 触るとき: パネル表示中にタブが閉じられた時の挙動を調べるとき。
 - 呼び出し先: `this.updatePreviews()`
 - 条件付き依存: `if (this.tabCount == 2)` → `this.close()`
 - 条件付き依存: `if (this.selected.hidden)` → `this.advanceFocus()`
@@ -331,8 +331,8 @@ lines: 859
 
 ## ctrlTab_handleEvent()
 - 位置: L683-778
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブの開閉・選択・属性変更・表示切替とキー・マウス・コマンドの各イベントを処理する。
+- 触るとき: Ctrl+Tab 周りのイベント処理全般を調べるとき。
 - 呼び出し先: `["label", "busy", "image"].includes()`, `event.detail.changed.some()`, `event.preventDefault()`, `event.stopPropagation()`, `this._initRecentlyUsedTabs()`, `this._sortRecentlyUsedTabs()`, `this.attachTab()`, `this.detachTab()`, `this.onKeyDown()`, `this.onKeyPress()`, `this.pick()`
 - 条件付き依存: `if ( this.previews[i]._tab && this.previews[i]._tab == event.target )` → `this.updatePreview()`
 - 条件付き依存: `if (previousTab.hidden)` → `this.detachTab()`
@@ -346,26 +346,26 @@ lines: 859
 
 ## filterForThumbnailExpiration()
 - 位置: L780-795
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 表示分より少し多めのタブの URL を、サムネイル期限切れの除外対象として渡す。
+- 触るとき: サムネイルが消える/残る条件を調べるとき。
 - 呼び出し先: `Math.min()`, `aCallback()`, `urls.push()`
 
 ## _sortRecentlyUsedTabs()
 - 位置: L796-800
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブ一覧を最終アクセス時刻の新しい順に並べる。
+- 触るとき: MRU の並び順を調べるとき。
 - 呼び出し先: `this._recentlyUsedTabs.sort()`
 
 ## _initRecentlyUsedTabs()
 - 位置: L801-807
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じ中と非表示を除くタブから最近使った順一覧を作る。
+- 触るとき: MRU 一覧の初期構築を調べるとき。
 - 呼び出し先: `Array.prototype.filter.call()`, `this._sortRecentlyUsedTabs()`
 
 ## ctrlTab__init()
 - 位置: L809-844
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 機能の有効・無効に合わせ各種イベントリスナー、サムネイル除外フィルター、メニュー項目を登録または解除する。
+- 触るとき: 有効化時に登録されるリスナーや副作用を調べるとき。
 - 呼び出し先: `document .getElementById()`, `document .getElementById("menu_viewPopup") [toggleEventListener]()`, `document.getElementById()`, `document[toggleEventListener]()`, `tabContainer[toggleEventListener]()`, `window[toggleEventListener]()`
 - 条件付き依存: `if (enable)` → `document.addEventListener()`
 - 条件付き依存: `if (!(enable))` → `document.removeEventListener()`

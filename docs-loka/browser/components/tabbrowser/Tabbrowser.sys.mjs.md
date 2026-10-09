@@ -5,24 +5,24 @@ source-hash: 430e1137a15f0aa8c5f39fd76127f825b2751c69
 lines: 11180
 
 ## <module>
-- 役割: (未記入)
+- 役割: 遅延ロードのモジュール群と定数を宣言し、各ウィンドウの gBrowser となる Tabbrowser クラスと、補助の TabProgressListener、URILoadingWrapper を定義する。
 - 呼び出し先: `ChromeUtils.generateQI()`, `XPCOMUtils.declareLazy()`
 
 ## tabLocalization()
 - 位置: L66-74
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: tabbrowser.ftl などを読み込む Localization を遅延生成するファクトリ。
+- 触るとき: タブ周りの文言 (FTL) の読み込み元を変えるとき。
 
 ## getTotalMemoryUsage()
 - 位置: async L118-125
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 親プロセスと全子プロセスのメモリ使用量を合計して非同期で返す。
+- 触るとき: タブの明示アンロード時のメモリ計測を調べるとき。直前のコメントは本文と合っていない。
 - 呼び出し先: `ChromeUtils.requestProcInfo()`
 
 ## handleDroppedLink()
 - 位置: async L132-200
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ドロップされたリンクを数の警告で確認し、URL を解決して対象タブに loadTabs で読み込む。
+- 触るとき: コンテンツ領域へのリンクのドロップ動作を変えるとき。
 - 呼び出し先: `Array.isArray()`, `Services.prefs.getIntPref()`, `browser.getAttribute()`, `lazy.UrlbarUtils.getShortcutOrURIAndPostData()`, `postDatas.push()`, `urls.push()`
 - 条件付き依存: `if (event)` → `event.preventDefault()`
 - 条件付き依存: `if (event)` → `Services.prefs.getBoolPref()`
@@ -33,169 +33,169 @@ lines: 11180
 
 ## Tabbrowser.create()
 - 位置: L227-230
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: Tabbrowser を作って window.gBrowser に設定し、init を呼ぶ静的メソッド。
+- 触るとき: ウィンドウ起動時の gBrowser 初期化の入口を調べるとき。
 - 呼び出し先: `window.gBrowser.init()`
 
 ## Tabbrowser.destroy()
 - 位置: L232-234
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: window.gBrowser の destroy を呼ぶ静的メソッド。
+- 触るとき: ウィンドウ終了時の後始末の入口を調べるとき。
 - 呼び出し先: `window.gBrowser.destroy()`
 
 ## Tabbrowser.init()
 - 位置: L236-302
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 必要な DOM 要素の取得、オブザーバとイベントリスナの登録、最初のブラウザとタブの構築を行う。
+- 触るとき: gBrowser の起動時初期化や、登録されるイベントを変えるとき。
 - 呼び出し先: `Services.obs.addObserver()`, `Services.prefs.getIntPref()`, `this.#setFindbarData()`, `this.#setupEventListeners()`, `this.#setupInitialBrowserAndTab()`, `this.document.addEventListener()`, `this.document.getElementById()`, `this.document.querySelector()`, `this.document.querySelector("title").removeAttribute()`, `this.documentGlobal .matchMedia()`, `this.documentGlobal .matchMedia("(prefers-color-scheme: dark)") .addEventListener()`, `this.documentGlobal.addEventListener()`, `this.tabContainer.init()`
 - 条件付き依存: `if (Services.prefs.getIntPref("browser.display.document_color_use") == 2)` → `Services.prefs.getCharPref()`
 - XPCOM: `Services.obs` / `Services.prefs`
 
 ## this.#defaultDropLinkHandler()
 - 位置: L282-284
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ドロップ先の browser を this として handleDroppedLink を呼ぶ関数 (init 内で代入される)。
+- 触るとき: browser 要素の droppedLinkHandler の中身を追うとき。
 - 呼び出し先: `handleDroppedLink()`, `this.getTabBrowser()`
 
 ## Tabbrowser.ownerDocument()
 - 位置: L310-312
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: this.document を返すだけのゲッター。モジュール外の利用者向けに残してある。
+- 触るとき: gBrowser.ownerDocument を使う外部コードを調べるとき。
 
 ## Tabbrowser.TabMetrics()
 - 位置: L316-318
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 遅延ロードした TabMetrics モジュールを返すゲッター。
+- 触るとき: gBrowser.TabMetrics を参照する外部コードを調べるとき。
 
 ## Tabbrowser.tabLocalization()
 - 位置: L320-322
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 遅延生成した tabLocalization を返すゲッター。
+- 触るとき: gBrowser.tabLocalization を参照する外部コードを調べるとき。
 
 ## Tabbrowser.constructor()
 - 位置: L324-327
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウとその document をプロパティに保持する。
+- 触るとき: Tabbrowser が持つ window への参照の出どころを調べるとき。
 
 ## has()
 - 位置: L499-504
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: browsers プロキシの has トラップで、数値の添字が tabs に存在するかを返す。
+- 触るとき: gBrowser.browsers の添字アクセスの挙動を調べるとき。
 - 呼び出し先: `Number.isInteger()`, `parseInt()`
 
 ## get()
 - 位置: L505-516
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: browsers プロキシの get トラップで、length は tabs の長さ、数値の添字は対応するタブの linkedBrowser を返す。
+- 触るとき: gBrowser.browsers の添字アクセスや長さの扱いを調べるとき。
 - 呼び出し先: `Number.isInteger()`, `parseInt()`
 
 ## Tabbrowser.activeSplitView()
 - 位置: L528-530
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 現在アクティブな分割ビューを返すゲッター。
+- 触るとき: 分割ビューの有効状態の参照元を調べるとき。
 
 ## Tabbrowser.splitViewBrowsers()
 - 位置: L537-545
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: アクティブな分割ビューに含まれるタブの browser を配列で返す。
+- 触るとき: 分割ビューで同時に表示される browser の扱いを調べるとき。
 - 条件付き依存: `if (this.#activeSplitView)` → `browsers.push()`
 
 ## Tabbrowser.tabs()
 - 位置: L554-556
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: tabContainer の allTabs を返すゲッター。
+- 触るとき: gBrowser.tabs が返すタブの範囲を調べるとき。
 
 ## Tabbrowser.tabGroups()
 - 位置: L558-560
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: tabContainer の allGroups を返すゲッター。
+- 触るとき: ウィンドウ内のタブグループの取得元を調べるとき。
 
 ## Tabbrowser.splitViews()
 - 位置: L562-564
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: tabContainer の allSplitViews を返すゲッター。
+- 触るとき: ウィンドウ内の分割ビューの取得元を調べるとき。
 
 ## Tabbrowser.tabsInCollapsedTabGroups()
 - 位置: L566-571
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 折りたたまれたグループ内で、非表示でも閉じ中でもないタブを返す。
+- 触るとき: 折りたたみグループのタブを選択候補に含める処理を調べるとき。
 - 呼び出し先: `this.tabGroups .filter()`, `this.tabGroups .filter(tabGroup => tabGroup.collapsed) .flatMap()`, `this.tabGroups .filter(tabGroup => tabGroup.collapsed) .flatMap(tabGroup => tabGroup.tabs) .filter()`
 
 ## Tabbrowser.addEventListener()
 - 位置: L573-575
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: リスナー登録を tabpanels 要素に委譲する。
+- 触るとき: gBrowser へのイベント登録がどの要素に付くかを調べるとき。
 - 呼び出し先: `this.tabpanels.addEventListener()`
 
 ## Tabbrowser.removeEventListener()
 - 位置: L577-579
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: リスナー解除を tabpanels 要素に委譲する。
+- 触るとき: gBrowser のイベント解除がどの要素に効くかを調べるとき。
 - 呼び出し先: `this.tabpanels.removeEventListener()`
 
 ## Tabbrowser.dispatchEvent()
 - 位置: L581-583
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: イベントの送出を tabpanels 要素に委譲する。
+- 触るとき: gBrowser から送出されるイベントの宛先を調べるとき。
 - 呼び出し先: `this.tabpanels.dispatchEvent()`
 
 ## Tabbrowser.recordTabMetrics()
 - 位置: L593-612
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ユーザー操作で分解されていない文脈のときだけ、タブ操作を Glean に記録する。
+- 触るとき: タブ操作のテレメトリの記録条件や項目を変えるとき。
 - 呼び出し先: `Glean.tab.actions[action].add()`, `Glean.tab.interaction.record()`, `Glean.tab.tabCount[action].add()`
 
 ## Tabbrowser.openTabs()
 - 位置: L618-620
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: tabContainer の openTabs を返す。非表示や折りたたみ内を含み、閉じ中と Firefox View は除く。
+- 触るとき: 閉じ中のタブを除いた一覧が必要なとき。
 
 ## Tabbrowser.nonHiddenTabs()
 - 位置: L625-627
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: tabContainer の nonHiddenTabs を返す。openTabs から非表示を除いたもの。
+- 触るとき: 非表示タブを除いた一覧が必要なとき。
 
 ## Tabbrowser.visibleTabs()
 - 位置: L632-634
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: tabContainer の visibleTabs を返す。非表示と折りたたみグループ内を除いたもの。
+- 触るとき: 画面上に見えているタブの一覧が必要なとき。
 
 ## Tabbrowser.pinnedTabCount()
 - 位置: L636-643
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 先頭から続くピン留めタブの数 (最初の非ピンタブの添字) を返す。
+- 触るとき: ピン留めタブと通常タブの境界の計算を調べるとき。
 
 ## Tabbrowser.setSelectedTab()
 - 位置: L645-664
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 共有警告やモーダル表示中などは何もせず、それ以外は tabbox の選択タブを切り替えて ACTIVATE を記録する。
+- 触るとき: タブ選択が無視される条件や、選択時のテレメトリを変えるとき。
 - 呼び出し先: `this.document.documentElement.hasAttribute()`, `this.documentGlobal.gSharedTabWarning.willShowSharedTabWarning()`, `this.recordTabMetrics()`
 
 ## Tabbrowser.selectedTab()
 - 位置: L670-672
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: setSelectedTab を呼ぶセッター。
+- 触るとき: gBrowser.selectedTab への代入の経路を調べるとき。
 - 呼び出し先: `this.setSelectedTab()`
 
 ## Tabbrowser.selectedTab()
 - 位置: L674-676
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択中のタブを返すゲッター。
+- 触るとき: 現在のタブの保持場所を調べるとき。
 
 ## Tabbrowser.selectedBrowser()
 - 位置: L678-680
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択中の browser を返すゲッター。
+- 触るとき: 現在の browser の保持場所を調べるとき。
 
 ## Tabbrowser.selectedBrowsers()
 - 位置: L682-687
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 分割ビュー表示中はその browser 群、それ以外は選択中の browser 1 つを配列で返す。
+- 触るとき: 画面に表示中の browser 全てを扱う処理を書くとき。
 
 ## Tabbrowser.#setupInitialBrowserAndTab()
 - 位置: L689-875
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: window.arguments や採用タブから remoteType を決め、最初の browser を作って既存の先頭タブに結び付け、進捗リスナーを接続する。
+- 触るとき: 新規ウィンドウ最初のタブのプロセス選択や、タブの採用時の初期化を調べるとき。
 - 呼び出し先: `Cc[ "@mozilla.org/appshell/component/browser-status-filter;1" ].createInstance()`, `Tabbrowser.#generateUniquePanelID()`, `Tabbrowser.#tabFilters.set()`, `Tabbrowser.#tabListeners.set()`, `URILoadingWrapper.fixupAndLoadURIString.bind()`, `URILoadingWrapper.loadURI.bind()`, `browser.setAttribute()`, `browser.webProgress.addProgressListener()`, `extraOptions?.hasKey()`, `filter.addProgressListener()`, `lazy.AIWindow.isAIWindowActive()`, `tabArgument.hasAttribute()`, `this.#tabForBrowser.set()`, `this.#updateUserContextUIIndicator()`, `this.appendStatusPanel()`, `this.createBrowser()`, `this.documentGlobal.docShell.treeOwner .QueryInterface()`, `this.documentGlobal.docShell.treeOwner .QueryInterface(Ci.nsIInterfaceRequestor) .getInterface()`, `this.documentGlobal.gBrowserInit.getTabToAdopt()`, `this.getPanel()`, `this.shouldActivateDocShell()`, `this.tabpanels.appendChild()`
 - 条件付き依存: `if (extraOptions?.hasKey("triggeringRemoteType"))` → `extraOptions.getPropertyAsACString()`
 - 条件付き依存: `if (tabArgument && tabArgument.hasAttribute("usercontextid"))` → `parseInt()`
@@ -215,8 +215,8 @@ lines: 11180
 
 ## Tabbrowser.#updateUserContextUIIndicator()
 - 位置: L877-931
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択中 browser のコンテナ (userContext) に合わせて、コンテナの表示アイコンとラベルを更新または隠す。
+- 触るとき: コンテナ表示の更新タイミングや見た目を変えるとき。
 - 呼び出し先: `hbox.setAttribute()`, `lazy.ContextualIdentityService.getPublicIdentityFromId()`, `lazy.ContextualIdentityService.getUserContextLabel()`, `replaceContainerClass()`, `this.document.getElementById()`, `this.selectedBrowser.getAttribute()`
 - 条件付き依存: `if (!userContextId)` → `this.document.getElementById()`
 - 条件付き依存: `if (!userContextId)` → `replaceContainerClass()`
@@ -224,49 +224,49 @@ lines: 11180
 
 ## replaceContainerClass()
 - 位置: L878-891
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: identity-種別- で始まるクラスを外し、指定値のクラスを付け直すローカル関数。
+- 触るとき: コンテナ表示の色やアイコンのクラス名の扱いを調べるとき。
 - 呼び出し先: `className.startsWith()`, `element.classList.contains()`
 - 条件付き依存: `if (className.startsWith(prefix))` → `element.classList.remove()`
 - 条件付き依存: `if (value)` → `element.classList.add()`
 
 ## Tabbrowser.canGoBack()
 - 位置: L939-941
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択タブが戻れるかを返す、browser への転送。
+- 触るとき: 戻るの可否の判定元を調べるとき。
 
 ## Tabbrowser.canGoBackIgnoringUserInteraction()
 - 位置: L947-949
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ユーザー操作の有無を無視した戻れるかの判定を、選択 browser から返す。
+- 触るとき: 戻る履歴の判定でユーザー操作の扱いを調べるとき。
 
 ## Tabbrowser.canGoForward()
 - 位置: L954-956
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択タブが進めるかを返す、browser への転送。
+- 触るとき: 進むの可否の判定元を調べるとき。
 
 ## Tabbrowser.goBack()
 - 位置: L965-967
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser の goBack を呼ぶ転送。
+- 触るとき: 戻る操作の経路を調べるとき。
 - 呼び出し先: `this.selectedBrowser.goBack()`
 
 ## Tabbrowser.goForward()
 - 位置: L976-978
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser の goForward を呼ぶ転送。
+- 触るとき: 進む操作の経路を調べるとき。
 - 呼び出し先: `this.selectedBrowser.goForward()`
 
 ## Tabbrowser.reload()
 - 位置: L984-986
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser だけを reload する転送。複数選択は無視する。
+- 触るとき: 単一タブのリロード経路を調べるとき。
 - 呼び出し先: `this.selectedBrowser.reload()`
 
 ## Tabbrowser.reloadWithFlags()
 - 位置: L988-1073
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択中の各タブについて、リモート性が変わるなら URL を再読み込みし、変わらなければ一時権限をリセットしてフラグ付きでリロードする。
+- 触るとき: 強制リロードや複数選択のリロード、リロード時の権限リセットを変えるとき。
 - 呼び出し先: `lazy.ReducedProtectionNotification.markUserReload()`, `lazy.SitePermissions.clearTemporaryBlockPermissions()`, `reloadBrowser()`, `this.documentGlobal.gIdentityHandler.hidePopup()`, `this.documentGlobal.gPermissionPanel.hidePopup()`, `this.updateBrowserRemotenessByURL()`
 - 条件付き依存: `if (tab.linkedPanel)` → `loadBrowserURI()`
 - 条件付き依存: `if (!(tab.linkedPanel))` → `tab.addEventListener()`
@@ -277,8 +277,8 @@ lines: 11180
 
 ## reloadBrowser()
 - 位置: L1044-1065
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: セッション履歴または browsingContext でリロードし、未ロードのタブは browser を挿入して復元後に実行するローカル関数。
+- 触るとき: 未ロードタブのリロードの遅延実行を調べるとき。
 - 条件付き依存: `if (sessionHistory)` → `sessionHistory.reload()`
 - 条件付き依存: `if (!(sessionHistory))` → `browsingContext.reload()`
 - 条件付き依存: `if (!(tab.linkedPanel))` → `tab.addEventListener()`
@@ -287,128 +287,128 @@ lines: 11180
 
 ## loadBrowserURI()
 - 位置: L1067-1072
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 指定の URL を、保存した principal とリロードフラグで browser に読み込むローカル関数。
+- 触るとき: リモート性が変わった後の再読み込みを調べるとき。
 - 呼び出し先: `browser.loadURI()`
 
 ## Tabbrowser.stop()
 - 位置: L1078-1080
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser の stop を呼ぶ転送。
+- 触るとき: 読み込み停止の経路を調べるとき。
 - 呼び出し先: `this.selectedBrowser.stop()`
 
 ## Tabbrowser.loadURI()
 - 位置: L1088-1090
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser の loadURI を呼ぶ転送。
+- 触るとき: 選択タブへの nsIURI 読み込みの経路を調べるとき。
 - 呼び出し先: `this.selectedBrowser.loadURI()`
 
 ## Tabbrowser.fixupAndLoadURIString()
 - 位置: L1097-1099
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser の fixupAndLoadURIString を呼ぶ転送。
+- 触るとき: 選択タブへの文字列 URL 読み込みの経路を調べるとき。
 - 呼び出し先: `this.selectedBrowser.fixupAndLoadURIString()`
 
 ## Tabbrowser.gotoIndex()
 - 位置: L1107-1109
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser のセッション履歴の指定位置へ移動する転送。
+- 触るとき: 履歴の特定エントリへ移る経路を調べるとき。
 - 呼び出し先: `this.selectedBrowser.gotoIndex()`
 
 ## Tabbrowser.currentURI()
 - 位置: L1114-1116
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser の currentURI を返す転送。
+- 触るとき: 現在のページの URI の取得元を調べるとき。
 
 ## Tabbrowser.finder()
 - 位置: L1121-1123
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser の finder を返す転送。
+- 触るとき: ページ内検索の実行体の取得元を調べるとき。
 
 ## Tabbrowser.docShell()
 - 位置: L1129-1131
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser の docShell を返す転送。
+- 触るとき: 選択タブの docShell への参照を調べるとき。
 
 ## Tabbrowser.webNavigation()
 - 位置: L1136-1138
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser の webNavigation を返す転送。
+- 触るとき: 選択タブのナビゲーション API の取得元を調べるとき。
 
 ## Tabbrowser.webProgress()
 - 位置: L1143-1145
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser の webProgress を返す転送。
+- 触るとき: 選択タブの進捗オブジェクトの取得元を調べるとき。
 
 ## Tabbrowser.contentWindow()
 - 位置: L1151-1153
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser の contentWindow を返す転送。
+- 触るとき: 選択タブのコンテンツ window の取得元を調べるとき。
 
 ## Tabbrowser.sessionHistory()
 - 位置: L1158-1160
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser の sessionHistory を返す転送。
+- 触るとき: 選択タブの履歴オブジェクトの取得元を調べるとき。
 
 ## Tabbrowser.contentDocument()
 - 位置: L1166-1168
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser の contentDocument を返す転送。
+- 触るとき: 選択タブのコンテンツ document の取得元を調べるとき。
 
 ## Tabbrowser.contentTitle()
 - 位置: L1173-1175
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser の contentTitle を返す転送。
+- 触るとき: 選択タブのページタイトルの取得元を調べるとき。
 
 ## Tabbrowser.contentPrincipal()
 - 位置: L1180-1182
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser の contentPrincipal を返す転送。
+- 触るとき: 選択タブのページの principal の取得元を調べるとき。
 
 ## Tabbrowser.securityUI()
 - 位置: L1187-1189
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser の securityUI を返す転送。
+- 触るとき: 選択タブのセキュリティ状態の取得元を調べるとき。
 
 ## Tabbrowser.fullZoom()
 - 位置: L1194-1196
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser の fullZoom を設定する転送。
+- 触るとき: 選択タブのズーム率の設定経路を調べるとき。
 
 ## Tabbrowser.fullZoom()
 - 位置: L1198-1200
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser の fullZoom を返す転送。
+- 触るとき: 選択タブのズーム率の取得元を調べるとき。
 
 ## Tabbrowser.textZoom()
 - 位置: L1205-1207
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser の textZoom を設定する転送。
+- 触るとき: 選択タブの文字サイズ倍率の設定経路を調べるとき。
 
 ## Tabbrowser.textZoom()
 - 位置: L1209-1211
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser の textZoom を返す転送。
+- 触るとき: 選択タブの文字サイズ倍率の取得元を調べるとき。
 
 ## Tabbrowser.isSyntheticDocument()
 - 位置: L1217-1219
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser の isSyntheticDocument を返す転送。
+- 触るとき: 画像やメディア単体の表示ページかの判定元を調べるとき。
 
 ## Tabbrowser.userTypedValue()
 - 位置: L1226-1228
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser の userTypedValue を設定する転送。
+- 触るとき: アドレスバーの入力途中の値の設定経路を調べるとき。
 
 ## Tabbrowser.userTypedValue()
 - 位置: L1230-1232
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択 browser の userTypedValue を返す転送。
+- 触るとき: アドレスバーの入力途中の値の取得元を調べるとき。
 
 ## Tabbrowser.#setFindbarData()
 - 位置: L1234-1253
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 検索バーのショートカットキーを、未設定なら Services.ppmm の sharedData に登録する。
+- 触るとき: コンテンツ側が知る検索ショートカットの決まり方を変えるとき。
 - 呼び出し先: `sharedData.has()`
 - 条件付き依存: `if (!sharedData.has("Findbar:Shortcut"))` → `this.document.getElementById()`
 - 条件付き依存: `if (!sharedData.has("Findbar:Shortcut"))` → `keyEl .getAttribute("modifiers") .replace()`
@@ -420,33 +420,33 @@ lines: 11180
 
 ## Tabbrowser.isFindBarInitialized()
 - 位置: L1263-1265
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: そのタブの検索バーがすでに作られているかを、作成せずに返す。
+- 触るとき: 検索バーを不用意に生成せず存在確認したいとき。
 - 呼び出し先: `Tabbrowser.#findBars.has()`
 
 ## Tabbrowser.getCachedFindBar()
 - 位置: L1274-1276
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 作成済みなら検索バーを同期的に返し、未作成なら undefined を返す。
+- 触るとき: 検索バーを生成せずに参照したいとき。
 - 呼び出し先: `Tabbrowser.#findBars.get()`
 
 ## Tabbrowser.clearLastFindValue()
 - 位置: L1281-1283
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 新規検索バーに初期入力する直近の検索語を消す。
+- 触るとき: 検索語の引き継ぎをリセットする処理を調べるとき。
 
 ## Tabbrowser.getFindBar()
 - 位置: async L1292-1305
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブの検索バーを返し、未作成なら作成する。作成中の Promise を共有して再入を防ぐ。
+- 触るとき: 検索バーの遅延生成や、重複作成の防止を調べるとき。
 - 呼び出し先: `Tabbrowser.#pendingFindBars.get()`, `this.getCachedFindBar()`
 - 条件付き依存: `if (!pendingFindBar)` → `this.#createFindBar()`
 - 条件付き依存: `if (!pendingFindBar)` → `Tabbrowser.#pendingFindBars.set()`
 
 ## Tabbrowser.#createFindBar()
 - 位置: async L1313-1335
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: findbar 要素を browser の直後に挿入し、次フレーム後に browser と直近の検索語を設定して TabFindInitialized を送る。
+- 触るとき: 検索バーの生成手順や初期状態を変えるとき。
 - 呼び出し先: `Tabbrowser.#findBars.set()`, `Tabbrowser.#pendingFindBars.delete()`, `aTab.dispatchEvent()`, `browser.parentNode.insertAdjacentElement()`, `event.initEvent()`, `this.document.createEvent()`, `this.document.createXULElement()`, `this.documentGlobal.requestAnimationFrame()`, `this.getBrowserForTab()`
 
 ## Tabbrowser.appendStatusPanel()
