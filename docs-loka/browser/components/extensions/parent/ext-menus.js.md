@@ -353,15 +353,15 @@ lines: 1489
 
 ## isLibraryWindow()
 - 位置: L964-967
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウが Places の管理画面 (ライブラリ) かどうかを windowtype 属性で判定する。
+- 触るとき: ライブラリ画面のブックマーク右クリックに拡張の項目が出ないときに見る。
 - 呼び出し先: `window.document.documentElement.getAttribute()`
 - 参照: `this.libraryWindowType`
 
 ## init()
 - 位置: L969-984
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウ通知を登録し、既に開いているライブラリ窓と、これから読み込まれるライブラリ窓に listener を呼ぶ。
+- 触るとき: ブックマーク管理画面を開いたときに拡張のメニューが付かないとき、または起動時に既存の窓をどう扱うかを変えるときに見る。
 - 呼び出し先: `Services.wm.getEnumerator()`, `Services.ww.registerNotification()`, `windowTracker.isBrowserWindowInitialized()`
 - 条件付き依存: `if (windowTracker.isBrowserWindowInitialized(window))` → `this.isLibraryWindow()`
 - 条件付き依存: `if (this.isLibraryWindow(window))` → `this.notify()`
@@ -371,67 +371,67 @@ lines: 1489
 
 ## uninit()
 - 位置: L987-1000
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 通知を解除し、開いているライブラリ窓ごとに cleanupWindow を呼ぶ。例外は報告して続ける。
+- 触るとき: 拡張の終了後にライブラリ窓へリスナーが残るときに見る。
 - 呼び出し先: `Cu.reportError()`, `Services.wm.getEnumerator()`, `Services.ww.unregisterNotification()`, `this.isLibraryWindow()`, `window.removeEventListener()`
 - 条件付き依存: `if (this.isLibraryWindow(window))` → `cleanupWindow()`
 - XPCOM: `Services.wm` / `Services.ww`
 
 ## observe()
 - 位置: L1004-1008
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: domwindowopened を受けて、新しい窓の load を待つ。
+- 触るとき: 新しく開かれたライブラリ窓に拡張の処理が付かないときに見る。
 - 条件付き依存: `if (topic === "domwindowopened")` → `window.addEventListener()`
 
 ## handleEvent()
 - 位置: L1011-1016
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: load が終わった窓がライブラリなら notify を呼ぶ。
+- 触るとき: ライブラリ窓の初期化が読み込み完了後に走るかを確認するとき。
 - 呼び出し先: `this.isLibraryWindow()`
 - 条件付き依存: `if (this.isLibraryWindow(window))` → `this.notify()`
 - 参照: `event.target.defaultView`
 
 ## notify()
 - 位置: L1018-1024
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 登録された listener を窓を渡して呼び、例外は報告する。
+- 触るとき: ライブラリ窓の初期化で例外が出て拡張の処理が止まるときに見る。
 - 呼び出し先: `Cu.reportError()`, `this._listener.call()`
 
 ## register()
 - 位置: L1037-1044
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: on-build-contextmenu を監視し、既存のブラウザ窓とライブラリ窓に対象メニューのリスナーを付ける。
+- 触るとき: 最初の拡張が有効になったときに、メニューの監視がどこから始まるかを確認するとき。
 - 呼び出し先: `Services.obs.addObserver()`, `libraryTracker.init()`, `this.onWindowOpen()`, `windowTracker.addOpenListener()`, `windowTracker.browserWindows()`
 - 参照: `this.onLibraryOpen`, `this.onWindowOpen`
 - XPCOM: `Services.obs`
 
 ## unregister()
 - 位置: L1046-1053
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: on-build-contextmenu の監視と、既存の窓からのリスナー登録を外す。
+- 触るとき: 最後の拡張が無効になった後もメニューのリスナーが残るときに見る。
 - 呼び出し先: `Services.obs.removeObserver()`, `libraryTracker.uninit()`, `this.cleanupWindow()`, `windowTracker.browserWindows()`, `windowTracker.removeOpenListener()`
 - 参照: `this.cleanupLibrary`, `this.onWindowOpen`
 - XPCOM: `Services.obs`
 
 ## observe()
 - 位置: L1055-1058
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: on-build-contextmenu を受けて、そのコンテキストで gMenuBuilder.build を呼ぶ。
+- 触るとき: コンテキストメニューの構築が始まったときに拡張の項目が入らないときに見る。
 - 呼び出し先: `gMenuBuilder.build()`
 - 参照: `subject.wrappedJSObject`
 
 ## onWindowOpen()
 - 位置: async L1060-1079
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 対象メニューと、サイドバーヘッダーの SidebarShown にリスナーを付ける。ブックマークサイドバーが既に開いていれば、その場で onSidebarShown を呼ぶ。
+- 触るとき: 新しい窓で拡張のメニューが出ないとき、またはブックマークサイドバーが開いた状態で窓を開いたときに見る。
 - 呼び出し先: `menu.addEventListener()`, `sidebarHeader.addEventListener()`, `window.document.getElementById()`
 - 条件付き依存: `if ( !window.closed && window.SidebarController.currentID === "viewBookmarksSidebar" )` → `menuTracker.onSidebarShown()`
 - 参照: `menuTracker.menuIds`, `menuTracker.onSidebarShown`, `window.SidebarController.currentID`, `window.SidebarController.promiseInitialized`, `window.closed`
 
 ## cleanupWindow()
 - 位置: L1081-1105
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: onWindowOpen で付けたリスナーを外す。ブックマークサイドバーが開いていれば、その legacy メニューからもリスナーを外す。
+- 触るとき: 窓を閉じた後もサイドバーのメニューに拡張のリスナーが残るときに見る。
 - 呼び出し先: `menu.removeEventListener()`, `sidebarHeader.removeEventListener()`, `window.document.getElementById()`
 - 条件付き依存: `if (window.SidebarController.currentID === "viewBookmarksSidebar")` → `sidebarBrowser.removeEventListener()`
 - 条件付き依存: `if (window.SidebarController.currentID === "viewBookmarksSidebar")` → `Services.prefs.getBoolPref()`
@@ -442,8 +442,8 @@ lines: 1489
 
 ## onSidebarShown()
 - 位置: L1107-1135
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ブックマークサイドバーが開いたら、読み込み完了を待ってから、legacy の placesContext に onBookmarksContextMenu を付ける。
+- 触るとき: サイドバーのブックマーク右クリックに拡張の項目が出ないときに見る。sidebar.updatedBookmarks.enabled が true なら legacy 方式は使わない。
 - 条件付き依存: `if (sidebarBrowser.contentDocument.readyState !== "complete")` → `sidebarBrowser.addEventListener()`
 - 条件付き依存: `if (window.SidebarController.currentID === "viewBookmarksSidebar")` → `Services.prefs.getBoolPref()`
 - 条件付き依存: `if ( !Services.prefs.getBoolPref("sidebar.updatedBookmarks.enabled", false) )` → `sidebarBrowser.contentDocument.getElementById()`
@@ -453,22 +453,22 @@ lines: 1489
 
 ## onLibraryOpen()
 - 位置: L1137-1140
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ライブラリ窓の placesContext に onBookmarksContextMenu を付ける。
+- 触るとき: ライブラリ窓でブックマークの右クリックに拡張の項目が出ないときに見る。
 - 呼び出し先: `menu.addEventListener()`, `window.document.getElementById()`
 - 参照: `menuTracker.onBookmarksContextMenu`
 
 ## cleanupLibrary()
 - 位置: L1142-1148
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ライブラリ窓の placesContext から onBookmarksContextMenu を外す。
+- 触るとき: ライブラリ窓を閉じた後にリスナーが残るときに見る。
 - 呼び出し先: `menu.removeEventListener()`, `window.document.getElementById()`
 - 参照: `menuTracker.onBookmarksContextMenu`
 
 ## handleEvent()
 - 位置: L1150-1187
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: popupshowing を受けて、開かれたメニューの種類 (ブックマーク、ツールメニュー、タブ) ごとに gMenuBuilder.build を呼ぶ。
+- 触るとき: ブックマーク、ツールメニュー、タブのどれかで拡張の項目が出ないときに見る。
 - 条件付き依存: `if (menu.id === "placesContext")` → `gMenuBuilder.build()`
 - 条件付き依存: `if (menu.id === "sidebar-bookmarks-context-menu")` → `gMenuBuilder.build()`
 - 条件付き依存: `if (menu.id === "menu_ToolsPopup")` → `gMenuBuilder.build()`
@@ -477,23 +477,23 @@ lines: 1489
 
 ## onBookmarksContextMenu()
 - 位置: L1189-1201
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 右クリックされた行のブックマーク GUID を求め、仮想のリーフでなければ gMenuBuilder.build を呼ぶ。
+- 触るとき: ライブラリや旧サイドバーのブックマーク右クリックで項目が出ないとき、または仮想項目にまで出てしまうときに見る。
 - 呼び出し先: `PlacesUtils.getConcreteItemGuid()`, `PlacesUtils.isVirtualLeftPaneItem()`, `gMenuBuilder.build()`, `tree.getCellAt()`, `tree.view.nodeForTreeIndex()`
 - 参照: `cell.row`, `event.target`, `event.x`, `event.y`, `menu.triggerNode.parentElement`
 
 ## constructor()
 - 位置: L1207-1214
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 最初の拡張が登録されたときに menuTracker を登録し、その拡張のメニュー用 Map を作る。
+- 触るとき: 拡張のインスタンス生成時にメニューの監視を開始するタイミングを変えるときに見る。
 - 呼び出し先: `gMenuMap.set()`, `super()`
 - 条件付き依存: `if (!gMenuMap.size)` → `menuTracker.register()`
 - 参照: `gMenuMap.size`
 
 ## initExtensionMenus()
 - 位置: async L1216-1263
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 永続化されたメニューを親から順に MenuItem として作り直す。作れなかったものは永続データから削除し、webext-menus-created を発火させる。
+- 触るとき: 拡張の起動後に永続化されたメニューが消える、または一部だけ残るときに見る。
 - 呼び出し先: `Cu.reportError()`, `ExtensionMenus.asyncInitForExtension()`, `ExtensionMenus.getMenus()`, `ExtensionMenus.shouldPersistMenus()`, `createErrorMenuIds.push()`, `gMenuMap.get()`, `gMenuMap.get(extension).set()`, `menus.values()`, `notifyMenusCreated()`
 - 条件付き依存: `if (!menus.size)` → `notifyMenusCreated()`
 - 条件付き依存: `if (createErrorMenuIds.length)` → `ExtensionMenus.deleteMenus()`
@@ -501,21 +501,21 @@ lines: 1489
 
 ## notifyMenusCreated()
 - 位置: L1229-1230
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: テスト用に、作成済みのメニュー Map を webext-menus-created で拡張へ送る。
+- 触るとき: メニュー作成の完了を待つテストの経路を変えるときに見る。
 - 呼び出し先: `extension.emit()`, `gMenuMap.get()`
 
 ## onStartup()
 - 位置: L1265-1267
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 起動時に initExtensionMenus を始め、その Promise を保持する。
+- 触るとき: 起動直後に menus.create などが呼ばれ、復元の完了を待てていないかを調べるとき。create、update、remove はこの Promise を待つ。
 - 呼び出し先: `this.initExtensionMenus()`
 - 参照: `this.#promiseInitialized`
 
 ## onShutdown()
 - 位置: L1269-1281
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 拡張のメニュー Map、ルート項目、表示済みの項目、購読者を消し、最後の拡張なら menuTracker の登録を解除する。
+- 触るとき: 拡張を無効化した後もメニューが残るとき、または最後の拡張の終了時に監視が外れるかを確認するとき。
 - 呼び出し先: `gMenuMap.has()`
 - 条件付き依存: `if (gMenuMap.has(extension))` → `gMenuMap.delete()`
 - 条件付き依存: `if (gMenuMap.has(extension))` → `gRootItems.delete()`
@@ -526,63 +526,63 @@ lines: 1489
 
 ## onShown()
 - 位置: L1284-1325
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: menus.onShown のイベント。表示された項目 ID と文脈を、権限に応じて機微情報を含めて fire.sync する。
+- 触るとき: menus.onShown の引数を変えるときや、URL や選択テキストが出ない理由を調べるとき。
 - 呼び出し先: `extension.on()`, `gOnShownSubscribers.get()`, `gOnShownSubscribers.get(extension).add()`
 
 ## listener()
 - 位置: L1286-1309
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: webext-menu-shown を受けて、文脈の情報を作る。URL や選択テキストは、activeTab の権限か allowedOrigins に一致するときだけ含める。
+- 触るとき: onShown で機微情報が出る条件を変えるときに見る。
 - 呼び出し先: `Array.from()`, `addMenuEventInfo()`, `extension.allowedOrigins.matches()`, `extension.tabManager.convert()`, `extension.tabManager.hasActiveTabPermission()`, `fire.sync()`, `getMenuContexts()`
 - 参照: `contextData.frameUrl`, `contextData.inFrame`, `contextData.pageUrl`, `contextData.tab`
 
 ## unregister()
 - 位置: L1313-1320
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 購読者から listener を外し、空になれば購読者の登録を消してから webext-menu-shown の購読を解除する。
+- 触るとき: onShown を外した後も通知が届き続けるときに見る。
 - 呼び出し先: `extension.off()`, `gOnShownSubscribers.get()`, `listeners.delete()`
 - 条件付き依存: `if (listeners.size === 0)` → `gOnShownSubscribers.delete()`
 - 参照: `listeners.size`
 
 ## convert()
 - 位置: L1321-1323
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 永続イベントの再接続時に onShown の fire を差し替える。
+- 触るとき: 再起動後に onShown が古い fire へ送られるときに見る。
 
 ## onHidden()
 - 位置: L1326-1340
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: menus.onHidden のイベント。webext-menu-hidden を受けて fire.sync する。
+- 触るとき: メニューを閉じた通知が届かないときに見る。
 - 呼び出し先: `extension.on()`
 
 ## listener()
 - 位置: L1328-1330
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: webext-menu-hidden を受けて fire.sync() を呼ぶ。
+- 触るとき: onHidden が発火する条件を確認するときに見る。
 - 呼び出し先: `fire.sync()`
 
 ## unregister()
 - 位置: L1333-1335
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: webext-menu-hidden の購読を外す。
+- 触るとき: 無効化後も onHidden が届くときに見る。
 - 呼び出し先: `extension.off()`
 
 ## convert()
 - 位置: L1336-1338
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 永続イベントの再接続時に onHidden の fire を差し替える。
+- 触るとき: 再起動後に onHidden が古い fire へ送られるときに見る。
 
 ## onClicked()
 - 位置: L1341-1374
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: menus.onClicked のイベント。拡張の項目がクリックされたときに、起動待ちの後、そのタブの文脈で info と tab を fire.sync する。
+- 触るとき: menus.onClicked の引数を変えるときや、バックグラウンド起動直後のクリックが届かないときに見る。
 - 呼び出し先: `extension.on()`
 
 ## listener()
 - 位置: async L1343-1362
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: webext-menu-menuitem-click を受けて、タブを変換する。起動待ちがあれば待ち、その間にタブが閉じていれば中止して fire.sync する。
+- 触るとき: バックグラウンドが停止している状態からクリックしたときに onClicked が届かないときに見る。
 - 呼び出し先: `context.withPendingBrowser()`, `extension.tabManager.convert()`, `fire.sync()`
 - 条件付き依存: `if (fire.wakeup)` → `fire.wakeup()`
 - 条件付き依存: `if (fire.wakeup)` → `linkedBrowser.documentGlobal.gBrowser.getTabForBrowser()`
@@ -591,31 +591,31 @@ lines: 1489
 
 ## unregister()
 - 位置: L1366-1368
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: webext-menu-menuitem-click の購読を外す。
+- 触るとき: 無効化後も onClicked が届くときに見る。
 - 呼び出し先: `extension.off()`
 
 ## convert()
 - 位置: L1369-1372
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 永続イベントの再接続時に fire と context を差し替える。
+- 触るとき: 再起動後に onClicked が古い fire や context へ送られるときに見る。
 
 ## getAPI()
 - 位置: L1377-1487
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: menus と contextMenus (同じ API) と、内部用の menusInternal を組み立てて返す。
+- 触るとき: 拡張から見える menus API を増減するときに見る。
 - 呼び出し先: `new EventManager({ context, module: "menusInternal", event: "onShown", name: "menus.onShown", extensionApi: this, }).api()`
 
 ## refresh()
 - 位置: L1381-1383
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 表示中のメニューを rebuildMenu で作り直す。
+- 触るとき: menus.refresh を呼んでも開いているメニューが変わらないときに見る。
 - 呼び出し先: `gMenuBuilder.rebuildMenu()`
 
 ## create()
 - 位置: async L1405-1432
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 初期化を待ち、永続化する拡張では id を必須にして重複を弾いてから MenuItem を作り、永続データに追加する。
+- 触るとき: menus.create が『requires an id』や『already exists』を返すとき、または作成後に項目が出ないときに見る。
 - 呼び出し先: `ExtensionMenus.addMenu()`, `ExtensionMenus.shouldPersistMenus()`, `gMenuMap.get()`, `gMenuMap.get(extension).set()`
 - 条件付き依存: `if (ExtensionMenus.shouldPersistMenus(extension))` → `gMenuMap.get(extension).has()`
 - 条件付き依存: `if (ExtensionMenus.shouldPersistMenus(extension))` → `gMenuMap.get()`
@@ -623,22 +623,22 @@ lines: 1489
 
 ## update()
 - 位置: async L1434-1447
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 初期化を待ち、ID の項目の props を更新して永続データにも反映する。
+- 触るとき: menus.update で値が反映されないとき、または『Cannot find menu item』が出るときに見る。
 - 呼び出し先: `ExtensionMenus.updateMenu()`, `gMenuMap.get()`, `gMenuMap.get(extension).get()`, `menuItem.setProps()`
 - 参照: `extension.hasShutdown`, `this.#promiseInitialized`
 
 ## remove()
 - 位置: async L1449-1463
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ID の項目と子孫を削除し、対応する永続データも消す。
+- 触るとき: menus.remove で子項目もまとめて消えるかを確認するとき、または削除後も項目が残るときに見る。
 - 呼び出し先: `ExtensionMenus.deleteMenus()`, `gMenuMap.get()`, `gMenuMap.get(extension).get()`, `menuItem.remove()`
 - 参照: `extension.hasShutdown`, `menuItem.descendantIds`, `menuItem.id`, `this.#promiseInitialized`
 
 ## removeAll()
 - 位置: async L1465-1476
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ルート項目を削除し、拡張の全メニューを永続データからも消す。
+- 触るとき: menus.removeAll の後にメニューが残るとき、または再起動後に項目が戻るときに見る。
 - 呼び出し先: `ExtensionMenus.deleteAllMenus()`, `gRootItems.get()`
 - 条件付き依存: `if (root)` → `root.remove()`
 - 参照: `extension.hasShutdown`, `this.#promiseInitialized`

@@ -5,56 +5,56 @@ source-hash: 62b27dc8d0cce96ec4382194406edcedd55f7039
 lines: 8002
 
 ## <module>
-- 役割: (未記入)
+- 役割: スマートバー(アドレスバーと検索・チャット入力を兼ねる欄)の入力部分を実装する custom element SmartbarInput を定義する。
 - 呼び出し先: `ChromeUtils.importESModule()`, `Promise.resolve()`, `XPCOMUtils.declareLazy()`, `customElements.define()`
 
 ## logger()
 - 位置: L97-97
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: UrlbarShared のロガーを prefix "SmartbarInput" 付きで返す。
+- 触るとき: SmartbarInput のデバッグログを出す箇所を追加・確認するとき。
 - 呼び出し先: `UrlbarShared.getLogger()`
 
 ## getBoundsWithoutFlushing()
 - 位置: L106-107
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: windowUtils.getBoundsWithoutFlushing で要素の矩形を取得し、レイアウトを強制再計算させない。
+- 触るとき: ポップオーバーのアンカー高さを測る #measurePopoverAnchor のように、描画を伴わずに寸法だけ欲しいとき。
 - 呼び出し先: `element.documentGlobal.windowUtils.getBoundsWithoutFlushing()`
 
 ## px()
 - 位置: L108-108
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 数値を小数点以下2桁の文字列にして末尾に px を付ける。
+- 触るとき: 測った寸法を style に設定する箇所で単位付きの値が必要なとき。
 - 呼び出し先: `number.toFixed()`
 
 ## SmartbarInput.#markup()
 - 位置: L153-230
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: スマートバーの内部 DOM(検索モード切替ボタン、入力欄、結果ビュー、ボタン列)のマークアップ文字列を返す。nova 有効時と無効時で区切り線の構成が変わる。
+- 触るとき: 入力欄や結果ビューの子要素・属性を追加・変更するとき、または nova の区切り線の出し分けを見直すとき。
 - 呼び出し先: `UrlbarPrefs.get()`
 
 ## SmartbarInput.observedAttributes()
 - 位置: L232-234
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 監視対象の属性を open だけにする。
+- 触るとき: 属性変化の通知対象に別の属性を加えたいとき。
 
 ## SmartbarInput.fragment()
 - 位置: L244-250
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: マークアップを初回だけ XUL フラグメントにパースしてキャッシュし、呼び出しごとに importNode で複製して返す。
+- 触るとき: 生成される DOM を変えたいとき、またはスマートバーを複数作る際の複製コストを見直すとき。
 - 呼び出し先: `document.importNode()`
 - 条件付き依存: `if (!this.#fragment)` → `window.MozXULElement.parseXULToFragment()`
 - 参照: `this.#fragment`, `this.#markup`
 
 ## SmartbarInput.#popoverAnchor()
 - 位置: L286-288
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ポップオーバーのアンカーとして親ノード(parentNode)を返す。
+- 触るとき: ポップオーバーの位置決めの基準要素を変えたいとき。
 - 参照: `this.parentNode`
 
 ## SmartbarInput.constructor()
 - 位置: L365-385
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: gBrowser を持つ窓を親窓として解決し、document と private 判定を用意して UrlbarPrefs の監視を登録する。unload で監視を外す。
+- 触るとき: 検索バーなど gBrowser を持たない文脈でスマートバーが生成されたときの窓の決まり方を調べるとき。
 - 呼び出し先: `UrlbarPrefs.addObserver()`, `UrlbarPrefs.removeObserver()`, `lazy.PrivateBrowsingUtils.isWindowPrivate()`, `super()`, `window.addEventListener()`
 - 条件付き依存: `if (!this.window.gBrowser)` → `logger().debug()`
 - 条件付き依存: `if (!this.window.gBrowser)` → `logger()`
@@ -62,15 +62,15 @@ lines: 8002
 
 ## SmartbarInput.#populateSlots()
 - 位置: L393-420
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: moz-urlbar-slot[name] の位置へ urlbar-slot 属性の子要素を移し、slot を削除する。identity box や検索モード表示などの参照も取得する。
+- 触るとき: 新しいスロットを追加する、または子要素の指定方法(urlbar-slot 属性)を変えるとき。
 - 呼び出し先: `slot.getAttribute()`, `slot.parentNode.insertBefore()`, `slot.remove()`, `this._searchModeIndicator?.querySelector()`, `this.querySelector()`, `this.querySelectorAll()`
 - 参照: `this._identityBox`, `this._revertButton`, `this._searchModeIndicator`, `this._searchModeIndicatorClose`, `this._searchModeIndicatorTitle`
 
 ## SmartbarInput.#initOnce()
 - 位置: L425-536
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 初回接続時に sap-name を読んでマークアップを挿入し、スマートバーなら CTA と文脈チップを初期化する。controller、view、eventBufferer を作り、プロパティ転送と placeholder、engine store の初期化を行う。
+- 触るとき: 初回描画の初期化順序を変えるとき、またはスマートバー専用の初期化処理を追加するとき。
 - 呼び出し先: `Object.defineProperty()`, `this._setPlaceholder()`, `this.appendChild()`, `this.controller.addListener()`, `this.controller.maybeInitEngineStore()`, `this.dispatchEvent()`, `this.documentGlobal.requestAnimationFrame()`, `this.getAttribute()`, `this.querySelector()`
 - 条件付き依存: `if (document.readyState === "loading")` → `document.addEventListener()`
 - 条件付き依存: `if (document.readyState === "loading")` → `this.#populateSlots()`
@@ -89,32 +89,32 @@ lines: 8002
 
 ## SmartbarInput.get()
 - 位置: L505-507
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 転送対象の入力欄プロパティ(placeholder、readOnly、selectionStart、selectionEnd のいずれか)を内部の inputField から読む。
+- 触るとき: 外部から入力欄の値や選択位置を読む経路を変えるとき。
 - 参照: `this.inputField`
 
 ## SmartbarInput.set()
 - 位置: L508-510
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 転送対象の入力欄プロパティへ、内部の inputField を通して値を書き込む。
+- 触るとき: 外部から入力欄のプロパティを書き換える経路を変えるとき。
 - 参照: `this.inputField`
 
 ## SmartbarInput.attributeChangedCallback()
 - 位置: L538-544
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: open 属性が変わったときだけ updatePopover を呼ぶ。
+- 触るとき: ポップオーバーの開閉を属性の変化で駆動している箇所を追うとき。
 - 呼び出し先: `this.updatePopover()`
 
 ## SmartbarInput.connectedCallback()
 - 位置: L546-555
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: searchbar で新検索ウィジェットが無効なら何もせず、それ以外は #init を呼ぶ。
+- 触るとき: 接続時の初期化を省く条件(browser.search.widget.new など)を変えるとき。
 - 呼び出し先: `UrlbarPrefs.get()`, `this.#init()`, `this.getAttribute()`
 
 ## SmartbarInput.#init()
 - 位置: L557-633
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 未初期化なら #initOnce を呼び、コンテキストメニューと検索モード切替を接続する。ツールバーが非表示、taskbartab、readOnly のいずれかならアンカーを解放して終える。そうでなければ入力欄とウィンドウのイベント、パネルのイベントを登録し、placeholder とポップオーバーのアンカーを設定する。
+- 触るとき: イベントリスナーを登録する条件(ツールバーの可視性や readOnly)を変えるとき、または新しいリスナーを足すとき。
 - 呼び出し先: `UrlbarContentUtils.getPlatform()`, `this.#initContextMenuItems()`, `this.#updatePopoverAnchor()`, `this._addObservers()`, `this._initCopyCutController()`, `this._inputContainer.addEventListener()`, `this.addEventListener()`, `this.closest()`, `this.inputField.addEventListener()`, `this.searchModeSwitcher.connect()`, `this.view.panel.addEventListener()`, `this.window.addEventListener()`, `this.window.document.documentElement.hasAttribute()`
 - 条件付き依存: `if (!this.controller)` → `this.#initOnce()`
 - 条件付き依存: `if (this.sapName == "searchbar")` → `this.parentNode.setAttribute()`
@@ -128,14 +128,14 @@ lines: 8002
 
 ## SmartbarInput.disconnectedCallback()
 - 位置: L635-644
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: connectedCallback と同じ条件で #uninit を呼ぶ。
+- 触るとき: 切断時の後始末を行う条件を変えるとき。
 - 呼び出し先: `UrlbarPrefs.get()`, `this.#uninit()`, `this.getAttribute()`
 
 ## SmartbarInput.#uninit()
 - 位置: L646-727
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: #init で登録したリスナー、controller の購読、検索モード切替、copy/cut コントローラーを解除する。searchbar では overflows 属性も外す。
+- 触るとき: #init にリスナーを追加したとき、対応する解除を忘れていないか確かめるとき。
 - 呼び出し先: `UrlbarContentUtils.getPlatform()`, `UrlbarPrefs.removeObserver()`, `this.#removeContextMenuItems()`, `this._inputContainer.removeEventListener()`, `this._removeObservers()`, `this.controller.removeListener()`, `this.inputField.removeEventListener()`, `this.removeEventListener()`, `this.searchModeSwitcher.disconnect()`, `this.view.panel.removeEventListener()`, `this.window.removeEventListener()`
 - 条件付き依存: `if (this.sapName == "searchbar")` → `this.parentNode.removeAttribute()`
 - 条件付き依存: `if (this._copyCutController)` → `this.inputField.controllers.removeController()`

@@ -611,8 +611,8 @@ lines: 9611
 
 ## _SessionStore.#onQuitApplication()
 - 位置: L2747-2777
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: quit-application 時に、restart または os-restart なら resume_session_once を立てる(OS 再起動時は resuming_after_os_restart も立てる)。restart 以外は前回セッションを破棄し、最後に #uninit で終了処理を行う。
+- 触るとき: 再起動・OS 再起動後にセッションを戻すかどうかの判定や、終了種別ごとの前回セッションの扱いを変えるとき。
 - 呼び出し先: `this.#uninit()`
 - 条件付き依存: `if (!PrivateBrowsingUtils.permanentPrivateBrowsing)` → `this.#prefBranch.getBoolPref()`
 - 条件付き依存: `if ( aData == "os-restart" && !this.#prefBranch.getBoolPref("sessionstore.resume_session_once") )` → `this.#prefBranch.setBoolPref()`
@@ -624,8 +624,8 @@ lines: 9611
 
 ## _SessionStore.purgeDataForPrivateWindow()
 - 位置: L2784-2821
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 指定したプライベートウィンドウの閉じたタブと閉じたタブグループのデータを削除し、関連する一覧を初期化する。終了中は何もしない。
+- 触るとき: プライベートウィンドウを閉じた後に閉じたタブの履歴が残らないかを確認するとき。
 - 呼び出し先: `this.#windowIds.get()`
 - 条件付き依存: `if (windowData._closedTabs.length)` → `this.#removeClosedTabData()`
 - 条件付き依存: `if (windowData.closedGroups.length)` → `this.#removeClosedTabData()`
@@ -633,8 +633,8 @@ lines: 9611
 
 ## _SessionStore.#onPurgeSessionHistory()
 - 位置: L2826-2873
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: セッションファイルを消去し、終了中でなければ前回セッションを破棄する。開いているウィンドウの閉じたタブ・閉じたグループ、閉じたウィンドウ一覧、閉じた操作履歴を消し、閉じたウィンドウの一覧にない古い状態を捨てて保存を走らせる。
+- 触るとき: 履歴消去(sanitize)で閉じたタブやウィンドウのデータがどこまで消えるかを変えるとき。
 - 呼び出し先: `LastSession.clear()`, `lazy.SessionFile.wipe()`, `this.#clearRestoringWindows()`, `this.#getTopWindow()`, `this.#windowIds.get()`
 - 条件付き依存: `if (win)` → `win.setTimeout()`
 - 条件付き依存: `if (win)` → `lazy.SessionSaver.run()`
@@ -643,8 +643,8 @@ lines: 9611
 
 ## _SessionStore.#onPurgeDomainData()
 - 位置: L2881-2955
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 指定ドメインを含む閉じたタブ・グループを、ウィンドウ別と閉じたウィンドウ別に削除する。閉じたウィンドウ内の開いたタブも消し、残りがなければそのウィンドウを削除し、一部だけ消えた場合はタイトルと選択位置を直す。
+- 触るとき: サイト単位の履歴消去で閉じたタブやウィンドウのデータが正しく消えるかを確認するとき。
 - 呼び出し先: `closedTabs[i].state.entries.some()`, `openTabs[j].entries.some()`, `this.#clearRestoringWindows()`, `this.#closedWindows[ix].closedGroups.map()`, `this.#windows[ix].closedGroups.map()`
 - 条件付き依存: `if (closedTabs[i].state.entries.some(containsDomain, this))` → `closedTabs.splice()`
 - 条件付き依存: `if (openTabs[j].entries.some(containsDomain, this))` → `openTabs.splice()`
@@ -655,30 +655,30 @@ lines: 9611
 
 ## containsDomain()
 - 位置: L2883-2894
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 履歴エントリの URL のホストが指定ドメインに属するかを判定し、子エントリにも再帰的に調べる。URL にホストが無い場合は子エントリだけを調べる。
+- 触るとき: ドメイン単位の消去で一致判定の範囲(子エントリを含むか、サブドメインを含むか)を変えるとき。
 - 呼び出し先: `Services.eTLD.hasRootDomain()`, `Services.io.newURI()`, `aEntry.children.some()`
 - 参照: `Services.io.newURI(aEntry.url).host`, `aEntry.children`, `aEntry.url`
 - XPCOM: `Services.eTLD` / `Services.io`
 
 ## _SessionStore.#onPrefChange()
 - 位置: L2963-3010
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: sessionstore の設定変更を受け、上限値(max_tabs_undo、max_windows_undo)の変更時は超過分を切り詰め、その他の設定値はフィールドに反映して Glean の値も更新する。
+- 触るとき: sessionstore の設定を新しく追加したり、設定変更時の即時反映のしかたを変えるとき。
 - 呼び出し先: `Glean.sessionRestore.newTabOnRestoreEnabled.set()`, `this.#capClosedWindows()`, `this.#prefBranch.getBoolPref()`, `this.#prefBranch.getIntPref()`
 - 条件付き依存: `if (this.#windows[ix]._closedTabs.length > this.#max_tabs_undo)` → `this.#windows[ix]._closedTabs.splice()`
 - 参照: `this.#closedObjectsChanged`, `this.#closedTabsFromAllWindowsEnabled`, `this.#closedTabsFromClosedWindowsEnabled`, `this.#max_tabs_undo`, `this.#max_windows_undo`, `this.#restore_on_demand`, `this.#windows`, `this.#windows[ix]._closedTabs.length`
 
 ## _SessionStore.#onTabAdd()
 - 位置: L3018-3020
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブが追加されたとき、そのウィンドウの状態保存を遅延予約する。
+- 触るとき: 新規タブ追加時に保存のタイミングが適切かを確認するとき。
 - 呼び出し先: `this.#saveStateDelayed()`
 
 ## _SessionStore.#onTabBrowserInserted()
 - 位置: L3030-3048
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブの browser に SwapDocShells と oop-browser-crashed などのイベント購読を付け、遅延読み込みのタブが保存済みの状態を持っていれば #restoreTab で復元してから遅延状態を消す。
+- 触るとき: 新しいタブの browser が挿入されたときのイベント購読や、遅延タブの復元条件を変えるとき。
 - 呼び出し先: `TAB_LAZY_STATES.delete()`, `TAB_LAZY_STATES.has()`, `TAB_STATE_FOR_BROWSER.has()`, `browser.addEventListener()`, `lazy.TabStateCache.get()`
 - 条件付き依存: `if ( TAB_LAZY_STATES.has(aTab) && !TAB_STATE_FOR_BROWSER.has(browser) && lazy.TabStateCache.get(browser.permanentKey) )` → `lazy.TabState.clone()`
 - 条件付き依存: `if ( TAB_LAZY_STATES.has(aTab) && !TAB_STATE_FOR_BROWSER.has(browser) && lazy.TabStateCache.get(browser.permanentKey) )` → `TAB_CUSTOM_VALUES.get()`
@@ -687,36 +687,36 @@ lines: 9611
 
 ## _SessionStore.#onTabRemove()
 - 位置: L3060-3066
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブの browser に関する内部状態を後始末し、通知を伴う場合は状態の保存を遅延予約する。
+- 触るとき: タブを閉じた後に内部状態が残らないか、または保存が必要かを確認するとき。
 - 呼び出し先: `this.#cleanUpRemovedBrowser()`
 - 条件付き依存: `if (!aNoNotification)` → `this.#saveStateDelayed()`
 
 ## _SessionStore.#onTabClose()
 - 位置: L3078-3089
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: max_tabs_undo が 0 でなければ、タブの最新状態を収集して #maybeSaveClosedTab に渡し、閉じたタブとして保存する。
+- 触るとき: 閉じたタブの記録が取られる条件や、一括で閉じたタブ(multiselection)の扱いを変えるとき。
 - 呼び出し先: `TAB_CUSTOM_VALUES.get()`, `lazy.TabState.collect()`, `this.#maybeSaveClosedTab()`
 - 参照: `this.#max_tabs_undo`
 
 ## _SessionStore.#onTabGroupRemoveRequested()
 - 位置: L3095-3127
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブグループが閉じられるとき、保存済みのグループなら何もせず、そうでなければグループの状態と属するタブ・分割表示のデータを閉じたグループとして先頭に追加し、直前のグループ閉鎖数を更新する。max_tabs_undo が 0 なら何もしない。
+- 触るとき: タブグループを閉じたときに閉じたグループ一覧へ入る条件や、保存済みグループの「保存して閉じる」扱いを変えるとき。
 - 呼び出し先: `closedGroups.unshift()`, `lazy.TabGroupState.closed()`, `this.#collectClosedTabsForTabGroup()`, `this.#collectSplitViewDataForTabGroup()`, `this.#windowIds.get()`, `this.getSavedTabGroup()`
 - 参照: `tabGroup.id`, `tabGroup.tabs`, `tabGroupState.splitViews`, `tabGroupState.tabs`, `tabGroupState.tabs.length`, `this.#closedObjectsChanged`, `this.#max_tabs_undo`, `this.#windows`, `this.#windows[this.#windowIds.get(win)]._lastClosedTabGroupCount`, `this.#windows[this.#windowIds.get(win)].closedGroups`
 
 ## _SessionStore.#collectClosedTabsForTabGroup()
 - 位置: L3149-3162
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: グループ内の各タブの状態を収集し、必要なら groupId を付け替えて、閉じたタブ用の配列へ #maybeSaveClosedTab 経由で集める。
+- 触るとき: 閉じたタブグループに入るタブのデータ形式や groupId の付け替えを変えるとき。
 - 呼び出し先: `TAB_CUSTOM_VALUES.get()`, `lazy.TabState.collect()`, `tabs.forEach()`, `this.#maybeSaveClosedTab()`
 - 参照: `tabState.groupId`
 
 ## _SessionStore.#collectSplitViewDataForTabGroup()
 - 位置: L3168-3178
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: グループ内のタブから分割表示 ID ごとに最初に見つかった状態だけを取り出して配列にする。
+- 触るとき: 閉じたグループや保存済みグループに分割表示の情報をどう残すかを変えるとき。
 - 呼び出し先: `Array.from()`, `splitViewData.values()`, `tabs.forEach()`
 - 条件付き依存: `if (tab.splitview)` → `splitViewData.get()`
 - 条件付き依存: `if (!splitViewData.get(tab.splitview.splitViewId))` → `splitViewData.set()`
@@ -724,46 +724,46 @@ lines: 9611
 
 ## _SessionStore.#onMoveToNewWindow()
 - 位置: L3188-3198
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 移動元 browser をフラッシュしてからタブ状態をキャッシュし、移動先 browser の permanentKey に複製する。移動元の状態が無ければ例外を投げる。
+- 触るとき: タブを新しいウィンドウへ移したときに状態が引き継がれるかを確認するとき。
 - 呼び出し先: `lazy.TabStateCache.get()`, `lazy.TabStateCache.update()`, `lazy.TabStateFlusher.flush()`, `lazy.TabStateFlusher.flush(aFromBrowser).then()`
 - 参照: `aFromBrowser.permanentKey`, `aToBrowser.permanentKey`
 
 ## _SessionStore.#maybeSaveClosedTab()
 - 位置: L3219-3270
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: プライベートタブや FirefoxView のタブは除外し、保存対象ならタブの情報を閉じたタブ用の配列へ保存する。どの場合も closingTabMap に登録して、閉じた後に届く最後の更新を扱えるようにする。
+- 触るとき: 閉じたタブが記録される条件(プライベートや FirefoxView の除外)を変えるとき。
 - 呼び出し先: `Date.now()`, `PrivateBrowsingUtils.isWindowPrivate()`, `aWindow.gBrowser.getIcon()`, `this.#closingTabMap.set()`, `this.#shouldSaveTabState()`, `this.#windowIds.get()`
 - 条件付き依存: `if (this.#shouldSaveTabState(tabState))` → `this.#saveClosedTabData()`
 - 参照: `aTab.index`, `aTab.label`, `aTab.linkedBrowser.permanentKey`, `aWindow.FirefoxViewHandler.tab`, `tabState.groupId`, `tabState.isPrivate`, `this.#windows`, `winData._closedTabs`
 
 ## _SessionStore.resetBrowserToLazyState()
 - 位置: L3279-3335
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 接続中の browser をタブ閉鎖時と同様に後始末し、pending と crashed の属性を立て直し、入力中の URL をキャッシュに補ってから遅延状態(TAB_LAZY_STATES)に戻す。
+- 触るとき: タブを破棄して遅延状態に戻す(discard)処理の結果、次に開いたとき正しい URL で復元されるかを調べるとき。
 - 呼び出し先: `TAB_LAZY_STATES.set()`, `aTab.removeAttribute()`, `aTab.setAttribute()`, `browser.didStartLoadSinceLastUserTyping()`, `lazy.TabStateCache.get()`, `this.#cleanUpRemovedBrowser()`, `this.#crashedBrowsers.delete()`
 - 条件付き依存: `if (shouldUpdateCacheState)` → `lazy.TabStateCache.update()`
 - 参照: `aTab.label`, `aTab.linkedBrowser`, `browser.currentURI.spec`, `browser.isConnected`, `browser.permanentKey`, `cacheState.userTypedValue`
 
 ## _SessionStore.maybeExitCrashedState()
 - 位置: L3345-3350
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: browser の文書が about:tabcrashed なら、クラッシュ中の集合から外して更新メッセージを再び受け付けるようにする。
+- 触るとき: クラッシュしたタブが別ページへ移動して復活した後に状態保存が再開されるかを確認するとき。
 - 呼び出し先: `uri?.spec?.startsWith()`
 - 条件付き依存: `if (uri?.spec?.startsWith("about:tabcrashed"))` → `this.#crashedBrowsers.delete()`
 - 参照: `aBrowser.documentURI`, `aBrowser.permanentKey`
 
 ## _SessionStore.isBrowserInCrashedSet()
 - 位置: L3358-3365
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: デバッグモード時だけ、browser がクラッシュ中の集合に入っているかを返す。デバッグモード以外では例外を投げる。
+- 触るとき: テストでクラッシュ状態の遷移を検証する箇所を書くとき。
 - 条件付き依存: `if (gDebuggingEnabled)` → `this.#crashedBrowsers.has()`
 - 参照: `aBrowser.permanentKey`
 
 ## _SessionStore.#cleanUpRemovedBrowser()
 - 位置: L3373-3390
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: browser の SwapDocShells と oop-browser-crashed などの購読を外し、復元中・復元待ちの状態を戻す。復元中だったタブなら次のタブの復元を始める。
+- 触るとき: タブを閉じたり遅延状態に戻したときに復元キューが止まらないかを確認するとき。
 - 呼び出し先: `TAB_STATE_FOR_BROWSER.get()`, `browser.removeEventListener()`
 - 条件付き依存: `if (previousState)` → `this.#resetTabRestoringState()`
 - 条件付き依存: `if (previousState == TAB_STATE_RESTORING)` → `this.#restoreNextTab()`
@@ -771,8 +771,8 @@ lines: 9611
 
 ## _SessionStore.#saveClosedTabData()
 - 位置: L3406-3455
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じたタブを closedAt の新しい順に挿入して ID を振り、グループ外のタブは max_tabs_undo を超えた分を切り詰める。グループ内の閉鎖数と closedAt を更新し、必要なら閉じた操作の履歴にも追加する。
+- 触るとき: 閉じたタブの並び順や上限の扱い、タブグループ内の閉鎖数の数え方を変えるとき。
 - 呼び出し先: `closedTabs.findIndex()`, `closedTabs.splice()`
 - 条件付き依存: `if (saveAction)` → `this.#addClosedAction()`
 - 条件付き依存: `if ( !tabData.closedInTabGroupId && closedTabs.length > this.#max_tabs_undo )` → `closedTabs.splice()`
@@ -780,8 +780,8 @@ lines: 9611
 
 ## _SessionStore.#removeClosedTabData()
 - 位置: L3470-3494
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じたタブ一覧から指定位置のタブを取り除き、最終更新待ちの closingTabMap などの登録も外して、閉じた操作の履歴からも削除する。
+- 触るとき: 閉じたタブを開き直す、または忘れるときに、最終更新が後から戻ってきて再登録されないかを確認するとき。
 - 呼び出し先: `closedTabs.splice()`, `this.#removeClosedAction()`
 - 条件付き依存: `if (closedTab.permanentKey)` → `this.#closingTabMap.delete()`
 - 条件付き依存: `if (closedTab.permanentKey)` → `this.#tabClosingByWindowMap.delete()`
@@ -789,16 +789,16 @@ lines: 9611
 
 ## _SessionStore.#onTabSelect()
 - 位置: L3502-3510
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 稼働中ならウィンドウの選択タブ位置を更新し、選ばれたタブの内容が未復元なら復元を始める。
+- 触るとき: タブを切り替えたときに遅延タブの内容が読み込まれるタイミングを変えるとき。
 - 条件付き依存: `if (lazy.RunState.isRunning)` → `this.#windowIds.get()`
 - 条件付き依存: `if (lazy.RunState.isRunning)` → `this.#maybeRestoreTabContent()`
 - 参照: `aWindow.gBrowser.selectedTab`, `aWindow.gBrowser.tabContainer.selectedIndex`, `lazy.RunState.isRunning`, `this.#windows`, `this.#windows[this.#windowIds.get(aWindow)].selected`
 
 ## _SessionStore.#maybeRestoreTabContent()
 - 位置: L3515-3534
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブが未復元(NEEDS_RESTORE)の場合、クラッシュ画面を表示すべきならクラッシュ状態に入り、そうでなければ #restoreTabContent で中身を復元する。
+- 触るとき: 遅延タブを表示した時点でクラッシュ画面と通常復元のどちらを出すかを変えるとき。
 - 呼び出し先: `TAB_STATE_FOR_BROWSER.get()`
 - 条件付き依存: `if (TAB_STATE_FOR_BROWSER.get(browser) == TAB_STATE_NEEDS_RESTORE)` → `lazy.TabCrashHandler.willShowCrashedTab()`
 - 条件付き依存: `if (lazy.TabCrashHandler.willShowCrashedTab(browser))` → `this.#enterCrashedState()`
@@ -807,8 +807,8 @@ lines: 9611
 
 ## _SessionStore.#onTabShow()
 - 位置: L3540-3556
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 未復元のタブが表示されたら TabRestoreQueue の隠れ→表示の区分を移し、復元キューを進める。その後、状態の保存を遅延予約する。
+- 触るとき: 非表示タブの復元(restore_hidden_tabs)の順番や、表示切り替え時の保存タイミングを変えるとき。
 - 呼び出し先: `TAB_STATE_FOR_BROWSER.get()`, `this.#saveStateDelayed()`
 - 条件付き依存: `if ( TAB_STATE_FOR_BROWSER.get(aTab.linkedBrowser) == TAB_STATE_NEEDS_RESTORE )` → `TabRestoreQueue.hiddenToVisible()`
 - 条件付き依存: `if ( TAB_STATE_FOR_BROWSER.get(aTab.linkedBrowser) == TAB_STATE_NEEDS_RESTORE )` → `this.#restoreNextTab()`
@@ -816,22 +816,22 @@ lines: 9611
 
 ## _SessionStore.#onTabHide()
 - 位置: L3562-3574
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 未復元のタブが隠されたら TabRestoreQueue の表示→隠れ区分を移し、状態の保存を遅延予約する。
+- 触るとき: タブを非表示にしたときに復元キュー上の位置がどう変わるかを確認するとき。
 - 呼び出し先: `TAB_STATE_FOR_BROWSER.get()`, `this.#saveStateDelayed()`
 - 条件付き依存: `if ( TAB_STATE_FOR_BROWSER.get(aTab.linkedBrowser) == TAB_STATE_NEEDS_RESTORE )` → `TabRestoreQueue.visibleToHidden()`
 - 参照: `aTab.linkedBrowser`
 
 ## _SessionStore.#onBrowserCrashed()
 - 位置: L3582-3587
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: browser のクラッシュを #enterCrashedState に渡し、返ってこないフラッシュ要求を解決する。
+- 触るとき: タブのクラッシュ時にフラッシュ待ちが止まらないかを確認するとき。
 - 呼び出し先: `lazy.TabStateFlusher.resolveAll()`, `this.#enterCrashedState()`
 
 ## _SessionStore.#enterCrashedState()
 - 位置: L3597-3612
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: browser をクラッシュ中の集合に加え、未復元または復元途中だった場合はタブの復元状態を戻して、後で復活させたときに再度復元できるようにする。
+- 触るとき: クラッシュしたタブを復活させた後に内容がもう一度復元されるかを調べるとき。
 - 呼び出し先: `TAB_STATE_FOR_BROWSER.has()`, `this.#crashedBrowsers.add()`
 - 条件付き依存: `if (TAB_STATE_FOR_BROWSER.has(browser))` → `win.gBrowser.getTabForBrowser()`
 - 条件付き依存: `if (tab)` → `this.#resetLocalTabRestoringState()`
@@ -839,30 +839,30 @@ lines: 9611
 
 ## _SessionStore.#onIdleDaily()
 - 位置: L3617-3642
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: アイドル時の日次処理で、閉じたウィンドウ・その閉じたタブ・閉じたグループ、開いているウィンドウの閉じたタブ・閉じたグループについて古いものを削除する。保存は再予約しない。
+- 触るとき: 閉じた項目の保持期間を変えるとき、または日次の掃除が閉じた項目の一覧にどう効くかを調べるとき。
 - 呼び出し先: `Object.keys()`, `Object.keys(this.#windows).map()`, `this.#cleanupOldData()`, `this.#closedWindows.map()`, `this.#notifyOfClosedObjectsChange()`
 - 参照: `this.#closedWindows`, `this.#windows`, `this.#windows[key]._closedTabs`, `this.#windows[key].closedGroups`, `winData._closedTabs`, `winData.closedGroups`
 
 ## _SessionStore.#cleanupOldData()
 - 位置: L3645-3664
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: sessionstore.cleanup.forget_closed_after を保持期間として、渡された各配列を後ろから見て期間を過ぎた項目を削除する。closedAt が無い項目には今の時刻を入れる。
+- 触るとき: 閉じた項目を何日残すかの判定や、closedAt が無い古いデータの扱いを変えるとき。
 - 呼び出し先: `Date.now()`, `this.#prefBranch.getIntPref()`
 - 条件付き依存: `if (now - data.closedAt > TIME_TO_LIVE)` → `array.splice()`
 - 参照: `array.length`, `data.closedAt`, `this.#closedObjectsChanged`
 
 ## _SessionStore.getBrowserState()
 - 位置: L3673-3683
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 現在の状態を JSON 文字列にして返す。前回セッションの状態と遅延初期状態は含めない。
+- 触るとき: nsISessionStore の getBrowserState の戻り値の形を変えるとき、またはテストで状態を取得する経路を追うとき。
 - 呼び出し先: `JSON.stringify()`, `this.getCurrentState()`
 - 参照: `state.deferredInitialState`, `state.lastSessionState`
 
 ## _SessionStore.setBrowserState()
 - 位置: L3699-3765
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: テストや自動化用に、JSON の状態を受け取って他のブラウザウィンドウを閉じ、閉じたウィンドウ一覧を空にしてから全ウィンドウを復元する。state が無効なら例外を投げる。
+- 触るとき: テストで状態を丸ごと差し替える手順や、setBrowserState 時に閉じたデータがどう消えるかを変えるとき。
 - 呼び出し先: `JSON.parse()`, `lazy.SessionCookies.restore()`, `this.#getTopWindow()`, `this.#globalState.setFromState()`, `this.#handleClosedWindows()`, `this.#initSplitViewIds()`, `this.#notifyOfClosedObjectsChange()`, `this.#resetRestoringState()`, `this.#restoreWindows()`
 - 条件付き依存: `if (!state)` → `Components.Exception()`
 - 条件付き依存: `if (!state.windows)` → `Components.Exception()`
@@ -873,8 +873,8 @@ lines: 9611
 
 ## _SessionStore.getWindowState()
 - 位置: L3772-3786
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 追跡中のウィンドウならその状態を、終了直前のキャッシュにあればその状態を、どちらも無ければ例外を返す。
+- 触るとき: ウィンドウ単位の状態取得で、閉じかけのウィンドウの扱いを確認するとき。
 - 呼び出し先: `Components.Exception()`, `DyingWindowCache.has()`, `this.#windowIds.has()`
 - 条件付き依存: `if (this.#windowIds.has(aWindow))` → `Cu.cloneInto()`
 - 条件付き依存: `if (this.#windowIds.has(aWindow))` → `this.#getWindowState()`
@@ -884,16 +884,16 @@ lines: 9611
 
 ## _SessionStore.setWindowState()
 - 位置: L3799-3814
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 追跡中のウィンドウに対して、渡された状態を復元する。上書きの指定を渡せる。
+- 触るとき: 既存ウィンドウへの状態の流し込みの挙動を変えるとき。
 - 呼び出し先: `this.#notifyOfClosedObjectsChange()`, `this.#restoreWindows()`, `this.#windowIds.get()`
 - 条件付き依存: `if (!this.#windowIds.get(aWindow))` → `Components.Exception()`
 - 参照: `Cr.NS_ERROR_INVALID_ARG`
 
 ## _SessionStore.getTabState()
 - 位置: L3826-3840
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブが追跡中のウィンドウに属していれば、そのタブの状態を収集して JSON 文字列で返す。無効なタブや未追跡なら例外を投げる。
+- 触るとき: タブ単位の状態取得の形式や、追跡されていないタブの扱いを変えるとき。
 - 呼び出し先: `JSON.stringify()`, `TAB_CUSTOM_VALUES.get()`, `lazy.TabState.collect()`, `this.#windowIds.get()`
 - 条件付き依存: `if (!aTab || !aTab.documentGlobal)` → `Components.Exception()`
 - 条件付き依存: `if (!this.#windowIds.get(aTab.documentGlobal))` → `Components.Exception()`
@@ -901,8 +901,8 @@ lines: 9611
 
 ## _SessionStore.setTabState()
 - 位置: L3853-3899
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: JSON または object のタブ状態を検証し(entries が必要)、追跡中のウィンドウのタブへ復元する。復元中ならリセットしてから #restoreTab を呼ぶ。
+- 触るとき: タブ状態の入力検証の条件や、復元中のタブを差し替える経路を変えるとき。
 - 呼び出し先: `TAB_STATE_FOR_BROWSER.has()`, `this.#ensureNoNullsInTabDataList()`, `this.#notifyOfClosedObjectsChange()`, `this.#restoreTab()`, `this.#windowIds.get()`, `this.#windowIds.has()`
 - 条件付き依存: `if (typeof tabState == "string")` → `JSON.parse()`
 - 条件付き依存: `if (!tabState)` → `Components.Exception()`
@@ -914,49 +914,49 @@ lines: 9611
 
 ## _SessionStore.isTabRestoring()
 - 位置: L3907-3909
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブの browser が復元状態(TAB_STATE_FOR_BROWSER)を持つかを返す。
+- 触るとき: タブが復元中かどうかの判定を呼び出し側で使う箇所を調べるとき。
 - 呼び出し先: `TAB_STATE_FOR_BROWSER.has()`
 - 参照: `aTab.linkedBrowser`
 
 ## _SessionStore.getInternalObjectState()
 - 位置: L3918-3926
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウ ID があればそのウィンドウの内部データを、なければ loadURI を持つ browser なら復元状態、それ以外はタブのカスタム値を返す。
+- 触るとき: テストや内部確認で、ウィンドウ・browser・タブごとの内部状態をどこから読むかを調べるとき。
 - 呼び出し先: `TAB_CUSTOM_VALUES.get()`, `TAB_STATE_FOR_BROWSER.get()`, `this.#windowIds.get()`
 - 参照: `this.#windows`
 
 ## _SessionStore.getObjectTypeForClosedId()
 - 位置: L3933-3939
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 指定の closedId が閉じたウィンドウに一致すれば "window"、そうでなければ "tab" を返す。
+- 触るとき: 閉じた項目の ID から種別を引く呼び出し元(sessions.restore など)の挙動を変えるとき。
 - 呼び出し先: `this.#getClosedWindowDataByClosedId()`
 - 参照: `this.LAST_ACTION_CLOSED_TAB`, `this.LAST_ACTION_CLOSED_WINDOW`
 
 ## _SessionStore.#getClosedWindowDataByClosedId()
 - 位置: L3945-3949
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じたウィンドウ一覧から closedId が一致する最初のデータを返す。無ければ undefined。
+- 触るとき: 閉じたウィンドウを ID で探す箇所の挙動を変えるとき。
 - 呼び出し先: `this.#closedWindows.find()`
 - 参照: `closedData.closedId`
 
 ## _SessionStore.getWindowId()
 - 位置: L3964-3966
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウに振られた SessionStore の ID を返す。未登録なら null を返す。
+- 触るとき: ウィンドウ ID を外部に渡す箇所や、再開時に ID が変わる条件を確認するとき。
 - 呼び出し先: `this.#windowIds.get()`
 
 ## _SessionStore.getWindowById()
 - 位置: L3973-3982
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 開いているブラウザウィンドウの中から SessionStore の ID が一致するものを返す。無ければ undefined。
+- 触るとき: ID からウィンドウを逆引きする呼び出し元の挙動を確認するとき。
 - 呼び出し先: `this.#windowIds.get()`
 - 参照: `this.#browserWindows`
 
 ## _SessionStore.duplicateTab()
 - 位置: L4007-4100
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウに新しいタブを作り、元タブの状態をフラッシュ後にキャッシュから取り込んで、履歴位置を aDelta だけずらし固定化を解いたうえで復元する。背景指定ならフォーカスを移さない。
+- 触るとき: タブの複製で履歴位置の初期値や背景での開き方を変えるとき、またはフラッシュ前の状態が複製に入る経路を調べるとき。
 - 呼び出し先: `Math.max()`, `Math.min()`, `TAB_CUSTOM_VALUES.get()`, `aTab.getAttribute()`, `aWindow.gBrowser.addTrustedTab()`, `aWindow.gBrowser.setDefaultIcon()`, `lazy.TabState.collect()`, `lazy.TabState.copyFromCache()`, `lazy.TabStateFlusher.flush()`, `lazy.TabStateFlusher.flush(browser).then()`, `this.#restoreTab()`, `this.#windowIds.get()`, `uriObj.schemeIs()`
 - 条件付き依存: `if (!aTab || !aTab.documentGlobal)` → `Components.Exception()`
 - 条件付き依存: `if (!this.#windowIds.get(aTab.documentGlobal))` → `Components.Exception()`
@@ -966,8 +966,8 @@ lines: 9611
 
 ## _SessionStore.getWindows()
 - 位置: L4110-4125
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 指定ウィンドウ(省略時は最前面)と同じプライベート状態のブラウザウィンドウ一覧を返す。
+- 触るとき: プライベート・非プライベートで対象を絞る呼び出し元の挙動を確認するとき。
 - 呼び出し先: `Array.from()`, `Array.from(this.#browserWindows).filter()`, `PrivateBrowsingUtils.isWindowPrivate()`
 - 条件付き依存: `if (!aWindowOrOptions)` → `this.#getTopWindow()`
 - 条件付き依存: `if (aWindowOrOptions instanceof Ci.nsIDOMWindow)` → `PrivateBrowsingUtils.isWindowPrivate()`
@@ -977,15 +977,15 @@ lines: 9611
 
 ## _SessionStore.getWindowForTabClosedId()
 - 位置: L4133-4151
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 非プライベートのウィンドウを先に、aIncludePrivate が真ならプライベートも順に調べ、その closedId の閉じたタブを持つウィンドウを返す。無ければ undefined。
+- 触るとき: 閉じたタブの ID から持ち主のウィンドウを探す検索順序を変えるとき。
 - 呼び出し先: `closedTabs.find()`, `this.#getStateForClosedTabsAndClosedGroupTabs()`, `this.#windowIds.get()`, `this.getWindows()`
 - 参照: `closedTabs.length`, `tab.closedId`, `this.#windows`
 
 ## _SessionStore.getLastClosedTabCount()
 - 位置: L4163-4175
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 直近に一緒に閉じたタブ数を、グループ閉鎖数の下限 1 と閉じたタブ数の上限で挟んで返す。未追跡のウィンドウなら例外を投げる。
+- 触るとき: 複数タブを一括で閉じた後の「閉じたタブを開き直す」の件数表示を変えるとき。
 - 呼び出し先: `this.#windowIds.has()`
 - 条件付き依存: `if (this.#windowIds.has(aWindow))` → `Math.min()`
 - 条件付き依存: `if (this.#windowIds.has(aWindow))` → `Math.max()`
@@ -995,16 +995,16 @@ lines: 9611
 
 ## _SessionStore.resetLastClosedTabCount()
 - 位置: L4184-4191
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 追跡中のウィンドウについて、直近の一括閉鎖数を -1、直近のグループ ID を null に戻す。未追跡なら例外。
+- 触るとき: 一括閉鎖の記録をどの操作でリセットするかを確認するとき。
 - 呼び出し先: `this.#windowIds.has()`
 - 条件付き依存: `if (this.#windowIds.has(aWindow))` → `this.#windowIds.get()`
 - 参照: `Components.returnCode`, `Cr.NS_ERROR_INVALID_ARG`, `this.#windows`, `this.#windows[this.#windowIds.get(aWindow)]._lastClosedTabGroupCount`, `this.#windows[this.#windowIds.get(aWindow)].lastClosedTabGroupId`
 
 ## _SessionStore.getClosedTabCountForWindow()
 - 位置: L4198-4215
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 追跡中のウィンドウ、または終了直前のキャッシュにあるウィンドウについて、閉じたタブとグループ内のタブの合計数を返す。どちらにも無ければ例外。
+- 触るとき: ウィンドウ単位の閉じたタブ数の数え方を変えるとき。
 - 呼び出し先: `DyingWindowCache.get()`, `DyingWindowCache.has()`, `this.#getStateForClosedTabsAndClosedGroupTabs()`, `this.#windowIds.has()`
 - 条件付き依存: `if (this.#windowIds.has(aWindow))` → `this.#getStateForClosedTabsAndClosedGroupTabs()`
 - 条件付き依存: `if (this.#windowIds.has(aWindow))` → `this.#windowIds.get()`
@@ -1013,8 +1013,8 @@ lines: 9611
 
 ## _SessionStore.#prepareClosedTabOptions()
 - 位置: L4222-4248
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: オプションに既定値(全ウィンドウ対象、閉じたウィンドウ対象の設定値)を補い、元ウィンドウが無ければ最前面を使い、プライベート指定を決める。
+- 触るとき: 閉じたタブの取得 API に渡すオプションの既定値を変えるとき。
 - 呼び出し先: `Object.assign()`, `sourceOptions.hasOwnProperty()`
 - 条件付き依存: `if (!sourceOptions.sourceWindow)` → `this.#getTopWindow()`
 - 条件付き依存: `if (!sourceOptions.hasOwnProperty("private"))` → `PrivateBrowsingUtils.isWindowPrivate()`
@@ -1022,8 +1022,8 @@ lines: 9611
 
 ## _SessionStore.getClosedTabCount()
 - 位置: L4256-4272
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: オプションに従って、対象ウィンドウ(全ウィンドウか元ウィンドウだけか)の閉じたタブ数と、閉じたウィンドウ由来の数を合計する。
+- 触るとき: 閉じたタブ数の表示や判定に使われる件数の範囲を変えるとき。
 - 呼び出し先: `this.#prepareClosedTabOptions()`
 - 条件付き依存: `if (sourceOptions.closedTabsFromAllWindows)` → `this.getWindows({ private: sourceOptions.private }) .map(win => this.getClosedTabCountForWindow(win)) .reduce()`
 - 条件付き依存: `if (sourceOptions.closedTabsFromAllWindows)` → `this.getWindows({ private: sourceOptions.private }) .map()`
@@ -1035,22 +1035,22 @@ lines: 9611
 
 ## _SessionStore.getClosedTabCountFromClosedWindows()
 - 位置: L4280-4287
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じたウィンドウ一覧の各ウィンドウについて、閉じたタブとグループ内タブの数を合計して返す。
+- 触るとき: 閉じたウィンドウから復元できるタブ数の計算を調べるとき。
 - 呼び出し先: `this.#closedWindows .map()`, `this.#closedWindows .map( winData => this.#getStateForClosedTabsAndClosedGroupTabs(winData).length ) .reduce()`, `this.#getStateForClosedTabsAndClosedGroupTabs()`
 - 参照: `this.#getStateForClosedTabsAndClosedGroupTabs(winData).length`
 
 ## _SessionStore.getClosedTabDataForWindow()
 - 位置: L4297-4302
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 指定ウィンドウの閉じたタブとグループ内タブのデータを、複製して配列で返す。
+- 触るとき: 閉じたタブの一覧を呼び出し元に渡す形式を変えるとき。
 - 呼び出し先: `this.#getClonedDataForWindow()`
 - 参照: `this.#getStateForClosedTabsAndClosedGroupTabs`
 
 ## _SessionStore.getClosedTabData()
 - 位置: L4310-4323
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: オプションに従い、全ウィンドウまたは元ウィンドウの閉じたタブデータを連結して返す。
+- 触るとき: 閉じたタブの一覧の取得範囲を変えるとき。
 - 呼び出し先: `this.#prepareClosedTabOptions()`
 - 条件付き依存: `if (sourceOptions.closedTabsFromAllWindows)` → `this.getWindows()`
 - 条件付き依存: `if (sourceOptions.closedTabsFromAllWindows)` → `closedTabData.push()`
@@ -1061,15 +1061,15 @@ lines: 9611
 
 ## _SessionStore.getClosedTabDataFromClosedWindows()
 - 位置: L4331-4347
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じたウィンドウ一覧の各ウィンドウの閉じたタブを複製し、元の閉じたウィンドウ ID(sourceClosedId)を付けて連結する。並び替えは行わない。
+- 触るとき: 閉じたウィンドウ由来のタブ一覧に元ウィンドウを示す情報を足すとき、または並び順の責務を確認するとき。
 - 呼び出し先: `Cu.cloneInto()`, `closedTabData.push()`, `this.#getStateForClosedTabsAndClosedGroupTabs()`
 - 参照: `tabData.sourceClosedId`, `this.#closedWindows`, `winData.closedId`
 
 ## _SessionStore.getClosedTabGroups()
 - 位置: L4356-4389
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: オプションに従い、対象ウィンドウの閉じたタブグループを複製して返す。閉じたウィンドウ由来のグループには元ウィンドウの closedId を各タブに付ける。
+- 触るとき: 閉じたタブグループの一覧に含める範囲や、元ウィンドウ情報の付け方を変えるとき。
 - 呼び出し先: `this.#prepareClosedTabOptions()`
 - 条件付き依存: `if (sourceOptions.closedTabsFromAllWindows)` → `this.getWindows()`
 - 条件付き依存: `if (sourceOptions.closedTabsFromAllWindows)` → `closedTabGroups.push()`
@@ -1082,16 +1082,16 @@ lines: 9611
 
 ## _SessionStore.getLastClosedTabGroupId()
 - 位置: L4396-4402
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 追跡中のウィンドウについて、直近に閉じたタブグループの ID を返す。未追跡なら例外。
+- 触るとき: 直近に閉じたグループを「開き直す」対象として特定する処理を調べるとき。
 - 呼び出し先: `this.#windowIds.has()`
 - 条件付き依存: `if (this.#windowIds.has(aWindow))` → `this.#windowIds.get()`
 - 参照: `this.#windows`, `this.#windows[this.#windowIds.get(aWindow)].lastClosedTabGroupId`
 
 ## _SessionStore.#getClonedDataForWindow()
 - 位置: L4414-4436
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 追跡中のウィンドウ、無ければ終了直前のキャッシュから状態を取り、selector で選んだ部分を FormData を含めて複製して返す。どちらにも無ければ例外。
+- 触るとき: ウィンドウ状態の一部を外部に渡す際の複製方法や、閉じかけウィンドウの扱いを変えるとき。
 - 呼び出し先: `Cu.cloneInto()`, `DyingWindowCache.get()`, `DyingWindowCache.has()`, `selector()`, `this.#windowIds.has()`
 - 条件付き依存: `if (this.#windowIds.has(aWindow))` → `this.#windowIds.get()`
 - 条件付き依存: `if (!winData && !DyingWindowCache.has(aWindow))` → `Components.Exception()`
@@ -1099,8 +1099,8 @@ lines: 9611
 
 ## _SessionStore.#getStateForClosedTabsAndClosedGroupTabs()
 - 位置: L4449-4485
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: _closedTabs とグループ内タブを closedAt の降順に並べた 1 本の配列にまとめ、各要素に元の位置(_originalStateIndex、グループなら _originalGroupStateIndex)を記録する。
+- 触るとき: 閉じたタブの統一インデックス(closedId 以外の並び)の作り方を変えるとき、または閉じたタブ操作の番号がずれる原因を調べるとき。
 - 条件付き依存: `if ( groupIdx < closedGroups.length && (tabIdx >= closedTabs.length || group?.closedAt > tab?.closedAt) )` → `group.tabs.forEach()`
 - 条件付き依存: `if ( groupIdx < closedGroups.length && (tabIdx >= closedTabs.length || group?.closedAt > tab?.closedAt) )` → `result.push()`
 - 条件付き依存: `if (!( groupIdx < closedGroups.length && (tabIdx >= closedTabs.length || group?.closedAt > tab?.closedAt) ))` → `result.push()`
@@ -1108,14 +1108,14 @@ lines: 9611
 
 ## _SessionStore.#getClosedTabStateFromUnifiedIndex()
 - 位置: L4500-4511
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 統一インデックスの要素から、元の閉じたタブ配列(グループ内なら該当グループの tabs)と、その中の位置を取り出す。
+- 触るとき: 統一インデックスで指した閉じたタブを実際にどの配列から取り除くかを確認するとき。
 - 参照: `sourceWinData._closedTabs`, `sourceWinData.closedGroups`, `sourceWinData.closedGroups[tabState._originalGroupStateIndex].tabs`, `tabState._originalGroupStateIndex`, `tabState._originalStateIndex`
 
 ## _SessionStore.undoCloseTab()
 - 位置: L4524-4600
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 指定した閉じたタブを統一インデックスで取り出して閉じた一覧から外し、ユーザーコンテキストやグループを引き継いだ新しいタブを対象ウィンドウに作って状態を復元する。プライバシーが違う場合は例外。
+- 触るとき: 「閉じたタブを開き直す」の挙動、対象ウィンドウの選び方、プライベートの扱いを変えるとき。
 - 呼び出し先: `Boolean()`, `PrivateBrowsingUtils.isWindowPrivate()`, `tabbrowser.addTrustedTab()`, `tabbrowser.tabGroups.find()`, `this.#cleanupOrphanedClosedGroups()`, `this.#getClosedTabStateFromUnifiedIndex()`, `this.#getPreferredRemoteType()`, `this.#getStateForClosedTabsAndClosedGroupTabs()`, `this.#notifyOfClosedObjectsChange()`, `this.#removeClosedTabData()`, `this.#resolveClosedDataSource()`, `this.#restoreTab()`, `this.#windowIds.get()`
 - 条件付き依存: `if (aTargetWindow && !this.#windowIds.get(aTargetWindow))` → `Components.Exception()`
 - 条件付き依存: `if (!aTargetWindow)` → `this.#getTopWindow()`
@@ -1128,22 +1128,22 @@ lines: 9611
 
 ## _SessionStore.undoClosedTabFromClosedWindow()
 - 位置: L4613-4627
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じたウィンドウ内で closedId が一致する項目を探し、その統一インデックスで undoCloseTab に渡す。見つからなければ例外。
+- 触るとき: 閉じたウィンドウ由来のタブを closedId で開き直す経路を変えるとき。
 - 呼び出し先: `Components.Exception()`, `closedTabs.findIndex()`, `this.#getStateForClosedTabsAndClosedGroupTabs()`, `this.#resolveClosedDataSource()`
 - 条件付き依存: `if (closedIndex >= 0)` → `this.undoCloseTab()`
 - 参照: `Cr.NS_ERROR_INVALID_ARG`, `tabData.closedId`
 
 ## _SessionStore.#getPreferredRemoteType()
 - 位置: L4629-4634
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: URL とユーザーコンテキストから、そのタブが使うべきリモートタイプを ChromeUtils で予測して返す。
+- 触るとき: タブを開き直すときにプロセス切り替えが起きないよう、リモートタイプの予測条件を変えるとき。
 - 呼び出し先: `ChromeUtils.predictRemoteTypeForURI()`
 
 ## _SessionStore.#resolveClosedDataSource()
 - 位置: L4640-4664
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウ、sourceWindow、sourceClosedId、sourceWindowId のいずれかから、対応するウィンドウの状態データを取り出す。どれにも当たらなければ例外。
+- 触るとき: 閉じたタブ API に渡される呼び出し元の指定方法(ウィンドウ、閉じた ID、ウィンドウ ID)を追加・変更するとき。
 - 条件付き依存: `if (aSource instanceof Ci.nsIDOMWindow)` → `this.#getWindowStateData()`
 - 条件付き依存: `if (aSource.sourceWindow instanceof Ci.nsIDOMWindow)` → `this.#getWindowStateData()`
 - 条件付き依存: `if (typeof aSource.sourceClosedId == "number")` → `this.#getClosedWindowDataByClosedId()`
@@ -1156,40 +1156,40 @@ lines: 9611
 
 ## _SessionStore.forgetClosedTab()
 - 位置: L4677-4693
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 指定した位置の閉じたタブを、そのウィンドウの閉じたタブ一覧から削除する。範囲外なら例外を投げる。
+- 触るとき: 閉じたタブを一覧から消す操作で、開き直せなくなる範囲を確認するとき。
 - 呼び出し先: `this.#notifyOfClosedObjectsChange()`, `this.#removeClosedTabData()`, `this.#resolveClosedDataSource()`
 - 条件付き依存: `if (!(aIndex in winData._closedTabs))` → `Components.Exception()`
 - 参照: `Cr.NS_ERROR_INVALID_ARG`, `winData._closedTabs`
 
 ## _SessionStore.forgetClosedTabGroup()
 - 位置: L4707-4728
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 指定 ID の閉じたタブグループを探し、そのタブを閉じた一覧から全部外してからグループ自体を削除する。見つからなければ例外。
+- 触るとき: 閉じたタブグループを一覧から消したとき、中のタブも開き直せなくなるかを確認するとき。
 - 呼び出し先: `this.#notifyOfClosedObjectsChange()`, `this.#removeClosedTabData()`, `this.#resolveClosedDataSource()`, `winData.closedGroups.findIndex()`, `winData.closedGroups.splice()`
 - 条件付き依存: `if (closedGroupIndex < 0)` → `Components.Exception()`
 - 参照: `Cr.NS_ERROR_INVALID_ARG`, `closedGroup.tabs`, `closedGroup.tabs.length`, `closedTabGroup.id`, `winData.closedGroups`
 
 ## _SessionStore.forgetSavedTabGroup()
 - 位置: L4736-4766
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 保存済みタブグループを ID で探して削除し、そのタブを閉じた一覧からも外す。各ウィンドウの直近グループ参照は、一致すれば解除する。見つからなければ例外。
+- 触るとき: 保存済みタブグループを忘れる操作で残る参照や通知の範囲を変えるとき。
 - 呼び出し先: `Object.values()`, `this.#notifyOfClosedObjectsChange()`, `this.#notifyOfSavedTabGroupsChange()`, `this.#removeClosedTabData()`, `this.#savedGroups.findIndex()`, `this.#savedGroups.splice()`
 - 条件付き依存: `if (savedGroupIndex < 0)` → `Components.Exception()`
 - 参照: `Cr.NS_ERROR_INVALID_ARG`, `savedGroup.tabs`, `savedGroup.tabs.length`, `savedTabGroup.id`, `this.#closedObjectsChanged`, `this.#closedWindows`, `this.#savedGroups`, `this.#windows`, `winData._lastClosedTabGroupCount`, `winData.lastClosedTabGroupId`
 
 ## _SessionStore.forgetClosedWindowById()
 - 位置: L4777-4789
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じたウィンドウ一覧から closedId が一致する位置を探し、forgetClosedWindow に委ねる。見つからなければ例外。
+- 触るとき: 閉じたウィンドウを ID で忘れる経路を追うとき。
 - 呼び出し先: `this.#closedWindows.findIndex()`, `this.forgetClosedWindow()`
 - 条件付き依存: `if (closedIndex < 0)` → `Components.Exception()`
 - 参照: `Cr.NS_ERROR_INVALID_ARG`, `windowState.closedId`
 
 ## _SessionStore.forgetClosedTabById()
 - 位置: L4804-4853
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 渡された呼び出し元があればそのウィンドウだけ、なければ開いているウィンドウ(includePrivate が偽ならプライベートを除く)を順に調べ、closedId が一致する閉じたタブを削除する。どこにも無ければ例外。
+- 触るとき: 閉じたタブを ID で忘れるときの検索範囲(プライベートを含むかどうか)を変えるとき。
 - 呼び出し先: `Components.Exception()`, `closedTabs.find()`, `this.#getStateForClosedTabsAndClosedGroupTabs()`
 - 条件付き依存: `if ( aSourceOptions instanceof Ci.nsIDOMWindow || "sourceWindowId" in aSourceOptions || "sourceClosedId" in aSourceOptions )` → `this.#resolveClosedDataSource()`
 - 条件付き依存: `if (!( aSourceOptions instanceof Ci.nsIDOMWindow || "sourceWindowId" in aSourceOptions || "sourceClosedId" in aSourceOptions ))` → `Array.from()`
@@ -1204,42 +1204,42 @@ lines: 9611
 
 ## _SessionStore.getClosedWindowCount()
 - 位置: L4859-4861
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じたウィンドウ一覧の件数を返す。
+- 触るとき: 開き直せる閉じたウィンドウがあるかの判定を見るとき。
 - 参照: `this.#closedWindows.length`
 
 ## _SessionStore.getClosedWindowData()
 - 位置: L4866-4872
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じたウィンドウ一覧を複製し、各ウィンドウのグループを概要情報だけに切り詰めて返す。
+- 触るとき: 外部に渡す閉じたウィンドウの情報の範囲を変えるとき。
 - 呼び出し先: `Cu.cloneInto()`, `this.#trimSavedTabGroupMetadataInClosedWindow()`
 - 参照: `this.#closedWindows`
 
 ## _SessionStore.#trimSavedTabGroupMetadataInClosedWindow()
 - 位置: L4884-4889
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じたウィンドウの groups を、TabGroupState の abbreviated 形式(タブの本体を除いた要約)に置き換える。
+- 触るとき: 閉じたウィンドウの情報に含めるグループの項目を増減するとき。
 - 呼び出し先: `Cu.cloneInto()`, `closedWinData.groups?.map()`, `lazy.TabGroupState.abbreviated()`
 - 参照: `closedWinData.groups`
 
 ## _SessionStore.maybeDontRestoreTabs()
 - 位置: L4898-4901
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 指定ウィンドウに _maybeDontRestoreTabs を立て、次回の起動時に前回セッションのタブを復元しないようにする。
+- 触るとき: ユーザーが閉じたウィンドウのタブが次回起動時に戻らないようにする経路を追うとき。
 - 呼び出し先: `this.#windowIds.get()`
 - 参照: `this.#windows`, `this.#windows[this.#windowIds.get(aWindow)]._maybeDontRestoreTabs`
 
 ## _SessionStore.#isLastRestorableWindow()
 - 位置: L4903-4909
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 非プライベートの開いているウィンドウがちょうど 1 つで、閉じたウィンドウに復元対象(_shouldRestore)が無いときに真を返す。
+- 触るとき: 最後のウィンドウを閉じたときに閉じたウィンドウとして保存するかを判定する条件を変えるとき。
 - 呼び出し先: `Object.values()`, `Object.values(this.#windows).filter()`, `this.#closedWindows.some()`
 - 参照: `Object.values(this.#windows).filter(winData => !winData.isPrivate) .length`, `this.#windows`, `win._shouldRestore`, `winData.isPrivate`
 
 ## _SessionStore.undoCloseWindow()
 - 位置: L4922-4957
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じたウィンドウを一覧から外して開き直し、中の保存済みタブグループを開いたグループに変換して保存済みから消す。ウィンドウ表示後に undo_close として状態を復元する。
+- 触るとき: 閉じたウィンドウを開き直す挙動や、保存済みタブグループが戻る際の移動の扱いを変えるとき。
 - 呼び出し先: `WINDOW_SHOWING_PROMISES.get()`, `WINDOW_SHOWING_PROMISES.get(window).promise.then()`, `this.#notifyOfClosedObjectsChange()`, `this.#openWindowWithState()`, `this.#removeClosedWindow()`, `this.#restoreWindows()`, `this.#trimSavedTabGroupMetadataInClosedWindow()`, `this.getSavedTabGroup()`
 - 条件付き依存: `if (!(aIndex in this.#closedWindows))` → `Components.Exception()`
 - 条件付き依存: `if (this.getSavedTabGroup(tabGroup.id))` → `this.forgetSavedTabGroup()`
@@ -1247,16 +1247,16 @@ lines: 9611
 
 ## _SessionStore.forgetClosedWindow()
 - 位置: L4967-4984
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 指定位置(省略時は最新)の閉じたウィンドウを一覧から削除し、保存対象からも外す。範囲外なら例外。
+- 触るとき: 閉じたウィンドウを一覧から消す操作の副作用を確認するとき。
 - 呼び出し先: `this.#notifyOfClosedObjectsChange()`, `this.#removeClosedWindow()`, `this.#saveableClosedWindowData.delete()`
 - 条件付き依存: `if (!(aIndex in this.#closedWindows))` → `Components.Exception()`
 - 参照: `Cr.NS_ERROR_INVALID_ARG`, `this.#closedWindows`
 
 ## _SessionStore.getCustomWindowValue()
 - 位置: L4995-5010
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 追跡中のウィンドウ、または終了直前のキャッシュにあるウィンドウの extData から指定キーの値を返す。無ければ空文字列。どちらにも無ければ例外。
+- 触るとき: 拡張機能などがウィンドウに保存した値を読む経路で、キーの不一致や空文字の扱いを確認するとき。
 - 呼び出し先: `Components.Exception()`, `DyingWindowCache.has()`, `this.#windowIds.has()`
 - 条件付き依存: `if (this.#windowIds.has(aWindow))` → `this.#windowIds.get()`
 - 条件付き依存: `if (DyingWindowCache.has(aWindow))` → `DyingWindowCache.get()`
@@ -1264,8 +1264,8 @@ lines: 9611
 
 ## _SessionStore.setCustomWindowValue()
 - 位置: L5024-5040
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 文字列の値だけを受け付け、追跡中のウィンドウの extData に保存して状態の保存を遅延予約する。型が違えば TypeError、未追跡なら例外。
+- 触るとき: ウィンドウ単位のカスタム値の保存条件や、保存タイミングを変えるとき。
 - 呼び出し先: `this.#saveStateDelayed()`, `this.#windowIds.get()`, `this.#windowIds.has()`
 - 条件付き依存: `if (!this.#windowIds.has(aWindow))` → `Components.Exception()`
 - 条件付き依存: `if (!this.#windows[this.#windowIds.get(aWindow)].extData)` → `this.#windowIds.get()`
@@ -1273,70 +1273,70 @@ lines: 9611
 
 ## _SessionStore.deleteCustomWindowValue()
 - 位置: L5050-5059
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウの extData から指定キーを消し、値の有無に関わらず状態の保存を遅延予約する。
+- 触るとき: ウィンドウ単位のカスタム値を削除したときに保存が走るかを確認するとき。
 - 呼び出し先: `this.#saveStateDelayed()`, `this.#windowIds.get()`
 - 条件付き依存: `if ( this.#windowIds.get(aWindow) && this.#windows[this.#windowIds.get(aWindow)].extData && this.#windows[this.#windowIds.get(aWindow)].extData[aKey] )` → `this.#windowIds.get()`
 - 参照: `this.#windows`, `this.#windows[this.#windowIds.get(aWindow)].extData`
 
 ## _SessionStore.getCustomTabValue()
 - 位置: L5069-5071
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブのカスタム値から指定キーの値を返す。無ければ空文字列。
+- 触るとき: タブ単位のカスタム値の読み出し方を確認するとき。
 - 呼び出し先: `TAB_CUSTOM_VALUES.get()`
 
 ## _SessionStore.setCustomTabValue()
 - 位置: L5084-5097
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 文字列の値だけを受け付け、タブのカスタム値の辞書を作ってから値を書き込み、タブのあるウィンドウの保存を遅延予約する。型が違えば TypeError。
+- 触るとき: タブ単位のカスタム値が未復元タブでも失われないかを確認するとき。
 - 呼び出し先: `TAB_CUSTOM_VALUES.get()`, `TAB_CUSTOM_VALUES.has()`, `this.#saveStateDelayed()`
 - 条件付き依存: `if (!TAB_CUSTOM_VALUES.has(aTab))` → `TAB_CUSTOM_VALUES.set()`
 - 参照: `aTab.documentGlobal`
 
 ## _SessionStore.deleteCustomTabValue()
 - 位置: L5107-5113
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブのカスタム値に指定キーがあれば削除し、保存を遅延予約する。
+- 触るとき: タブ単位のカスタム値の削除で保存が走る条件を変えるとき。
 - 呼び出し先: `TAB_CUSTOM_VALUES.get()`
 - 条件付き依存: `if (state && aKey in state)` → `this.#saveStateDelayed()`
 - 参照: `aTab.documentGlobal`
 
 ## _SessionStore.#moveCustomTabValue()
 - 位置: L5119-5128
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 移動元タブのカスタム値の辞書を移動先タブへ付け替え、移動元の登録を外す。保存の予約は呼び出し元が行う。
+- 触るとき: タブをウィンドウ間で移動したときにカスタム値が引き継がれるかを確認するとき。
 - 呼び出し先: `TAB_CUSTOM_VALUES.get()`
 - 条件付き依存: `if (state)` → `TAB_CUSTOM_VALUES.set()`
 - 条件付き依存: `if (state)` → `TAB_CUSTOM_VALUES.delete()`
 
 ## _SessionStore.getLazyTabValue()
 - 位置: L5139-5141
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 遅延タブ(まだ browser が作られていないタブ)の遅延状態から指定キーの値を返す。遅延状態が無ければ undefined。
+- 触るとき: 遅延タブの URL やタイトルを読み取る経路を変えるとき。
 - 呼び出し先: `TAB_LAZY_STATES.get()`
 
 ## _SessionStore.getCustomGlobalValue()
 - 位置: L5149-5151
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: セッション全体のグローバル状態から指定キーの値を返す。
+- 触るとき: セッション全体で保存する値の読み出しを確認するとき。
 - 呼び出し先: `this.#globalState.get()`
 
 ## _SessionStore.setCustomGlobalValue()
 - 位置: L5162-5169
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 文字列の値だけを受け付け、グローバル状態に保存して状態の保存を遅延予約する。型が違えば TypeError。
+- 触るとき: セッション全体の値の保存条件を変えるとき。
 - 呼び出し先: `this.#globalState.set()`, `this.#saveStateDelayed()`
 
 ## _SessionStore.deleteCustomGlobalValue()
 - 位置: L5177-5180
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: グローバル状態から指定キーを削除し、状態の保存を遅延予約する。
+- 触るとき: グローバル値の削除後に保存が反映されるかを確認するとき。
 - 呼び出し先: `this.#globalState.delete()`, `this.#saveStateDelayed()`
 
 ## _SessionStore.undoCloseById()
 - 位置: L5197-5228
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: closedId が閉じたウィンドウに一致すればそのウィンドウを開き直し、そうでなければ開いているウィンドウの閉じたタブ一覧から探して開き直す。どちらにも無ければ undefined を返す。
+- 触るとき: closedId 一つで閉じたタブかウィンドウを開き直す共通の入口の挙動を変えるとき。
 - 呼び出し先: `PrivateBrowsingUtils.isWindowPrivate()`, `Services.wm.getEnumerator()`, `this.#windowIds.get()`
 - 条件付き依存: `if (this.#closedWindows[i].closedId == aClosedId)` → `this.undoCloseWindow()`
 - 条件付き依存: `if (windowState)` → `this.#getStateForClosedTabsAndClosedGroupTabs()`
@@ -1346,8 +1346,8 @@ lines: 9611
 
 ## _SessionStore.#updateTabLabelAndIcon()
 - 位置: L5240-5285
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: カスタマイズモード中は何もしない。現在の履歴エントリのタイトルとアイコンをタブに設定し、読み込んだアイコンは一度だけ使ってキャッシュから消す。about:blank の最初の読み込みではアイコンを変えない。
+- 触るとき: 復元直後のタブのタイトルやアイコンがちらつく問題、または about:blank の扱いを調べるとき。
 - 呼び出し先: `tab.hasAttribute()`
 - 条件付き依存: `if (!tabData)` → `lazy.TabState.collect()`
 - 条件付き依存: `if (!tabData)` → `TAB_CUSTOM_VALUES.get()`
@@ -1359,8 +1359,8 @@ lines: 9611
 
 ## _SessionStore.#forgetTabsWithUserContextId()
 - 位置: L5288-5331
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 指定のユーザーコンテキスト ID を持つ閉じたタブを、開いているウィンドウと閉じたウィンドウの両方から削除する。閉じたウィンドウは残りのタブが無くなったら一覧から外す。
+- 触るとき: コンテナ(ユーザーコンテキスト)を削除したときに閉じたタブが残らないかを確認するとき。
 - 呼び出し先: `Services.wm.getEnumerator()`, `clearClosedTabs()`, `this.#notifyOfClosedObjectsChange()`, `this.#windowIds.get()`, `windowState.tabs.filter()`
 - 条件付き依存: `if (windowState)` → `clearClosedTabs()`
 - 条件付き依存: `if (!windowState.tabs.length)` → `this.#removeClosedWindow()`
@@ -1370,8 +1370,8 @@ lines: 9611
 
 ## clearClosedTabs()
 - 位置: L5289-5303
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 指定ウィンドウの閉じたタブのうち、ユーザーコンテキスト ID が一致するものを後ろから順に削除する。
+- 触るとき: ユーザーコンテキスト単位で閉じたタブを消す範囲を変えるとき。
 - 呼び出し先: `indexes.reverse()`, `this.#removeClosedTabData()`, `windowState._closedTabs.forEach()`
 - 条件付き依存: `if (closedTab.state.userContextId == userContextId)` → `indexes.push()`
 - 参照: `closedTab.state.userContextId`, `windowState._closedTabs`
