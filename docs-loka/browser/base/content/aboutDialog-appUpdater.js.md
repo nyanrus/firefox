@@ -5,19 +5,19 @@ source-hash: 879b827299c0231c08f1a4fd41750ad14712563c
 lines: 323
 
 ## <module>
-- 役割: (未記入)
+- 役割: about:dialog と設定画面の「バージョン情報」で使う更新 UI の制御。AppUpdater の状態を受けて、更新パネルの切り替えと再起動処理を行う。
 - 呼び出し先: `ChromeUtils.defineESModuleGetters()`, `ChromeUtils.importESModule()`, `XPCOMUtils.defineLazyServiceGetter()`
 
 ## onUnload()
 - 位置: L31-36
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ページを閉じるとき、更新 UI の AppUpdater を破棄して参照を外す。
+- 触るとき: ダイアログを閉じた後に更新チェックが動き続けるときに見る。
 - 条件付き依存: `if (gAppUpdater)` → `gAppUpdater.destroy()`
 
 ## appUpdater()
 - 位置: L38-76
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: AppUpdater を作って状態リスナーを登録し、手動更新リンクを設定してから更新チェックを始める。
+- 触るとき: 更新 UI の初期化の流れや、オプションの受け取り方を変えるとき。
 - 呼び出し先: `Services.strings.createBundle()`, `document.getElementById()`, `this._appUpdater.addListener()`, `this._appUpdater.check()`
 - 条件付き依存: `if (this.updateDeck)` → `Services.urlFormatter.formatURLPref()`
 - 条件付き依存: `if (this.updateDeck)` → `document.querySelectorAll()`
@@ -30,41 +30,41 @@ lines: 323
 
 ## this._appUpdateListener()
 - 位置: L41-43
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: AppUpdater の状態通知を _onAppUpdateStatus へ転送する。
+- 触るとき: 状態通知の受け口を変えるとき。
 - 呼び出し先: `this._onAppUpdateStatus()`
 
 ## destroy()
 - 位置: L79-84
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 進行中のチェックを止め、最小表示時間のタイマーを解除する。
+- 触るとき: 更新 UI を破棄した後にタイマーが残る問題を調べるとき。
 - 呼び出し先: `this.stopCurrentCheck()`
 - 条件付き依存: `if (this.updatingMinDisplayTimerId)` → `clearTimeout()`
 - 参照: `this.updatingMinDisplayTimerId`
 
 ## stopCurrentCheck()
 - 位置: L86-89
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: リスナーを外して AppUpdater の確認を止める。
+- 触るとき: 更新チェックを途中で止める経路を調べるとき。
 - 呼び出し先: `this._appUpdater.removeListener()`, `this._appUpdater.stop()`
 - 参照: `this._appUpdateListener`
 
 ## update()
 - 位置: L91-93
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: AppUpdater が保持している現在の更新情報を返す。
+- 触るとき: 更新パネルで表示するバージョン等を参照するとき。
 - 参照: `this._appUpdater.update`
 
 ## selectedPanel()
 - 位置: L95-97
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 更新デッキで今選ばれているパネルを返す。
+- 触るとき: どの更新状態のパネルが表示中かを確認するとき。
 - 参照: `this.updateDeck?.selectedPanel`
 
 ## _onAppUpdateStatus()
 - 位置: L99-199
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: AppUpdater の各ステータスを、表示すべき更新パネルに対応づける。ダウンロード進捗も表示に反映する。
+- 触るとき: 更新状態ごとの表示を追加・変更するとき。
 - 呼び出し先: `Services.policies.isAllowed()`, `document.getElementById()`, `setTimeout()`, `this.checkingForUpdatesDelayPromise.then()`, `this.selectPanel()`
 - 条件付き依存: `if (!args.length)` → `DownloadUtils.getTransferTotal()`
 - 条件付き依存: `if (downloadStatus)` → `document.l10n.setArgs()`
@@ -81,8 +81,8 @@ lines: 323
 
 ## selectPanel()
 - 位置: L207-264
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 指定パネルを表示し、アイコンとボタンの文言を更新する。ダウンロード時はバージョンと nightly のビルド日を付ける。カスタムの selectPanel があればそちらへ渡す。
+- 触るとき: 更新パネルの表示やボタンのラベル、自動フォーカスを変えるとき。
 - 呼び出し先: `document.getElementById()`, `panel.querySelector()`
 - 条件付き依存: `if (aChildID == "downloadAndInstall")` → `/a\d+$/.test()`
 - 条件付き依存: `if (/a\d+$/.test(updateVersion))` → `buildID.slice()`
@@ -97,14 +97,14 @@ lines: 323
 
 ## checkForUpdates()
 - 位置: L269-271
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: AppUpdater に更新チェックを依頼する。
+- 触るとき: 手動の再チェック操作の経路を調べるとき。
 - 呼び出し先: `this._appUpdater.check()`
 
 ## buttonRestartAfterDownload()
 - 位置: L277-314
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 更新適用の再起動ボタンの処理。終了要求を各ウィンドウに通知し、中断されたら適用パネルに戻し、無ければ再起動する。セーフモードでは再起動もセーフモードで行う。
+- 触るとき: 更新後の再起動の挙動や中断時の扱いを変えるとき。
 - 呼び出し先: `Cc["@mozilla.org/supports-PRBool;1"].createInstance()`, `Services.obs.notifyObservers()`, `Services.startup.quit()`, `gAppUpdater.selectPanel()`
 - 条件付き依存: `if (cancelQuit.data)` → `gAppUpdater.selectPanel()`
 - 条件付き依存: `if (Services.appinfo.inSafeMode)` → `Services.startup.restartInSafeMode()`
@@ -114,6 +114,6 @@ lines: 323
 
 ## startDownload()
 - 位置: L319-321
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: AppUpdater に更新のダウンロードを許可する。
+- 触るとき: ダウンロード開始ボタンの経路を調べるとき。
 - 呼び出し先: `this._appUpdater.allowUpdateDownload()`

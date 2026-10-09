@@ -5,13 +5,13 @@ source-hash: 9ce7aa058ce2156bcb213984416282da05d7e69b
 lines: 204
 
 ## <module>
-- 役割: (未記入)
+- 役割: about:dialog(バージョン情報)のスクリプト。更新 UI の読み込みも行う。
 - 呼び出し先: `ChromeUtils.defineESModuleGetters()`, `ChromeUtils.importESModule()`, `init()`
 
 ## init()
 - 位置: L27-201
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: バージョン表示、配布元情報、リリースノートのリンク、チャンネル表示、寄付説明の切り替え、更新ボタンの配線を初期化する。
+- 触るとき: バージョン情報ダイアログの表示項目を変える、または更新ボタンの動作を変えるとき。
 - 呼び出し先: `/a\d+$/.test()`, `Services.prefs.getBoolPref()`, `Services.prefs.getDefaultBranch()`, `Services.prefs.getPrefType()`, `Services.sysinfo.get()`, `["x86", "x86-64"].includes()`, `[...new Set(describedBy)].join()`, `defaults.getCharPref()`, `defaults.getStringPref()`, `document .getElementById()`, `document .getElementById("aboutDialogEscapeKey") .addEventListener()`, `document.documentElement .getAttribute()`, `document.documentElement .getAttribute("aria-describedby") .split()`, `document.documentElement .getAttribute("aria-describedby") .split(" ") .map()`, `document.documentElement.setAttribute()`, `document.getElementById()`, `document.l10n.setAttributes()`, `versionIdMap.get()`, `window.close()`
 - 条件付き依存: `if (distroId && distroAbout)` → `document.getElementById()`
 - 条件付き依存: `if (distroId && distroAbout)` → `defaults.getCharPref()`

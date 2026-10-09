@@ -5,72 +5,72 @@ source-hash: e3694b8418faea9b38bf4304dea1764132c7c07c
 lines: 384
 
 ## <module>
-- 役割: (未記入)
+- 役割: コンテンツから来た JavaScript のプロンプトを、タブ・コンテンツ・ウィンドウのいずれかの形式で親側に表示するアクター。
 - 呼び出し先: `ChromeUtils.defineESModuleGetters()`, `ChromeUtils.defineLazyGetter()`
 
 ## PromptParent.didDestroy()
 - 位置: L29-33
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: アクター破棄時に、この文脈で開いているプロンプトを強制的に閉じる。
+- 触るとき: タブやフレームのクラッシュ時の後始末を変えるとき。
 - 呼び出し先: `this.forceClosePrompts()`
 
 ## PromptParent.registerDialog()
 - 位置: L46-54
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: BrowsingContext ごとに、ID 付きでダイアログを記録する。
+- 触るとき: 開いているダイアログの追跡方法を変えるとき。
 - 呼び出し先: `dialogs.set()`, `gBrowserDialogs.get()`
 - 条件付き依存: `if (!dialogs)` → `gBrowserDialogs.set()`
 - 参照: `this.browsingContext`
 
 ## PromptParent.unregisterPrompt()
 - 位置: L64-67
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 記録から指定 ID のダイアログを外す。
+- 触るとき: 閉じた後の参照の解放を変えるとき。
 - 呼び出し先: `dialogs?.delete()`, `gBrowserDialogs.get()`
 - 参照: `this.browsingContext`
 
 ## PromptParent.forceClosePrompts()
 - 位置: L72-78
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 記録中の全ダイアログの abort を呼び、閉じる。
+- 触るとき: 強制的に閉じる条件を変えるとき。
 - 呼び出し先: `dialog?.abort()`, `gBrowserDialogs.get()`
 - 参照: `this.browsingContext`
 
 ## PromptParent.isAboutAddonsOptionsPage()
 - 位置: L80-93
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 文脈が about:addons の拡張機能オプション画面かを判定する。
+- 触るとき: アドオン設定画面からのプロンプトの扱いを変えるとき。
 - 参照: `embedderWindowGlobal.documentPrincipal.isSystemPrincipal`, `embedderWindowGlobal.documentURI.spec`
 
 ## PromptParent.#isNestedInSidebarBrowser()
 - 位置: L95-99
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ブラウザがサイドバーの中にあるかを判定する。
+- 触るとき: サイドバー内のプロンプトの判定を変えるとき。
 - 参照: `browser?.documentGlobal?.browsingContext.embedderElement?.id`
 
 ## PromptParent.isEmbeddedInSidebar()
 - 位置: L103-116
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: サイドバー内にあるブラウザのうち、拡張機能用のものを除いて真を返す。
+- 触るとき: サイドバーでプロンプトを表示する対象を変えるとき。
 - 呼び出し先: `browser.getAttribute()`, `this.#isNestedInSidebarBrowser()`
 
 ## PromptParent.shouldShowPromptOnSidebarBrowser()
 - 位置: L121-127
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: サイドバー内のブラウザ、または AI チャットボットのブラウザであれば、サイドバーのブラウザ側で表示すべきかを返す。
+- 触るとき: チャットボットからのプロンプトの表示先を変えるとき。
 - 呼び出し先: `browser.getAttribute()`, `this.#isNestedInSidebarBrowser()`, `this.isEmbeddedInSidebar()`
 
 ## PromptParent.receiveMessage()
 - 位置: L129-140
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: Prompt:Open を、文脈がアクティブなタブの時だけ openPromptWithTabDialogBox に渡す。
+- 触るとき: プロンプトを受け付ける条件を変えるとき。
 - 呼び出し先: `this.openPromptWithTabDialogBox()`
 - 参照: `message.data`, `message.name`, `this.windowContext.isActiveInTab`
 
 ## PromptParent.openPromptWithTabDialogBox()
 - 位置: async L153-330
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 表示先を決めてモーダル状態にし、タブかコンテンツのダイアログ、またはウィンドウとして開く。閉じるまで待ち、結果を引数に戻す。認証の偽装対策の表示もここで行う。
+- 触るとき: プロンプトの表示形式や閉じ方、認証の表示を変えるとき。
 - 呼び出し先: `lazy.PromptUtils.propBagToObject()`, `this.isAboutAddonsOptionsPage()`, `this.shouldShowPromptOnSidebarBrowser()`
 - 条件付き依存: `if (browsingContext.embedderElement)` → `browsingContext.embedderElement.enterModalState()`
 - 条件付き依存: `if (browsingContext.embedderElement)` → `lazy.PromptUtils.fireDialogEvent()`
@@ -95,15 +95,15 @@ lines: 384
 
 ## PromptParent.getOpenEventDetail()
 - 位置: L332-343
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: コンテンツ形式のプロンプトの時だけ、開く際の詳細情報を返す。
+- 触るとき: DOMWillOpenModalDialog に渡す情報を変えるとき。
 - 参照: `Services.prompt.MODAL_TYPE_CONTENT`, `args.inPermitUnload`, `args.modalType`, `args.promptPrincipal`
 - XPCOM: `Services.prompt`
 
 ## PromptParent.addTabSwitchCheckboxToArgs()
 - 位置: L354-382
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: コンテンツのプロンプトで、タブの切り替えを許可するチェックボックスとその文言を引数に加える。
+- 触るとき: タブ切り替えの許可表示を変えるとき。
 - 条件付き依存: `if ( allowTabFocusByPromptPrincipal && args.modalType === Services.prompt.MODAL_TYPE_CONTENT )` → `lazy.gTabBrowserLocalization.formatMessagesSync()`
 - 条件付き依存: `if ( allowTabFocusByPromptPrincipal && args.modalType === Services.prompt.MODAL_TYPE_CONTENT )` → `allowFocusMsg.attributes.find()`
 - 参照: `Services.prompt.MODAL_TYPE_CONTENT`, `a.name`, `allowTabFocusByPromptPrincipal.URI.displayHostPort`, `allowTabFocusByPromptPrincipal.URI.prePath`, `allowTabFocusByPromptPrincipal.addonPolicy?.name`, `args.allowFocusCheckbox`, `args.checkLabel`, `args.modalType`, `dialogBox._allowTabFocusByPromptPrincipal`, `labelAttr.value`
