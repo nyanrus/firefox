@@ -164,10 +164,33 @@ def format_text(hit, summary):
     return out
 
 
+EXAMPLES = """examples:
+  idx.py callers -w addTabGroup                 who calls addTabGroup
+  idx.py callers -w addTabGroup browser/base    ... only under browser/base
+  idx.py callees -w handle_drop                 what handle_drop calls
+  idx.py refs -w tabGroupMenu -l                files that call or read it
+  idx.py fn -s 'ContextMenu' browser/actors     find functions, with roles
+  idx.py uses -w nsIDragService                 users of an XPCOM interface
+  idx.py callers -w foo --json | jq -r .path    one JSON object per match
+"""
+
+
+def path_to_glob(path):
+    path = path.removeprefix("./").removeprefix("docs-loka/").rstrip("/")
+    return path if any(c in path for c in "*?[") else path + "*"
+
+
 def main(argv=None):
-    p = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    p = argparse.ArgumentParser(
+        description=__doc__.split("\n\n")[0],
+        epilog=EXAMPLES,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     p.add_argument("command", choices=["callers", "callees", "refs", "fn", "uses"])
     p.add_argument("pattern")
+    p.add_argument("paths", nargs="*", metavar="PATH",
+                   help="only source paths under PATH (a prefix or a glob), "
+                        "like rg's PATH; docs-loka/ prefixes are ignored")
     p.add_argument("-i", "--ignore-case", action="store_true")
     p.add_argument("-F", "--fixed", action="store_true",
                    help="treat PATTERN as a literal string")
@@ -175,6 +198,8 @@ def main(argv=None):
                    help="match whole words only")
     p.add_argument("-g", "--glob", action="append", default=[],
                    help="only source paths matching GLOB (repeatable)")
+    p.add_argument("-m", "--max-count", type=int, default=0, metavar="N",
+                   help="stop after N matches")
     p.add_argument("-l", "--files-with-matches", action="store_true")
     p.add_argument("-c", "--count", action="store_true",
                    help="print the number of matches per file")
@@ -186,10 +211,14 @@ def main(argv=None):
     args = p.parse_args(argv)
 
     rx = compile_pattern(args)
+    globs = args.glob + [path_to_glob(x) for x in args.paths]
     hits = []
-    for entry in iter_entries(args.root, args.glob):
+    for entry in iter_entries(args.root, globs):
         for kind, text, cond in matches(args, entry, rx):
             hits.append({"entry": entry, "kind": kind, "match": text, "condition": cond})
+        if args.max_count and len(hits) >= args.max_count:
+            hits = hits[: args.max_count]
+            break
 
     if args.files_with_matches:
         for path in sorted({h["entry"]["path"] for h in hits}):
