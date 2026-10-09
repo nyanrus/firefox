@@ -81,32 +81,32 @@ lines: 9611
 
 ## _SessionStore.promiseAllWindowsRestored()
 - 位置: L684-686
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 全ウィンドウの復元完了を表す Promise を返す getter。
+- 触るとき: 起動後の処理を全ウィンドウ復元の後に行わせたい呼び出し元の待ち合わせを追うとき。
 - 参照: `this.#deferredAllWindowsRestored.promise`
 
 ## _SessionStore.promiseInitialized()
 - 位置: L698-700
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: SessionStore の初期化完了を表す Promise を返す getter。
+- 触るとき: 初期化前に SessionStore を参照してしまう呼び出し元がないか確認するとき。
 - 参照: `this.#deferredInitialized.promise`
 
 ## _SessionStore.canRestoreLastSession()
 - 位置: L708-710
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 前回セッションが復元可能かを LastSession.canRestore から返す。
+- 触るとき: 「前回のセッションを復元」を有効にするかどうかの判定元を調べるとき。
 - 参照: `LastSession.canRestore`
 
 ## _SessionStore.canRestoreLastSession()
 - 位置: L712-716
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: false を代入すると LastSession を消去して前回セッションを破棄する。true の代入は何もしない。
+- 触るとき: 前回セッションを明示的に捨てる呼び出し元を追うとき。
 - 条件付き依存: `if (!val)` → `LastSession.clear()`
 
 ## _SessionStore.lastClosedObjectType()
 - 位置: L723-743
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じたウィンドウのほうが閉じたタブより新しければ "window"、そうでなければ "tab" を返す。
+- 触るとき: sessions.restore WebExtensions API が返す直近に閉じた項目の種別を変えるとき、または判定の時刻比較を確認するとき。
 - 条件付き依存: `if (this.#closedWindows.length)` → `Services.wm.getEnumerator()`
 - 条件付き依存: `if (this.#closedWindows.length)` → `this.#windowIds.get()`
 - 条件付き依存: `if (windowState && windowState._closedTabs[0])` → `tabTimestamps.push()`
@@ -116,24 +116,24 @@ lines: 9611
 
 ## _SessionStore.willAutoRestore()
 - 位置: L749-756
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 次回起動時に前回セッションが自動復元されるかを、非永続プライベートブラウズで resume_session_once が立つか startup.page が RESUME_SESSION の場合に判定する。
+- 触るとき: 次回起動時の自動復元条件を変えるとき、または起動ページ設定と resume_session_once の関係を調べるとき。
 - 呼び出し先: `Services.prefs.getBoolPref()`, `Services.prefs.getIntPref()`
 - 参照: `PrivateBrowsingUtils.permanentPrivateBrowsing`
 - XPCOM: `Services.prefs`
 
 ## _SessionStore.init()
 - 位置: L761-779
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 起動時に一度だけ呼ばれ、必要な topic の Observer を登録し、設定を読み込む。二度目の呼び出しは例外になる。
+- 触るとき: SessionStore の起動順序を変えるとき、または init より前に通知を受けてしまう経路を調べるとき。
 - 呼び出し先: `Glean.sessionRestore.startupTimeline.sessionRestoreInitialized.set()`, `Services.obs.addObserver()`, `Services.telemetry.msSinceProcessStart()`, `this.#initPrefs()`, `this.#log.debug()`, `this.promiseAllWindowsRestored.finally()`
 - 参照: `this.#initialized`
 - XPCOM: `Services.obs` / `Services.telemetry`
 
 ## _SessionStore.#initSession()
 - 位置: L784-965
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: SessionStartup の状態から復元対象を決める。遅延復元ではピン留めタブと保存済みグループだけを残し、クラッシュ後は about:sessionrestore か about:welcomeback に差し替え、通常復元では明示的に閉じたタブを除いて復元用の state を返す。
+- 触るとき: 起動時の復元方式(通常・遅延・クラッシュ後の確認画面)を変えるとき、または起動時の判定結果が decision として記録される経路を追うとき。
 - 呼び出し先: `Glean.sessionRestore.startupInitSession.start()`, `Glean.sessionRestore.startupInitSession.stopAndAccumulate()`, `ss.willRestore()`, `this.#log.debug()`, `this.#prefBranch.getBoolPref()`, `this.#recordSessionDecision()`
 - 条件付き依存: `if (state)` → `this.#initSplitViewIds()`
 - 条件付き依存: `if (ss.sessionType == ss.DEFER_SESSION)` → `this.#prepDataForDeferredRestore()`
@@ -163,16 +163,16 @@ lines: 9611
 
 ## _SessionStore.#recordSessionDecision()
 - 位置: L980-1019
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: セッション種別(no_session・recover・resume・defer)と選んだ動作、クラッシュ有無などを Glean の startupSessionDecision に記録する。
+- 触るとき: 起動時のセッション判定テレメトリの項目や値を追加・変更するとき。
 - 呼び出し先: `Glean.sessionRestore.startupSessionDecision.record()`, `this.#log.debug()`
 - 参照: `PrivateBrowsingUtils.permanentPrivateBrowsing`, `Services.appinfo.restartedByOS`, `decision.action`, `decision.initError`, `decision.interstitialReason`, `extra.init_error`, `extra.interstitial_reason`, `extra.previous_session_crashed`, `extra.resume_reason`, `ss.DEFER_SESSION`, `ss.NO_SESSION`, `ss.RECOVER_SESSION`, `ss.RESUME_SESSION`, `ss.previousSessionCrashed`, `ss.sessionType`
 - XPCOM: `Services.appinfo`
 
 ## _SessionStore.#removeExplicitlyClosedTabs()
 - 位置: L1030-1080
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: _maybeDontRestoreTabs が付いたウィンドウを復元対象から外す。唯一のウィンドウであればそのタブを閉じたタブ扱いにして _closedTabs へ移す。
+- 触るとき: ユーザーが閉じたはずのタブが起動時に復元されてしまう不具合(bug 490136 の系統)を調べるとき。
 - 条件付き依存: `if (state.windows.length == 1)` → `winData.tabs.pop()`
 - 条件付き依存: `if (state.windows.length == 1)` → `this.historyIndex()`
 - 条件付き依存: `if (state.windows.length == 1)` → `Math.min()`
@@ -188,24 +188,24 @@ lines: 9611
 
 ## _SessionStore.#initPrefs()
 - 位置: L1091-1139
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: browser.sessionstore.* の設定値を読み込んでフィールドに保持し、変更通知を購読する。debug 切り替えも同時に設定する。
+- 触るとき: 新しい sessionstore 設定を追加するとき、または設定変更が即座に反映されない原因を調べるとき。
 - 呼び出し先: `Glean.sessionRestore.newTabOnRestoreEnabled.set()`, `Services.prefs.addObserver()`, `Services.prefs.getBranch()`, `this.#prefBranch.addObserver()`, `this.#prefBranch.getBoolPref()`, `this.#prefBranch.getIntPref()`
 - 参照: `lazy.sessionStoreLogger`, `this.#closedTabsFromAllWindowsEnabled`, `this.#closedTabsFromClosedWindowsEnabled`, `this.#log`, `this.#max_tabs_undo`, `this.#max_windows_undo`, `this.#prefBranch`, `this.#restore_on_demand`
 - XPCOM: `Services.prefs`
 
 ## _SessionStore.#uninit()
 - 位置: L1145-1163
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 終了時に RunState を closing にし、初期化済みなら最後の状態を保存し、TabRestoreQueue をリセットして保留中の保存をキャンセルする。
+- 触るとき: 終了時にセッションファイルが最後の状態で書き出されるかを確認するとき、または終了処理の順序を変えるとき。
 - 呼び出し先: `TabRestoreQueue.reset()`, `lazy.RunState.setClosing()`, `lazy.SessionSaver.cancel()`
 - 条件付き依存: `if (this.#sessionInitialized)` → `lazy.SessionSaver.run()`
 - 参照: `this.#initialized`, `this.#sessionInitialized`
 
 ## _SessionStore.observe()
 - 位置: L1175-1263
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: Observer 通知(新規・閉じたウィンドウ、終了、履歴消去、設定変更、idle-daily、SHistory リスナー関連など)を topic ごとに対応するハンドラへ振り分ける。
+- 触るとき: 新しい通知を購読させるとき、または特定の通知でどの処理が走るかを追うとき。
 - 呼び出し先: `JSON.parse()`, `this.#notifyOfClosedObjectsChange()`, `this.#onBeforeBrowserWindowShown()`, `this.#onClose()`, `this.#onClose(/** @type {ChromeWindow} */ (aSubject)).then()`, `this.#onFinalTabStateUpdateComplete()`, `this.#onIdleDaily()`, `this.#onLastWindowCloseGranted()`, `this.#onPrefChange()`, `this.#onPurgeDomainData()`, `this.#onPurgeSessionHistory()`, `this.#onQuitApplication()`, `this.#onQuitApplicationGranted()`
 - 条件付き依存: `if (gDebuggingEnabled)` → `Services.obs.notifyObservers()`
 - 条件付き依存: `if (userContextId)` → `this.#forgetTabsWithUserContextId()`
@@ -217,15 +217,15 @@ lines: 9611
 
 ## _SessionStore.#getOrCreateSHistoryListener()
 - 位置: L1265-1276
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: トップの browsing context に対応する session history リスナーを返す。無ければ作成し、トップでなければ null を返す。
+- 触るとき: タブのセッション履歴の変化を SessionStore が取りこぼさず追跡しているかを調べるとき。
 - 呼び出し先: `this.#browserSHistoryListener.get()`, `this.#createSHistoryListener()`
 - 参照: `browsingContext.top`
 
 ## _SessionStore.#maybeRecreateSHistoryListener()
 - 位置: L1282-1288
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 既存リスナーの _browserId が現在の browsingContext と違う場合にリスナーを解除し、作り直す。
+- 触るとき: browser が別の browsing context に付け替えられた後も履歴が追跡されるかを確認するとき。
 - 呼び出し先: `this.#browserSHistoryListener.get()`
 - 条件付き依存: `if (!listener || listener._browserId != browsingContext.browserId)` → `listener?.unregister()`
 - 条件付き依存: `if (!listener || listener._browserId != browsingContext.browserId)` → `this.#createSHistoryListener()`
@@ -233,104 +233,104 @@ lines: 9611
 
 ## _SessionStore.#createSHistoryListener()
 - 位置: L1290-1417
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: browsing context の sessionHistory に SHistoryListener を登録して permanentKey ごとに保持し、必要なら直ちに履歴を収集してキャッシュに書く。
+- 触るとき: タブごとの履歴リスナーの生成条件や、about:blank を初回収集から外す判定を変えるとき。
 - 呼び出し先: `sessionHistory.addSHistoryListener()`, `this.#browserSHistoryListener.set()`
 - 条件付き依存: `if (collectImmediately && (!isAboutBlank || sessionHistory.count !== 0))` → `listener.collect()`
 - 参照: `browsingContext.currentURI?.spec`, `browsingContext.sessionHistory`, `sessionHistory.count`
 
 ## SHistoryListener.constructor()
 - 位置: L1296-1304
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: nsISHistoryListener を実装するリスナーを作り、browserId と収集開始位置(kNoIndex)を初期化する。
+- 触るとき: リスナーが保持する状態の初期値を変えるとき。
 - 呼び出し先: `ChromeUtils.generateQI()`
 - 参照: `browsingContext.browserId`, `this.QueryInterface`, `this._browserId`, `this._fromIndex`
 
 ## SHistoryListener.unregister()
 - 位置: L1306-1312
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 現在のトップ browsing context の sessionHistory からリスナーを外し、permanentKey の登録も削除する。
+- 触るとき: タブが閉じられたり付け替えられた後に履歴リスナーが残り続けないかを確認するとき。
 - 呼び出し先: `BrowsingContext.getCurrentTopByBrowserId()`, `SessionStore.#browserSHistoryListener.delete()`, `bc?.sessionHistory?.removeSHistoryListener()`
 - 参照: `this._browserId`
 
 ## SHistoryListener.collect()
 - 位置: L1314-1349
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 履歴の差分(全体または _fromIndex 以降)を SessionHistory.collectFromParent で取り出し、writeToCache 指定時はタブ状態の更新として渡す。変更が無ければ null を返す。
+- 触るとき: セッション履歴の差分がどの範囲で収集されるか、またはキャッシュ書き込みの条件を変えるとき。
 - 呼び出し先: `Glean.sessionRestore.collectSessionHistory.start()`, `Glean.sessionRestore.collectSessionHistory.stopAndAccumulate()`, `lazy.SessionHistory.collectFromParent()`
 - 条件付き依存: `if (writeToCache)` → `SessionStore.#onTabStateUpdate()`
 - 参照: `browsingContext.currentURI?.spec`, `browsingContext.currentWindowGlobal?.browsingContext?.window`, `browsingContext.embedderElement?.documentGlobal`, `browsingContext.sessionHistory`, `this._fromIndex`
 
 ## SHistoryListener.collectFrom()
 - 位置: L1351-1374
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 既に記録した開始位置より後ろなら何もせず、そうでなければ index を収集開始位置として保存し、フレームローダーに履歴更新を要求する。
+- 触るとき: 履歴の変化が遅延収集のタイマー経由でどのように集められるかを追うとき。
 - 呼び出し先: `BrowsingContext.getCurrentTopByBrowserId()`
 - 条件付き依存: `if (bc?.embedderElement?.frameLoader)` → `bc.embedderElement.frameLoader.requestSHistoryUpdate()`
 - 参照: `bc?.embedderElement?.frameLoader`, `this._browserId`, `this._fromIndex`
 
 ## SHistoryListener.OnHistoryNewEntry()
 - 位置: L1376-1381
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 新しい履歴エントリが追加されたとき、oldIndex - 1 から collectFrom で収集を要求する(oldIndex が -1 ならそのまま)。
+- 触るとき: 新規ナビゲーション時に現在のエントリの変更も拾えているかを確認するとき。
 - 呼び出し先: `this.collectFrom()`
 
 ## SHistoryListener.OnHistoryGotoIndex()
 - 位置: L1382-1384
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 履歴内を移動したとき、kLastIndex から collectFrom で収集を要求する。
+- 触るとき: 戻る・進むで履歴位置が移動した際の保存範囲を変えるとき。
 - 呼び出し先: `this.collectFrom()`
 
 ## SHistoryListener.OnHistoryPurge()
 - 位置: L1385-1387
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 履歴が消去されたとき、-1 から全体を収集対象にする。
+- 触るとき: 履歴消去後に保存内容が古いまま残らないかを確認するとき。
 - 呼び出し先: `this.collectFrom()`
 
 ## SHistoryListener.OnHistoryReload()
 - 位置: L1388-1391
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: リロードされたとき、-1 から全体を収集対象にして true を返す。
+- 触るとき: リロード時の履歴保存の扱いを変えるとき。
 - 呼び出し先: `this.collectFrom()`
 
 ## SHistoryListener.OnHistoryReplaceEntry()
 - 位置: L1392-1394
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: エントリが置き換えられたとき、-1 から全体を収集対象にする。
+- 触るとき: location.replace 相当の置換で履歴が保存されない問題を調べるとき。
 - 呼び出し先: `this.collectFrom()`
 
 ## SHistoryListener.OnHistoryTruncate()
 - 位置: L1395-1395
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 何もしない。履歴の切り詰め通知を無視する。
+- 触るとき: 履歴の切り詰めを保存に反映する必要が出た場合にここへ処理を足すかを検討するとき。
 
 ## SHistoryListener.OnDocumentViewerEvicted()
 - 位置: L1396-1396
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 何もしない。ドキュメントビューアが退避された通知を無視する。
+- 触るとき: ビューア退避時にも保存が必要になったかを検討するとき。
 
 ## SHistoryListener.OnHistoryCommit()
 - 位置: L1397-1397
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 何もしない。履歴のコミット通知を無視する。
+- 触るとき: コミット時に収集が必要になったかを検討するとき。
 
 ## SHistoryListener.OnEntryUpdated()
 - 位置: L1398-1398
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 何もしない。エントリ更新の通知を無視する。
+- 触るとき: エントリ更新を保存に反映する必要があるかを検討するとき。
 
 ## _SessionStore.#onTabStateUpdate()
 - 位置: L1419-1438
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: クラッシュ中でないブラウザのタブ状態を TabState に反映し、保存を遅延予約する。閉じたタブの最終更新なら閉じたタブの状態もキャッシュからコピーする。
+- 触るとき: タブ状態の更新がどこで保存に入るか、閉じたタブの後追い更新を扱う経路を調べるとき。
 - 呼び出し先: `lazy.TabState.update()`, `this.#closingTabMap.get()`, `this.#crashedBrowsers.has()`, `this.#saveStateDelayed()`
 - 条件付き依存: `if (closedTab)` → `lazy.TabState.copyFromCache()`
 - 参照: `closedTab.tabData.state`
 
 ## _SessionStore.#onFinalTabStateUpdateComplete()
 - 位置: L1443-1491
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブ閉鎖時の最終更新が届いた後、保存すべきかを判定して閉じたタブ一覧に追加または削除し、孤立したグループを掃除する。さらにフラッシュ要求を解決してリスナーを解除し、shutdown-flush 通知を出す。
+- 触るとき: 閉じたタブが閉じたタブ一覧に残るべきか判定する経路、またはシャットダウン時のフラッシュ順序を変えるとき。
 - 呼び出し先: `Services.obs.notifyObservers()`, `lazy.TabStateFlusher.resolveAll()`, `this.#browserSHistoryListener.get()`, `this.#browserSHistoryListener.get(permanentKey)?.unregister()`, `this.#closingTabMap.has()`, `this.#crashedBrowsers.has()`, `this.#restoreListeners.get()`, `this.#restoreListeners.get(permanentKey)?.unregister()`
 - 条件付き依存: `if ( this.#closingTabMap.has(permanentKey) && !this.#crashedBrowsers.has(permanentKey) )` → `this.#closingTabMap.get()`
 - 条件付き依存: `if ( this.#closingTabMap.has(permanentKey) && !this.#crashedBrowsers.has(permanentKey) )` → `this.#closingTabMap.delete()`
@@ -344,8 +344,8 @@ lines: 9611
 
 ## _SessionStore.updateSessionStoreFromChild()
 - 位置: L1509-1558
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 子プロセスから届いたタブ状態の更新を、現在のエポックのものに限って受け付ける。必要なら履歴の差分を収集して update に入れ、#onTabStateUpdate に渡す。
+- 触るとき: 子プロセスからのタブ状態更新の受け付け条件や、保存時(forStorage)の履歴収集を変えるとき。
 - 呼び出し先: `this.#getOrCreateSHistoryListener()`, `this.#isCurrentEpoch()`, `this.#onTabStateUpdate()`
 - 条件付き依存: `if (listener)` → `lazy.SessionHistory.collectNonWebControlledLoadingSession()`
 - 条件付き依存: `if (listener)` → `listener.collect()`
@@ -353,8 +353,8 @@ lines: 9611
 
 ## _SessionStore.handleEvent()
 - 位置: L1568-1670
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブ・タブグループ・分割表示・クラッシュ・XUL フレームローダーなどの DOM イベントを種類ごとに対応処理へ振り分け、最後に復元中ウィンドウの状態をクリアする。未知のイベントは例外にする。
+- 触るとき: 保存を走らせるイベントを追加・削除するとき、またはタブを閉じたときに閉じたタブとして記録されない理由を追うとき。
 - 呼び出し先: `this.#clearRestoringWindows()`, `this.#maybeRestoreTabContent()`, `this.#notifyOfClosedObjectsChange()`, `this.#onTabAdd()`, `this.#onTabBrowserInserted()`, `this.#onTabHide()`, `this.#onTabRemove()`, `this.#onTabSelect()`, `this.#onTabShow()`, `this.#saveStateDelayed()`
 - 条件付き依存: `if (detail.adoptedTab)` → `this.#moveCustomTabValue()`
 - 条件付き依存: `if (detail.adoptedBy)` → `this.#moveCustomTabValue()`
@@ -368,22 +368,22 @@ lines: 9611
 
 ## _SessionStore.#generateWindowID()
 - 位置: L1678-1680
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: "window" に連番を付けた内部ウィンドウ ID の文字列を返す。
+- 触るとき: ウィンドウ ID の形式を変えるとき、またはセッション内で ID が一意に払い出されるかを確認するとき。
 - 参照: `this.#nextWindowID`
 
 ## _SessionStore.ensureInitialized()
 - 位置: L1688-1697
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: セッションが初期化済みで、対象ウィンドウがまだ ID を持たない場合だけ #onLoad を呼んで追跡を始める。
+- 触るとき: 初期化より後に開いたウィンドウが追跡されない問題や、同じウィンドウへの二重登録を調べるとき。
 - 呼び出し先: `this.#windowIds.has()`
 - 条件付き依存: `if (this.#sessionInitialized && !this.#windowIds.has(window))` → `this.#onLoad()`
 - 参照: `this.#sessionInitialized`
 
 ## _SessionStore.#onLoad()
 - 位置: L1705-1791
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 未登録のウィンドウに ID を振り、タブ・グループ・閉じたタブなどを持つ状態オブジェクトを作る。プライベート、ポップアップ、taskbartab、AI ウィンドウ、chromeless などのフラグを立て、既存タブとタブ関連イベントの購読を始める。終了中に開かれたウィンドウは登録しない。
+- 触るとき: ウィンドウ状態に新しいフラグを追加するとき、またはウィンドウがいつ追跡され始めるかを調べるとき。
 - 呼び出し先: `PrivateBrowsingUtils.isWindowPrivate()`, `aWindow.docShell.treeOwner .QueryInterface()`, `aWindow.docShell.treeOwner .QueryInterface(Ci.nsIInterfaceRequestor) .getInterface()`, `aWindow.document.documentElement.hasAttribute()`, `aWindow.gBrowser.addEventListener()`, `lazy.AIWindow.isAIWindowActiveAndEnabled()`, `tabbrowser.tabContainer.addEventListener()`, `this.#generateWindowID()`, `this.#isWindowLoaded()`, `this.#onTabBrowserInserted()`, `this.#windowIds.get()`, `this.#windowIds.set()`
 - 条件付き依存: `if (PrivateBrowsingUtils.isWindowPrivate(aWindow))` → `this.#windowIds.get()`
 - 条件付き依存: `if (!this.#isWindowLoaded(aWindow))` → `this.#windowIds.get()`
@@ -397,8 +397,8 @@ lines: 9611
 
 ## _SessionStore.#initializeWindow()
 - 位置: L1805-2007
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 初回ウィンドウなら起動時の初期状態を流し込み、遅れて開いた通常ウィンドウには延期していた状態、閉じたウィンドウ、taskbar tab 向けの前回セッションのいずれかを復元する。
+- 触るとき: 起動時の復元が最初のウィンドウ・通常ウィンドウ・taskbar tab のどれに入るかの条件を変えるとき、または last-closed-window の復元で閉じたウィンドウがどう分割されるかを調べるとき。
 - 呼び出し先: `PrivateBrowsingUtils.isWindowPrivate()`, `this.#windowIds.get()`
 - 条件付き依存: `if (lazy.RunState.isStopped)` → `lazy.RunState.setRunning()`
 - 条件付き依存: `if (aInitialState)` → `lazy.SessionSaver.updateLastSaveTime()`
@@ -436,8 +436,8 @@ lines: 9611
 
 ## _SessionStore.#onBeforeBrowserWindowShown()
 - 位置: L2015-2113
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウが表示される直前に、DocumentPiP・mini-window・ASWebAuthenticationSession を除いて登録し、待機中の Promise を解決する。初期化済みならそのまま初期化し、未初期化なら最初のウィンドウの遅延起動完了と SessionStartup の初期化完了を待ってからセッションを読み込む。
+- 触るとき: 起動直後に開くウィンドウの扱いや、追跡対象外にするウィンドウ種別を増やすとき。
 - 呼び出し先: `WINDOW_SHOWING_PROMISES.get()`, `aWindow.document.documentElement.hasAttribute()`, `this.#log.error()`, `this.#onLoad()`, `this.#promiseReadyForInitialization .then()`
 - 条件付き依存: `if (deferred)` → `deferred.resolve()`
 - 条件付き依存: `if (deferred)` → `WINDOW_SHOWING_PROMISES.delete()`
@@ -457,16 +457,16 @@ lines: 9611
 
 ## obs()
 - 位置: L2057-2062
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: browser-delayed-startup-finished 通知を待ち、対象ウィンドウが届いたら自分自身を登録解除して Promise を解決する匿名 Observer。
+- 触るとき: 初回ウィンドウの遅延起動が終わるのを待つ仕組みを変えたり、起動時の待ち合わせが止まる原因を追うとき。
 - 条件付き依存: `if (aWindow == subject)` → `Services.obs.removeObserver()`
 - 条件付き依存: `if (aWindow == subject)` → `resolve()`
 - XPCOM: `Services.obs`
 
 ## _SessionStore.#onClose()
 - 位置: L2125-2323
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウ終了時に SSWindowClosing を発火し、タブのイベント購読を外す。実行中なら状態を閉じた時刻付きで退避し、タスクバータブ併用時の再起動復元を予約し、タブのフラッシュ完了後に閉じたウィンドウとして保存判定して状態を保存する。
+- 触るとき: ウィンドウを閉じたときに閉じたウィンドウ一覧へ入る条件や、タスクバータブが残るときの次回復元の予約を変えるとき。
 - 呼び出し先: `Array.from()`, `Promise.resolve()`, `aWindow.dispatchEvent()`, `aWindow.document.createEvent()`, `aWindow.gBrowser.removeEventListener()`, `event.initEvent()`, `tabbrowser.tabContainer.removeEventListener()`, `this.#isWindowLoaded()`, `this.#onTabRemove()`, `this.#windowIds.get()`
 - 条件付き依存: `if (!isFullyLoaded)` → `this.#windowIds.has()`
 - 条件付き依存: `if (!this.#windowIds.has(aWindow))` → `this.#windowIds.set()`
@@ -507,14 +507,14 @@ lines: 9611
 
 ## _SessionStore.#cleanUpWindow()
 - 位置: L2340-2352
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 残っているタブのフラッシュ Promise を解決し、ウィンドウの状態を DyingWindowCache に移して、ウィンドウ ID と保存対象の対応を削除する。
+- 触るとき: 閉じたウィンドウのデータが参照されなくなるタイミングや、ウィンドウ ID の後始末を変えるとき。
 - 呼び出し先: `DyingWindowCache.set()`, `lazy.TabStateFlusher.resolveAll()`, `this.#saveableClosedWindowData.delete()`, `this.#windowIds.delete()`
 
 ## _SessionStore.#maybeSaveClosedWindow()
 - 位置: L2371-2447
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 保存可能なタブがあるか、最後のウィンドウであれば閉じたウィンドウ一覧に入れ、閉じた時刻の新しい順に挿入して ID を振る。条件を満たさなければ一覧から外す。macOS で初回に閉じたときは履歴メニューに popupshowing を送る。
+- 触るとき: 閉じたウィンドウ一覧に残す条件(保存可能なタブの判定)や、最後のウィンドウの扱いを変えるとき。
 - 呼び出し先: `this.#saveableClosedWindowData.has()`
 - 条件付き依存: `if ( lazy.RunState.isRunning && this.#saveableClosedWindowData.has(winData) )` → `winData.tabs.some()`
 - 条件付き依存: `if ( lazy.RunState.isRunning && this.#saveableClosedWindowData.has(winData) )` → `this.#closedWindows.indexOf()`
@@ -532,8 +532,8 @@ lines: 9611
 
 ## _SessionStore.#saveOpenTabGroupsOnClose()
 - 位置: L2464-2503
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じるウィンドウ内のタブグループのうち saveOnWindowClose のものを保存済みグループに変換し、そのグループに属するタブを整形して追加した上で状態を記録する。
+- 触るとき: ウィンドウを閉じたときにタブグループが失われず保存済みに残るかを確認するとき、またはグループ保存の条件を変えるとき。
 - 呼び出し先: `closedWinData.groups.map()`, `lazy.TabGroupState.savedInClosedWindow()`, `newlySavedTabGroups.has()`, `newlySavedTabGroups.set()`, `newlySavedTabGroups.values()`, `this.#recordSavedTabGroupState()`, `this.#shouldSaveTabState()`
 - 条件付き依存: `if (this.#shouldSaveTabState(tabState))` → `this.formatTabStateForSavedGroup()`
 - 条件付き依存: `if (this.#shouldSaveTabState(tabState))` → `newlySavedTabGroups.get(tabState.groupId).tabs.push()`
@@ -542,15 +542,15 @@ lines: 9611
 
 ## _SessionStore.formatTabStateForSavedGroup()
 - 位置: L2516-2533
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブの現在の履歴インデックス(範囲内に丸める)のエントリからタイトルを決め、保存済みグループ用のタブ情報(state、title、image、closedAt、closedId)を作る。表示できる履歴が無ければ null を返す。
+- 触るとき: 保存済みタブグループに入るタブの表示名や画像の扱いを変えるとき、または移行時の縮小 state をどう扱うかを確認するとき。
 - 呼び出し先: `Date.now()`, `Math.max()`, `Math.min()`
 - 参照: `tabState.entries`, `tabState.entries.length`, `tabState.entries[activeIndex].title`, `tabState.entries[activeIndex].url`, `tabState.image`, `tabState.index`, `this.#nextClosedId`
 
 ## _SessionStore.#onQuitApplicationGranted()
 - 位置: L2543-2666
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 終了が許可されたとき、全ウィンドウの状態を収集して z 順を付け、RunState を quitting にする。非同期終了では全ウィンドウのフラッシュを待つ(10 秒制限、クラッシュ通知、content-shutdown 通知で打ち切り)。同期終了ではキャッシュ済みの内容だけを保存する。
+- 触るとき: 終了時にセッションが最後の状態まで保存されるか、またはフラッシュの待ち時間や打ち切り条件を変えるとき。
 - 呼び出し先: `Date.now()`, `lazy.RunState.setQuitting()`, `this.#collectWindowData()`, `this.#log.debug()`, `this.#windowIds.get()`
 - 条件付き依存: `if (!syncShutdown)` → `Glean.sessionRestore.shutdownType.async.add()`
 - 条件付き依存: `if (!syncShutdown)` → `this.#flushAllWindowsAsync()`
@@ -570,15 +570,15 @@ lines: 9611
 
 ## observeTopic()
 - 位置: L2591-2627
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 指定した通知 topic の Observer を登録し、対象の通知が届いたら中断用の Deferred を解決する。登録解除は後で行えるように返す。
+- 触るとき: 終了時の待機を打ち切る通知を追加したり、通知購読の後片付けを確認するとき。
 - 呼び出し先: `Promise.withResolvers()`, `Services.obs.addObserver()`, `deferred.promise.then()`
 - XPCOM: `Services.obs`
 
 ## observer()
 - 位置: L2593-2616
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ipc:content-shutdown の abnormal 通知と oop-frameloader-crashed 通知を受けて、該当する場合だけ Deferred を解決し、対応する結果カウンタを記録する。
+- 触るとき: クラッシュ時に終了時フラッシュを打ち切る条件を変えるとき。
 - 呼び出し先: `Glean.sessionRestore.shutdownFlushAllOutcomes.oop_frameloader_crashed.add()`, `deferred.resolve()`, `subject.QueryInterface()`, `subject.get()`, `this.#log.debug()`
 - 条件付き依存: `if (subject.get("abnormal"))` → `this.#log.debug()`
 - 条件付き依存: `if (subject.get("abnormal"))` → `Glean.sessionRestore.shutdownFlushAllOutcomes.abnormal_content_shutdown.add()`
@@ -588,15 +588,15 @@ lines: 9611
 
 ## cleanup()
 - 位置: L2617-2623
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: observer の登録を外す。解除に失敗した場合はエラーをログに出す。
+- 触るとき: 終了時に登録した Observer が確実に外れるかを確認するとき。
 - 呼び出し先: `Services.obs.removeObserver()`, `this.#log.error()`
 - XPCOM: `Services.obs`
 
 ## _SessionStore.#flushAllWindowsAsync()
 - 位置: async L2686-2728
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 保存中の Flush Promise を集め、全ブラウザウィンドウをフラッシュ開始と同時に見えなくする。各 Promise を順に待ちながら状態を収集し、最後に最前面ウィンドウを記録して DirtyWindows をクリアする。
+- 触るとき: 終了時のフラッシュの待ち方や進捗表示を変えるとき、または終了直前のウィンドウ状態がどこで確定するかを追うとき。
 - 呼び出し先: `DirtyWindows.clear()`, `Glean.sessionRestore.shutdownFlushAllOutcomes.complete.add()`, `WINDOW_FLUSHING_PROMISES.clear()`, `lazy.TabStateFlusher.flushWindow()`, `this.#getTopWindow()`, `this.#windowIds.get()`, `window.docShell.treeOwner.QueryInterface()`, `windowPromises.set()`
 - 条件付き依存: `if (this.#windowIds.get(win) && this.#windows[this.#windowIds.get(win)])` → `this.#collectWindowData()`
 - 条件付き依存: `if (activeWindow)` → `this.#windowIds.get()`
@@ -605,8 +605,8 @@ lines: 9611
 
 ## _SessionStore.#onLastWindowCloseGranted()
 - 位置: L2733-2739
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 最後のブラウザウィンドウが閉じられることが許可されたとき、次に別のブラウザウィンドウが開いた時点で最後のウィンドウを復元するように #restoreLastWindow を立てる。
+- 触るとき: 最後のウィンドウを閉じた後に新しいウィンドウを開いたときの復元挙動を変えるとき。
 - 参照: `this.#restoreLastWindow`
 
 ## _SessionStore.#onQuitApplication()
