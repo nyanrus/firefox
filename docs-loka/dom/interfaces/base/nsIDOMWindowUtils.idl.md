@@ -18,7 +18,7 @@ source-hash: 400fb84ffc63b2a328d75a0e49779bd5f1194a01
 - 継承: nsISupports
 - 役割: DOM window に関する使用頻度の低いメソッド群を提供するインターフェース (一部は chrome 権限が必要で、DOMWindow の getInterface で取得する)。
 - 実装: `nsDOMWindowUtils` (dom/base/nsDOMWindowUtils.cpp)
-- 使っているJS: [`browser/components/tabbrowser/Tabbrowser.sys.mjs`](../../../browser/components/tabbrowser/Tabbrowser.sys.mjs.md)
+- 使っているJS: [`browser/components/asrouter/modules/FeatureCallout.sys.mjs`](../../../browser/components/asrouter/modules/FeatureCallout.sys.mjs.md), [`browser/components/tabbrowser/Tabbrowser.sys.mjs`](../../../browser/components/tabbrowser/Tabbrowser.sys.mjs.md)
 
 ## メソッド / 属性
 - `attribute unsigned short imageAnimationMode`: Image animation mode of the window. When this attribute's value

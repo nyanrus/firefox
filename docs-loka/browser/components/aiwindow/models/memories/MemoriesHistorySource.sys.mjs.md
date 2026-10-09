@@ -57,7 +57,7 @@ lines: 1164
 ## topkAggregates()
 - 位置: L663-769
 - 役割: 集計結果に時間減衰を掛けたランクを付け、ドメイン30件、タイトル60件、検索10件を上位から切り出す。
-- 触るとき: 記憶生成に渡す上位の閲覧候補を増減させるとき、ランクの並びが想定と違うとき。
+- 触るとき: 上位の閲覧候補を切り出す件数やランクの並びを変えるとき、ランクの並びが想定と違うとき。本番の呼び出し元は見当たらず、テストから使われている。
 - 呼び出し先: `Array.isArray()`, `Number()`, `Number.isFinite()`, `Object.entries()`, `Object.entries(aggDomains).map()`, `Object.entries(aggSearches).map()`, `Object.entries(aggTitles).map()`, `domainRanked .slice()`, `domainRanked .slice(0, k_domains) .map()`, `domainRanked.sort()`, `round2()`, `searchRanked .slice()`, `searchRanked .slice(0, k_searches) .map()`, `searchRanked.sort()`, `titleRanked .slice()`, `titleRanked .slice(0, k_titles) .map()`, `titleRanked.sort()`, `withRecency()`
 - 条件付き依存: `if (now == null)` → `Date.now()`
 - 条件付き依存: `if (!(now == null))` → `Number()`

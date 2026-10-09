@@ -80,7 +80,7 @@ lines: 469
 
 ## MemoriesSchedulers.#onInterval()
 - 位置: async L252-403
-- 役割: 毎回有効条件を確かめ、保守を1日(設定値)ごとに実行したうえで、クールダウンの判定と契機の判定を通った時だけ記憶生成と統合を行う。429は長い待機、一時エラーは短い待機にして再試行を遅らせる。
+- 役割: 毎回有効条件を確かめ、保守を設定値の周期(既定は4時間)ごとに実行したうえで、クールダウンの判定と契機の判定を通った時だけ記憶生成と統合を行う。429は長い待機、一時エラーは短い待機にして再試行を遅らせる。
 - 触るとき: 記憶生成や統合が動かない、または繰り返し失敗するとき。待機時間や実行順を変えるとき。
 - 呼び出し先: `Date.now()`, `MemoriesSchedulers.#anySourceEnabled()`, `lazy.MemoriesManager.generateMemoriesFromSessions()`, `lazy.MemoriesManager.getLastSessionMemoryTimestamp()`, `lazy.MemoriesManager.setLastGenerationRunTimestamp()`, `lazy.MemoriesManager.shouldEnableMemoriesFromSchedulers()`, `lazy.console.debug()`, `lazy.openAIEngine.is429Error()`, `this.#shouldRunGeneration()`, `this.#stopInterval()`
 - 条件付き依存: `if (this.#destroyed)` → `lazy.console.warn()`

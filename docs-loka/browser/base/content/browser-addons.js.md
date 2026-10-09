@@ -1049,7 +1049,7 @@ lines: 3406
 
 ## _createBlocklistMessageBar()
 - 位置: L3136-3195
-- 役割: ブロックリストの警告バーを作り、既存のものと差し替えるか、隔離警告の前に挿入する。閉じられたら記録を消す。
+- 役割: ブロックリストの警告バーを作り、既存のものと差し替えるか、隔離警告の前に挿入する。利用者が閉じたら blocklistAttentionInfo の dismiss() を呼ぶ。
 - 触るとき: ブロックリスト警告の文言・種類・閉じる動作を変えるとき。
 - 呼び出し先: `container.contains()`, `messageBarBlocklist.addEventListener()`, `this._makeMessageBar()`, `this.blocklistAttentionInfo?.dismiss()`
 - 条件付き依存: `if ( this._messageBarBlocklist && container.contains(this._messageBarBlocklist) )` → `container.replaceChild()`

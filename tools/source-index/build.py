@@ -10,8 +10,8 @@
                                        source-hash is unchanged are kept
                                        unless --force is given; summaries
                                        already written are carried over, and
-                                       IDL docs are only rewritten when their
-                                       source changed
+                                       IDL docs are always refreshed so their
+                                       list of JS users stays current
   build.py check                       list index docs whose source changed
   build.py check-links                 list links in index docs that do not
                                        resolve to a file
@@ -217,6 +217,54 @@ def render_idl(data, contract_index, idl_users):
     return "\n".join(out).rstrip() + "\n"
 
 
+def read_idl_summaries(path):
+    """Return {interface: {"role", "impl", "contract", "members"}} of a doc."""
+    full = os.path.join(TOPSRC, path)
+    if not os.path.exists(full):
+        return {}
+    found, cur = {}, None
+    with open(full, encoding="utf-8") as f:
+        for line in f.read().split("\n"):
+            m = re.match(r"^# (\w+) \(", line)
+            if m:
+                cur = found.setdefault(
+                    m.group(1),
+                    {"role": None, "impl": None, "contract": None, "members": {}},
+                )
+            elif cur is None:
+                continue
+            elif line.startswith("- 役割: ") and line != f"- 役割: {TODO}":
+                cur["role"] = line
+            elif line.startswith("- 実装: ") and line != f"- 実装: {TODO}":
+                cur["impl"] = line
+            elif line.startswith("- contract ID: "):
+                cur["contract"] = line
+            elif line.startswith("- `") and not line.endswith(f": {TODO}"):
+                sig = line.split("`: ", 1)[0]
+                cur["members"][sig] = line
+    return found
+
+
+def keep_idl_summaries(rendered, old):
+    """Put the summaries of an older IDL doc back into a freshly rendered one."""
+    out, cur = [], None
+    for line in rendered.split("\n"):
+        m = re.match(r"^# (\w+) \(", line)
+        if m:
+            cur = old.get(m.group(1))
+        elif cur is not None:
+            if line.startswith("- 役割: ") and cur["role"]:
+                line = cur["role"]
+            elif line.startswith("- 実装: ") and cur["impl"]:
+                line = cur["impl"]
+            elif line.startswith("- contract ID: ") and cur["impl"]:
+                line = cur["contract"] or line
+            elif line.startswith("- `"):
+                line = cur["members"].get(line.split("`: ", 1)[0], line)
+        out.append(line)
+    return "\n".join(out)
+
+
 def write(path, content):
     full = os.path.join(TOPSRC, path)
     os.makedirs(os.path.dirname(full), exist_ok=True)
@@ -255,9 +303,9 @@ def generate(targets, force=False):
     for idl in sorted(used_idls):
         data = extract_idl.extract(os.path.join(TOPSRC, idl))
         data["path"] = idl
-        if is_current(doc_path(idl), data["source_hash"]):
-            continue
-        write(doc_path(idl), render_idl(data, contract_index, idl_users))
+        path = doc_path(idl)
+        rendered = render_idl(data, contract_index, idl_users)
+        write(path, keep_idl_summaries(rendered, read_idl_summaries(path)))
     print(f"wrote {len(extracted)} JS docs and {len(used_idls)} IDL docs")
 
 

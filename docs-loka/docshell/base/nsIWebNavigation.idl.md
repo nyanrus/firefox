@@ -6,7 +6,7 @@ source-hash: d5271dfedb404850797391de661c4aa2aac1880a
 - 継承: nsISupports
 - 役割: The nsIWebNavigation interface defines an interface for navigating the web.
 - 実装: `nsDocShell` (docshell/base/nsDocShell.cpp)
-- 使っているJS: [`browser/components/tabbrowser/Tabbrowser.sys.mjs`](../../browser/components/tabbrowser/Tabbrowser.sys.mjs.md)
+- 使っているJS: [`browser/actors/BlockedSiteParent.sys.mjs`](../../browser/actors/BlockedSiteParent.sys.mjs.md), [`browser/actors/SwitchDocumentDirectionChild.sys.mjs`](../../browser/actors/SwitchDocumentDirectionChild.sys.mjs.md), [`browser/base/content/browser-commands.js`](../../browser/base/content/browser-commands.js.md), [`browser/base/content/browser-siteIdentity.js`](../../browser/base/content/browser-siteIdentity.js.md), [`browser/base/content/browser-trustPanel.js`](../../browser/base/content/browser-trustPanel.js.md), [`browser/components/extensions/parent/ext-browser.js`](../../browser/components/extensions/parent/ext-browser.js.md), [`browser/components/extensions/parent/ext-tabs.js`](../../browser/components/extensions/parent/ext-tabs.js.md), [`browser/components/sessionstore/SessionStore.sys.mjs`](../../browser/components/sessionstore/SessionStore.sys.mjs.md), [`browser/components/tabbrowser/Tabbrowser.sys.mjs`](../../browser/components/tabbrowser/Tabbrowser.sys.mjs.md), [`browser/modules/BrowserDOMWindow.sys.mjs`](../../browser/modules/BrowserDOMWindow.sys.mjs.md), [`browser/modules/URILoadingHelper.sys.mjs`](../../browser/modules/URILoadingHelper.sys.mjs.md)
 
 ## メソッド / 属性
 - `readonly attribute boolean canGoBack`: Indicates if the object can go back.  If true this indicates that

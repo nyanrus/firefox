@@ -6,6 +6,7 @@ source-hash: 264a665f8f08dd480b8bb9f1a5969ae55cc4a439
 - 継承: nsIDocShellTreeItem
 - 役割: nsIDocShell is an interface corresponding to the native nsDocShell object,
 - 実装: `nsDocShell` (docshell/base/nsDocShell.cpp)
+- 使っているJS: [`browser/actors/RefreshBlockerChild.sys.mjs`](../../browser/actors/RefreshBlockerChild.sys.mjs.md), [`browser/base/content/browser.js`](../../browser/base/content/browser.js.md), [`browser/components/extensions/ExtensionControlledPopup.sys.mjs`](../../browser/components/extensions/ExtensionControlledPopup.sys.mjs.md), [`browser/components/protocolhandler/WebProtocolHandlerRegistrar.sys.mjs`](../../browser/components/protocolhandler/WebProtocolHandlerRegistrar.sys.mjs.md), [`browser/components/search/SearchSERPTelemetry.sys.mjs`](../../browser/components/search/SearchSERPTelemetry.sys.mjs.md), [`browser/components/tabnotes/TabNotesController.sys.mjs`](../../browser/components/tabnotes/TabNotesController.sys.mjs.md), [`browser/components/urlbar/content/SmartbarInput.mjs`](../../browser/components/urlbar/content/SmartbarInput.mjs.md), [`browser/components/urlbar/content/UrlbarInputBase.mjs`](../../browser/components/urlbar/content/UrlbarInputBase.mjs.md), [`browser/modules/ExtensionsUI.sys.mjs`](../../browser/modules/ExtensionsUI.sys.mjs.md)
 
 ## メソッド / 属性
 - `void setCancelContentJSEpoch(long aEpoch)`: (要確認)

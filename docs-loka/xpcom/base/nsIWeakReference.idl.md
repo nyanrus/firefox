@@ -19,7 +19,7 @@ source-hash: 7c54c078c9a910c33462295d59b8ab1e7818a74b
 - 継承: nsISupports
 - 役割: |nsISupportsWeakReference| is a factory interface which produces appropriate
 - 実装: `nsSupportsWeakReference` (xpcom/base/nsWeakReference.h)
-- 使っているJS: [`browser/components/tabbrowser/content/split-view-footer.js`](../../browser/components/tabbrowser/content/split-view-footer.js.md)
+- 使っているJS: [`browser/actors/FormValidationParent.sys.mjs`](../../browser/actors/FormValidationParent.sys.mjs.md), [`browser/components/places/content/browserPlacesViews.js`](../../browser/components/places/content/browserPlacesViews.js.md), [`browser/components/tabbrowser/content/split-view-footer.js`](../../browser/components/tabbrowser/content/split-view-footer.js.md), [`browser/components/urlbar/ActionsProviderContextualSearch.sys.mjs`](../../browser/components/urlbar/ActionsProviderContextualSearch.sys.mjs.md), [`browser/extensions/newtab/lib/RemoteRenderer.sys.mjs`](../../browser/extensions/newtab/lib/RemoteRenderer.sys.mjs.md)
 
 ## メソッド / 属性
 - `nsIWeakReference GetWeakReference()`: |GetWeakReference| produces an appropriate instance of |nsIWeakReference|.

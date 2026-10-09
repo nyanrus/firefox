@@ -963,7 +963,7 @@ lines: 6715
 
 ## UrlbarInputBase._recordSearch()
 - 位置: L3978-4005
-- 役割: 検索のテレメトリ情報(エンジン ID、検索元、検索語、一時的な窓か、one-off か、新規タブのセッション ID)をまとめ、タブで開く場合は recordSearchInOpenedTab、それ以外は recordSearch に渡す。
+- 役割: 検索のテレメトリ情報(エンジン ID、検索元、検索語、プライベート窓で開くか、one-off か、新規タブのセッション ID)をまとめ、タブで開く場合は recordSearchInOpenedTab、それ以外は recordSearch に渡す。
 - 触るとき: 検索のテレメトリや検索履歴の記録項目を追加、変更するとき。
 - 呼び出し先: `this.getSearchSource()`, `this.view.oneOffSearchButtons?.eventTargetIsAOneOff()`, `where.startsWith()`
 - 条件付き依存: `if (where.startsWith("tab"))` → `this.parentController.recordSearchInOpenedTab()`

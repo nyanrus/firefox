@@ -280,7 +280,7 @@ lines: 1289
 
 ## SmartFormFillDocument.#triggerFormUpdate()
 - 位置: L1234-1241
-- 役割: 単語キャッシュを消してからグループを更新し、フォーム情報を更新コールバックに渡す。
+- 役割: 近傍テキストのキャッシュを消してからグループを更新し、フォーム情報を更新コールバックに渡す。
 - 触るとき: フォーム更新の通知の順序を変えるとき。
 - 呼び出し先: `this.#updateFormGroups()`, `this.#utils.clearCache()`
 - 条件付き依存: `if (typeof this.#onFormUpdate === "function")` → `this.#onFormUpdate()`

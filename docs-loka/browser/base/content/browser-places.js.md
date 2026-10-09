@@ -728,7 +728,7 @@ lines: 2407
 
 ## BUI_updateStarState()
 - 位置: L1865-1917
-- 役割: 現在の URI のブックマーク guid を取得して _itemGuids に保存し、保留中の更新でなければスターを更新する。初回は Places のブックマーク変更の監視を登録する。guid が既にあれば new Set(...) で統合するが、この統合式は要確認。
+- 役割: 現在の URI のブックマーク guid を取得して _itemGuids に保存し、保留中の更新でなければスターを更新する。初回は Places のブックマーク変更の監視を登録する。guid が既にあるときの統合は new Set(...a, ...b) と書かれ、Set は引数を1つしか取らないため統合になっていない。
 - 触るとき: スターの状態判定や、ブックマーク変更を監視する条件を変えるとき。
 - 呼び出し先: `PlacesUtils.bookmarks .fetch()`, `PlacesUtils.bookmarks .fetch({ url: this._uri }, b => guids.add(b.guid), { concurrent: true }) .catch()`, `guids.add()`, `this._itemGuids.clear()`, `this._updateStar()`
 - 条件付き依存: `if (!this._hasBookmarksObserver)` → `this.handlePlacesEvents.bind()`

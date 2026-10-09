@@ -547,7 +547,7 @@ lines: 3102
 
 ## nsContextMenu.viewBGImage()
 - 位置: L1901-1915
-- 役割: 背景画像の URL をセキュリティ検査し、openUILink で開く。現在のコードは this.bgImageURL を読むが、この名前は setContext で代入されない(要確認: 実際には mediaURL に入る値)。
+- 役割: 背景画像の URL をセキュリティ検査し、openUILink で開く。this.bgImageURL を読み、setContext では context.bgImageURL から mediaURL に代入している。
 - 触るとき: 背景画像を開く経路を直すとき、または背景画像の項目で URL が空になる理由を調べるとき。
 - 呼び出し先: `this.window.openUILink()`, `this.window.urlSecurityCheck()`
 - 参照: `Ci.nsIScriptSecurityManager.DISALLOW_SCRIPT`, `this.bgImageURL`, `this.contentData.referrerInfo`, `this.policyContainer`, `this.principal`, `this.remoteType`

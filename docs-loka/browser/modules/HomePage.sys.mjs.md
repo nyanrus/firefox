@@ -5,13 +5,13 @@ source-hash: 762962c7ca610905f738440d6cd06461f99c2bd9
 lines: 399
 
 ## <module>
-- 役割: (未記入)
+- 役割: ホームページの設定値、既定値、無視リストをまとめて扱う窓口。
 - 呼び出し先: `ChromeUtils.defineESModuleGetters()`
 
 ## getHomepagePref()
 - 位置: L25-37
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ホームページ設定を読む。ユーザー値が空なら消して既定値を読み直す。
+- 触るとき: 空のホームページ設定がどう回復されるかを確かめるとき。
 - 呼び出し先: `Services.prefs.getDefaultBranch()`, `prefs.getStringPref()`
 - 条件付き依存: `if (!homePage && !useDefault)` → `Services.prefs.clearUserPref()`
 - 条件付き依存: `if (!homePage && !useDefault)` → `getHomepagePref()`
@@ -20,15 +20,15 @@ lines: 399
 
 ## delayedStartup()
 - 位置: async L60-78
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 無視リストを取得して購読し、CustomizableUI のリスナーを登録する。二度目以降は初期化を待つだけ。
+- 触るとき: 起動直後に get や set を呼んだときの無視リストの適用タイミングを変えるとき。
 - 呼び出し先: `lazy.IgnoreLists.getAndSubscribe()`, `this._addCustomizableUiListener()`, `this._handleIgnoreListUpdated()`, `this._handleIgnoreListUpdated.bind()`
 - 参照: `this._ignoreListListener`, `this._initializationPromise`
 
 ## get()
 - 位置: L90-121
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 現在のホームページを返す。プライベートウィンドウで拡張が制御していれば既定値を返す。
+- 触るとき: プライベートウィンドウで拡張のホームページが見えてしまう、または消える報告を調べるとき。about:blank は blanktab.html に置き換える。
 - 呼び出し先: `getHomepagePref()`, `lazy.PrivateBrowsingUtils.isWindowPrivate()`
 - 条件付き依存: `if ( lazy.PrivateBrowsingUtils.permanentPrivateBrowsing || (aWindow && lazy.PrivateBrowsingUtils.isWindowPrivate(aWindow)) )` → `Services.prefs.getBoolPref()`
 - 条件付き依存: `if ( lazy.PrivateBrowsingUtils.permanentPrivateBrowsing || (aWindow && lazy.PrivateBrowsingUtils.isWindowPrivate(aWindow)) )` → `homePages.includes()`
@@ -38,28 +38,28 @@ lines: 399
 
 ## getForErrorPage()
 - 位置: L123-132
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: エラーページ用のホームページURLを返す。プライベートでは新規タブURLにする。
+- 触るとき: エラーページの戻り先や再読み込み先が正しいか確かめるとき。複数URLなら先頭を使う。
 - 呼び出し先: `lazy.PrivateBrowsingUtils.isWindowPrivate()`, `this.get()`, `url.includes()`
 - 条件付き依存: `if (url.includes("|"))` → `url.split()`
 - 参照: `win.BROWSER_NEW_TAB_URL`
 
 ## parseCustomHomepageURLs()
 - 位置: L141-146
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: パイプ区切りのURL文字列を、空白を除いた配列にする。
+- 触るとき: カスタムホームページの複数URL入力を解釈する箇所を変えるとき。
 - 呼び出し先: `url.trim()`, `urls .split()`, `urls .split("|") .map()`, `urls .split("|") .map(url => url.trim()) .filter()`
 
 ## isPreferencesOrSettingsTab()
 - 位置: L154-159
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブが about:preferences か about:settings かを判定する。
+- 触るとき: 設定タブをホームページ候補から外す判定を変えるとき。
 - 呼び出し先: `tab.linkedBrowser.currentURI.spec.startsWith()`
 
 ## getTabsForCustomHomepage()
 - 位置: L167-185
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 通常ウィンドウの表示中タブのうち、ピン留め・設定・閉じ中のタブを除いて返す。
+- 触るとき: 「現在のタブをホームページに設定」で候補に入るタブを変えるとき。
 - 呼び出し先: `Services.wm.getMostRecentWindow()`, `win.document.documentElement.getAttribute()`
 - 条件付き依存: `if ( win && win.document.documentElement.getAttribute("windowtype") === "navigator:browser" )` → `win.gBrowser.visibleTabs.slice()`
 - 条件付き依存: `if ( win && win.document.documentElement.getAttribute("windowtype") === "navigator:browser" )` → `tabs.filter()`
@@ -69,39 +69,39 @@ lines: 399
 
 ## getDefault()
 - 位置: L191-193
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 既定ブランチのホームページ値を返す。
+- 触るとき: ユーザー値を消した後に戻る先を確かめるとき。
 - 呼び出し先: `getHomepagePref()`
 
 ## getOriginalDefault()
 - 位置: L199-201
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: アプリ固有の初期ホームページ(about:home)を返す。
+- 触るとき: 初期値として about:home を使う前提を変えるとき。
 
 ## overridden()
 - 位置: L207-209
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ホームページにユーザー値があるかを返す。
+- 触るとき: ユーザーが変えたホームページを表示や復元の判定で扱うとき。
 - 呼び出し先: `Services.prefs.prefHasUserValue()`
 - XPCOM: `Services.prefs`
 
 ## locked()
 - 位置: L215-217
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ホームページ設定がロックされているかを返す。
+- 触るとき: ポリシーで変更不可になっている場合の挙動を確かめるとき。
 - 呼び出し先: `Services.prefs.prefIsLocked()`
 - XPCOM: `Services.prefs`
 
 ## isDefault()
 - 位置: L223-225
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 現在のホームページが about:home かを返す。
+- 触るとき: 既定値のままかを判定する箇所を変えるとき。
 - 呼び出し先: `HomePage.get()`
 
 ## set()
 - 位置: async L234-247
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 無視リストを確認し、通すならホームページを設定してホームボタンを追加する。
+- 触るとき: ホームページ変更が拒否される報告を調べるとき。拒否時はコンソールに出し、テレメトリを set_blocked で記録し false を返す。
 - 呼び出し先: `Services.prefs.setStringPref()`, `this._maybeAddHomeButtonToToolbar()`, `this.delayedStartup()`, `this.shouldIgnore()`
 - 条件付き依存: `if (await this.shouldIgnore(value))` → `console.error()`
 - 条件付き依存: `if (await this.shouldIgnore(value))` → `Glean.homepage.preferenceIgnore.record()`
@@ -109,35 +109,35 @@ lines: 399
 
 ## safeSet()
 - 位置: L259-261
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 無視リストを通さずにホームページを設定する。
+- 触るとき: about:blank や内部から来た既知の安全な値を設定する箇所を追加するとき。外部入力には使わない。
 - 呼び出し先: `Services.prefs.setStringPref()`
 - XPCOM: `Services.prefs`
 
 ## clear()
 - 位置: L267-269
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ホームページのユーザー値を消す。
+- 触るとき: 既定値へ戻す処理の影響範囲を確かめるとき。
 - 呼び出し先: `Services.prefs.clearUserPref()`
 - XPCOM: `Services.prefs`
 
 ## reset()
 - 位置: L274-276
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ホームページを about:home に設定する。
+- 触るとき: リセット操作で何が設定されるかを確かめるとき。
 - 呼び出し先: `Services.prefs.setStringPref()`
 - XPCOM: `Services.prefs`
 
 ## shouldIgnore()
 - 位置: async L286-291
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: URL が無視リストのいずれかを部分一致(大小無視)で含むかを返す。
+- 触るとき: 無視リストの照合規則を変えるとき。判定前に初期化を待つ。
 - 呼び出し先: `code.toLowerCase()`, `lowerURL.includes()`, `this._ignoreList.some()`, `this.delayedStartup()`, `url.toLowerCase()`
 
 ## _handleIgnoreListUpdated()
 - 位置: async L300-349
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 無視リストを更新し、設定中のホームページが該当すれば拡張の設定を外すか値を消す。
+- 触るとき: リモート設定の無視リスト更新で、ユーザーのホームページが消える報告を調べるとき。セーフモードでは拡張の処理を飛ばす。テレメトリは saved_reset で記録する。
 - 条件付き依存: `if (this.overridden)` → `getHomepagePref().toLowerCase()`
 - 条件付き依存: `if (this.overridden)` → `getHomepagePref()`
 - 条件付き依存: `if (this.overridden)` → `this._ignoreList.some()`
@@ -156,16 +156,16 @@ lines: 399
 
 ## onWidgetRemoved()
 - 位置: L351-356
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ホームボタンが外されたら、その記録を立ててリスナーを外す。
+- 触るとき: ホームボタンを外した後に自動で戻される報告を調べるとき。
 - 条件付き依存: `if (widgetId == kWidgetId)` → `Services.prefs.setBoolPref()`
 - 条件付き依存: `if (widgetId == kWidgetId)` → `lazy.CustomizableUI.removeListener()`
 - XPCOM: `Services.prefs`
 
 ## _maybeAddHomeButtonToToolbar()
 - 位置: L366-391
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 条件を満たすとき、ホームボタンをナビバーの URL バー手前の位置に追加する。
+- 触るとき: ホームページを設定した後にホームボタンが現れる条件、または位置の決め方を変えるとき。about:home、about:blank、拡張制御、一度外された場合は追加しない。
 - 呼び出し先: `Services.prefs.getBoolPref()`, `lazy.CustomizableUI.getWidget()`
 - 条件付き依存: `if ( homePage !== "about:home" && homePage !== "about:blank" && !Services.prefs.getBoolPref(kExtensionControllerPref, false) && !Services.prefs.getBoolPref(kWidg...)` → `lazy.CustomizableUI.getWidgetIdsInArea()`
 - 条件付き依存: `if ( homePage !== "about:home" && homePage !== "about:blank" && !Services.prefs.getBoolPref(kExtensionControllerPref, false) && !Services.prefs.getBoolPref(kWidg...)` → `navbarPlacements.indexOf()`
@@ -177,8 +177,8 @@ lines: 399
 
 ## _addCustomizableUiListener()
 - 位置: L393-397
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ホームボタンを外された記録が無ければ CustomizableUI のリスナーを登録する。
+- 触るとき: ツールバーのカスタマイズに対する反応が起動時に効かない報告を調べるとき。
 - 呼び出し先: `Services.prefs.getBoolPref()`
 - 条件付き依存: `if (!Services.prefs.getBoolPref(kWidgetRemovedPref, false))` → `lazy.CustomizableUI.addListener()`
 - XPCOM: `Services.prefs`

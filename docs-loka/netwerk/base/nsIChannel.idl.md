@@ -6,7 +6,7 @@ source-hash: b8985434483ccc45de01411abd6210c74f1d3922
 - 継承: nsIRequest
 - 役割: The nsIChannel interface allows clients to construct "GET" requests for
 - 実装: (未記入)
-- 使っているJS: [`browser/components/tabbrowser/Tabbrowser.sys.mjs`](../../browser/components/tabbrowser/Tabbrowser.sys.mjs.md)
+- 使っているJS: [`browser/base/content/browser.js`](../../browser/base/content/browser.js.md), [`browser/base/content/nsContextMenu.sys.mjs`](../../browser/base/content/nsContextMenu.sys.mjs.md), [`browser/components/BrowserContentHandler.sys.mjs`](../../browser/components/BrowserContentHandler.sys.mjs.md), [`browser/components/asrouter/modules/ASRouterTriggerListeners.sys.mjs`](../../browser/components/asrouter/modules/ASRouterTriggerListeners.sys.mjs.md), [`browser/components/backup/BackupService.sys.mjs`](../../browser/components/backup/BackupService.sys.mjs.md), [`browser/components/newtab/AboutNewTabRedirector.sys.mjs`](../../browser/components/newtab/AboutNewTabRedirector.sys.mjs.md), [`browser/components/newtab/MozNewTabRemoteRendererProtocolHandler.sys.mjs`](../../browser/components/newtab/MozNewTabRemoteRendererProtocolHandler.sys.mjs.md), [`browser/components/search/SearchSERPTelemetry.sys.mjs`](../../browser/components/search/SearchSERPTelemetry.sys.mjs.md), [`browser/components/sessionstore/SessionStore.sys.mjs`](../../browser/components/sessionstore/SessionStore.sys.mjs.md), [`browser/components/tabbrowser/Tabbrowser.sys.mjs`](../../browser/components/tabbrowser/Tabbrowser.sys.mjs.md), [`browser/components/topsites/TopSites.sys.mjs`](../../browser/components/topsites/TopSites.sys.mjs.md)
 
 ## メソッド / 属性
 - `attribute nsIURI originalURI`: The original URI used to construct the channel. This is used in
@@ -48,6 +48,7 @@ source-hash: b8985434483ccc45de01411abd6210c74f1d3922
 - 継承: nsIChannel
 - 役割: 親子プロセス間で共有されるチャンネル固有の ID (channelId) を持たせる nsIChannel の拡張インターフェース。
 - 実装: (未記入)
+- 使っているJS: [`browser/extensions/webcompat/experiment-apis/trackingProtection.js`](../../browser/extensions/webcompat/experiment-apis/trackingProtection.js.md)
 
 ## メソッド / 属性
 - `attribute uint64_t channelId`: Unique ID of the channel, shared between parent and child. Needed if

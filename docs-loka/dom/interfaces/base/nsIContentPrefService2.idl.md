@@ -19,7 +19,7 @@ source-hash: a42a77396fdaa288f08642e9dcc1fd412d6a64c3
 - 継承: nsISupports
 - 役割: Content Preferences
 - 実装: `ContentPrefService2` (toolkit/components/contentprefs/ContentPrefService2.sys.mjs)
-- 使っているJS: [`browser/components/tabbrowser/content/browser-fullZoom.js`](../../../browser/components/tabbrowser/content/browser-fullZoom.js.md)
+- 使っているJS: [`browser/base/content/browser.js`](../../../browser/base/content/browser.js.md), [`browser/components/ProfileDataUpgrader.sys.mjs`](../../../browser/components/ProfileDataUpgrader.sys.mjs.md), [`browser/components/preferences/config/accessibility.mjs`](../../../browser/components/preferences/config/accessibility.mjs.md), [`browser/components/tabbrowser/content/browser-fullZoom.js`](../../../browser/components/tabbrowser/content/browser-fullZoom.js.md), [`browser/components/urlbar/content/SearchModeSwitcher.mjs`](../../../browser/components/urlbar/content/SearchModeSwitcher.mjs.md), [`browser/modules/PermissionUI.sys.mjs`](../../../browser/modules/PermissionUI.sys.mjs.md), [`browser/modules/ZoomUI.sys.mjs`](../../../browser/modules/ZoomUI.sys.mjs.md)
 
 ## メソッド / 属性
 - `const unsigned short GROUP_NAME_MAX_LENGTH`: Group (called "domain" in this interface) names longer than this will be

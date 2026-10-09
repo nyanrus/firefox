@@ -6,6 +6,7 @@ source-hash: c6fdf87520ed4adece8a0feaf714bf907fb0f03c
 - 継承: nsISupports
 - 役割: Interface indicating what we found/corrected when fixing up a URI
 - 実装: `URIFixupInfo` (docshell/base/URIFixup.sys.mjs)
+- 使っているJS: [`browser/base/content/browser.js`](../../browser/base/content/browser.js.md)
 
 ## メソッド / 属性
 - `attribute BrowsingContext consumer`: Consumer that asked for fixed up URI.
@@ -27,7 +28,7 @@ source-hash: c6fdf87520ed4adece8a0feaf714bf907fb0f03c
 - 継承: nsISupports
 - 役割: Interface implemented by objects capable of fixing up strings into URIs
 - 実装: `URIFixup` (docshell/base/URIFixup.sys.mjs)
-- 使っているJS: [`browser/components/tabbrowser/Tabbrowser.sys.mjs`](../../browser/components/tabbrowser/Tabbrowser.sys.mjs.md)
+- 使っているJS: [`browser/components/tabbrowser/Tabbrowser.sys.mjs`](../../browser/components/tabbrowser/Tabbrowser.sys.mjs.md), [`browser/components/urlbar/UrlbarParentController.sys.mjs`](../../browser/components/urlbar/UrlbarParentController.sys.mjs.md), [`browser/components/urlbar/UrlbarSearchTermsPersistence.sys.mjs`](../../browser/components/urlbar/UrlbarSearchTermsPersistence.sys.mjs.md), [`browser/components/urlbar/UrlbarUtils.sys.mjs`](../../browser/components/urlbar/UrlbarUtils.sys.mjs.md), [`browser/components/urlbar/content/SmartbarInput.mjs`](../../browser/components/urlbar/content/SmartbarInput.mjs.md), [`browser/components/urlbar/content/UrlbarInputBase.mjs`](../../browser/components/urlbar/content/UrlbarInputBase.mjs.md), [`browser/components/urlbar/content/UrlbarQueryContext.mjs`](../../browser/components/urlbar/content/UrlbarQueryContext.mjs.md)
 
 ## メソッド / 属性
 - `const unsigned long FIXUP_FLAG_NONE`: No fixup flags.
