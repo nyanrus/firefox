@@ -1,0 +1,353 @@
+# nsISynthesizedEventCallback (dom/interfaces/base/nsIDOMWindowUtils.idl)
+
+source: dom/interfaces/base/nsIDOMWindowUtils.idl
+source-hash: 400fb84ffc63b2a328d75a0e49779bd5f1194a01
+
+- 継承: nsISupports
+- 役割: (未記入)
+- 実装: (未記入)
+
+## メソッド / 属性
+- `void onCompleteDispatch()`: Called when a synthesized event has been dispatched.
+
+# nsIDOMWindowUtils (dom/interfaces/base/nsIDOMWindowUtils.idl)
+
+source: dom/interfaces/base/nsIDOMWindowUtils.idl
+source-hash: 400fb84ffc63b2a328d75a0e49779bd5f1194a01
+
+- 継承: nsISupports
+- 役割: (未記入)
+- 実装: (未記入)
+- 使っているJS: [`browser/components/tabbrowser/Tabbrowser.sys.mjs`](../../../browser/components/tabbrowser/Tabbrowser.sys.mjs.md)
+
+## メソッド / 属性
+- `attribute unsigned short imageAnimationMode`: Image animation mode of the window. When this attribute's value
+- `readonly attribute boolean docCharsetIsForced`: Whether the charset of the window's current document has been forced by
+- `readonly attribute float physicalMillimeterInCSSPixels`: Return the conversion of a physical millimeter in CSS pixels.
+- `AString getDocumentMetadata(AString aName)`: Function to get metadata associated with the window's current document
+- `void getLastOverWindowPointerLocationInCSSPixels(float aX, float aY)`: Relative to the top-level document.
+- `void updateLayerTree()`: Force a synchronous layer transaction for this window if necessary.
+- `readonly attribute unsigned long long lastTransactionId`: Get the last used layer transaction id for this window's refresh driver.
+- `void getViewportInfo(uint32_t aDisplayWidth, uint32_t aDisplayHeight, double aDefaultZoom, boolean aAllowZoom, double aMinZoom, double aMaxZoom, uint32_t aWidth, uint32_t aHeight, boolean aAutoSize)`: Information retrieved from the <meta name="viewport"> tag.
+- `AString getViewportFitInfo()`: (未記入)
+- `void getDocumentViewerSize(uint32_t aDisplayWidth, uint32_t aDisplayHeight)`: Information about the window size in device pixels.
+- `void setMousewheelAutodir(Element aElement, boolean aEnabled, boolean aHonourRoot)`: For any scrollable element, this allows you to override the default
+- `void setDisplayPortForElement(float aXPx, float aYPx, float aWidthPx, float aHeightPx, Element aElement, uint32_t aPriority)`: For any scrollable element, this allows you to override the
+- `void setDisplayPortMarginsForElement(float aLeftMargin, float aTopMargin, float aRightMargin, float aBottomMargin, Element aElement, uint32_t aPriority)`: An alternate way to represent a displayport rect as a set of margins and a
+- `void setDisplayPortBaseForElement(int32_t aX, int32_t aY, int32_t aWidth, int32_t aHeight, Element aElement)`: (未記入)
+- `void getScrollbarSizes(Element aElement, uint32_t aVerticalScrollbarWidth, uint32_t aHorizontalScrollbarHeight)`: If |aElement| is a scroll container, returns the amount of layout
+- `void setResolutionAndScaleTo(float aResolution)`: Get/set the resolution at which rescalable web content is drawn for
+- `float getResolution()`: (未記入)
+- `void setRestoreResolution(float aResolution, uint32_t aDisplayWidth, uint32_t aDisplayHeight)`: Set a resolution on the presShell which is the "restored" from history.
+- `attribute boolean isFirstPaint`: Whether the next paint should be flagged as the first paint for a document.
+- `uint32_t getPresShellId()`: (未記入)
+- `boolean isCORSSafelistedRequestHeader(ACString name, ACString value)`: Returns whether a given header and value is a CORS-safelisted request
+- `const long MODIFIER_ALT`: Following modifiers are for sent*Event() except sendNative*Event().
+- `const long MODIFIER_CONTROL`: (未記入)
+- `const long MODIFIER_SHIFT`: (未記入)
+- `const long MODIFIER_META`: (未記入)
+- `const long MODIFIER_ALTGRAPH`: (未記入)
+- `const long MODIFIER_CAPSLOCK`: (未記入)
+- `const long MODIFIER_FN`: (未記入)
+- `const long MODIFIER_FNLOCK`: (未記入)
+- `const long MODIFIER_NUMLOCK`: (未記入)
+- `const long MODIFIER_SCROLLLOCK`: (未記入)
+- `const long MODIFIER_SYMBOL`: (未記入)
+- `const long MODIFIER_SYMBOLLOCK`: (未記入)
+- `const unsigned long WHEEL_EVENT_CAUSED_BY_NO_LINE_OR_PAGE_DELTA_DEVICE`: Synthesize a wheel event for a window. The event types supported is only
+- `const unsigned long WHEEL_EVENT_CAUSED_BY_MOMENTUM`: (未記入)
+- `const unsigned long WHEEL_EVENT_CUSTOMIZED_BY_USER_PREFS`: (未記入)
+- `const unsigned long WHEEL_EVENT_ASYNC_ENABLED`: (未記入)
+- `const unsigned long WHEEL_EVENT_EXPECTED_OVERFLOW_DELTA_X_ZERO`: (未記入)
+- `const unsigned long WHEEL_EVENT_EXPECTED_OVERFLOW_DELTA_X_POSITIVE`: (未記入)
+- `const unsigned long WHEEL_EVENT_EXPECTED_OVERFLOW_DELTA_X_NEGATIVE`: (未記入)
+- `const unsigned long WHEEL_EVENT_EXPECTED_OVERFLOW_DELTA_Y_ZERO`: (未記入)
+- `const unsigned long WHEEL_EVENT_EXPECTED_OVERFLOW_DELTA_Y_POSITIVE`: (未記入)
+- `const unsigned long WHEEL_EVENT_EXPECTED_OVERFLOW_DELTA_Y_NEGATIVE`: (未記入)
+- `void sendWheelEvent(float aX, float aY, double aDeltaX, double aDeltaY, double aDeltaZ, unsigned long aDeltaMode, long aModifiers, long aLineOrPageDeltaX, long aLineOrPageDeltaY, unsigned long aOptions, nsISynthesizedEventCallback aCallback)`: (未記入)
+- `const unsigned long NATIVE_MODIFIER_CAPS_LOCK`: Native modifiers for sendNativeKeyEvent and sendNativeMouseEvent.
+- `const unsigned long NATIVE_MODIFIER_NUM_LOCK`: (未記入)
+- `const unsigned long NATIVE_MODIFIER_SHIFT_LEFT`: (未記入)
+- `const unsigned long NATIVE_MODIFIER_SHIFT_RIGHT`: (未記入)
+- `const unsigned long NATIVE_MODIFIER_CONTROL_LEFT`: (未記入)
+- `const unsigned long NATIVE_MODIFIER_CONTROL_RIGHT`: (未記入)
+- `const unsigned long NATIVE_MODIFIER_ALT_LEFT`: (未記入)
+- `const unsigned long NATIVE_MODIFIER_ALT_RIGHT`: (未記入)
+- `const unsigned long NATIVE_MODIFIER_COMMAND_LEFT`: (未記入)
+- `const unsigned long NATIVE_MODIFIER_COMMAND_RIGHT`: (未記入)
+- `const unsigned long NATIVE_MODIFIER_HELP`: (未記入)
+- `const unsigned long NATIVE_MODIFIER_ALT_GRAPH`: (未記入)
+- `const unsigned long NATIVE_MODIFIER_FUNCTION`: (未記入)
+- `const unsigned long NATIVE_MODIFIER_NUMERIC_KEY_PAD`: (未記入)
+- `void sendNativeKeyEvent(long aNativeKeyboardLayout, long aNativeKeyCode, unsigned long aModifierFlags, AString aCharacters, AString aUnmodifiedCharacters, nsISynthesizedEventCallback aCallback)`: See nsIWidget::SynthesizeNativeKeyEvent
+- `const unsigned long NATIVE_MOUSE_MESSAGE_BUTTON_DOWN`: See nsIWidget::SynthesizeNativeMouseEvent
+- `const unsigned long NATIVE_MOUSE_MESSAGE_BUTTON_UP`: (未記入)
+- `const unsigned long NATIVE_MOUSE_MESSAGE_MOVE`: (未記入)
+- `const unsigned long NATIVE_MOUSE_MESSAGE_ENTER_WINDOW`: (未記入)
+- `const unsigned long NATIVE_MOUSE_MESSAGE_LEAVE_WINDOW`: (未記入)
+- `void sendNativeMouseEvent(long aScreenX, long aScreenY, unsigned long aNativeMessage, short aButton, unsigned long aModifierFlags, Element aElementOnWidget, nsISynthesizedEventCallback aCallback)`: (未記入)
+- `void suppressAnimation(boolean aSuppress)`: Suppress animations that are applied to a window by OS when
+- `const unsigned long MOUSESCROLL_PREFER_WIDGET_AT_POINT`: The values for sendNativeMouseScrollEvent's aAdditionalFlags.
+- `const unsigned long MOUSESCROLL_SCROLL_LINES`: Interpret the scroll delta values as lines rather than pixels.
+- `const unsigned long MOUSESCROLL_WIN_SCROLL_LPARAM_NOT_NULL`: The platform specific values of aAdditionalFlags.  Must be over 0x00010000.
+- `void sendNativeMouseScrollEvent(long aScreenX, long aScreenY, unsigned long aNativeMessage, double aDeltaX, double aDeltaY, double aDeltaZ, unsigned long aModifierFlags, unsigned long aAdditionalFlags, Element aElement, nsISynthesizedEventCallback aCallback)`: See nsIWidget::SynthesizeNativeMouseScrollEvent
+- `const long TOUCH_HOVER`: Touch states for sendNativeTouchPoint. These values match
+- `const long TOUCH_CONTACT`: (未記入)
+- `const long TOUCH_REMOVE`: (未記入)
+- `const long TOUCH_CANCEL`: (未記入)
+- `const long PHASE_BEGIN`: Phase states for sendNativeTouchPadPinch.
+- `const long PHASE_UPDATE`: (未記入)
+- `const long PHASE_END`: (未記入)
+- `void sendNativeTouchPoint(unsigned long aPointerId, unsigned long aTouchState, long aScreenX, long aScreenY, double aPressure, unsigned long aOrientation, nsISynthesizedEventCallback aCallback, Element aElement)`: Create a new or update an existing touch point on the digitizer.
+- `void sendNativeTouchpadPinch(unsigned long aEventPhase, float aScale, long aScreenX, long aScreenY, long aModifierFlags)`: These values indicate touchpad pinch phase states :
+- `void sendNativeTouchTap(long aScreenX, long aScreenY, boolean aLongTap, nsISynthesizedEventCallback aCallback)`: Simulates native touch based taps on the input digitizer. Events
+- `void sendNativePenInput(unsigned long aPointerId, unsigned long aPointerState, long aScreenX, long aScreenY, double aPressure, unsigned long aRotation, long aTiltX, long aTiltY, long aButton, nsISynthesizedEventCallback aCallback, Element aElement)`: Create a new or update an existing pen input on the digitizer.
+- `void sendNativeTouchpadDoubleTap(long aScreenX, long aScreenY, long aModifierFlags)`: Send a native event as if the user double tapped the touchpad with two
+- `void sendNativeTouchpadPan(unsigned long aEventPhase, long aScreenX, long aScreenY, double aDeltaX, double aDeltaY, long aModifierFlags, nsISynthesizedEventCallback aCallback)`: Send a native event as if the user panned on the touchpad with two
+- `readonly attribute unsigned long parsedStyleSheets`: Returns the number of stylesheets that have been parsed on this document.
+- `void activateNativeMenuItemAt(AString indexString)`: See nsIWidget::ActivateNativeMenuItemAt
+- `void forceUpdateNativeMenuAt(AString indexString)`: See nsIWidget::ForceUpdateNativeMenuAt
+- `AString getNativeMenuItemKeyEquivalent(AString elementId)`: Returns the key equivalent currently carried by the native menu item that
+- `AString GetSelectionAsPlaintext()`: Returns the current selection as plaintext. Note that the result may be
+- `void garbageCollect(nsICycleCollectorListener aListener)`: Force a garbage collection followed by a cycle collection.
+- `void cycleCollect(nsICycleCollectorListener aListener)`: Force a cycle collection without garbage collection.
+- `void runNextCollectorTimer(ACString aReason)`: Trigger whichever GC or CC timer is currently active and waiting to fire.
+- `void pokeGC(ACString aReason)`: "Poke" the GC: set a timer to run a GC soon (usually 4 seconds), unless
+- `void sendSimpleGestureEvent(AString aType, float aX, float aY, unsigned long aDirection, double aDelta, long aModifiers, unsigned long aClickCount)`: Synthesize a simple gesture event for a window. The event types
+- `Element elementFromPoint(float aX, float aY, boolean aIgnoreRootScrollFrame, boolean aFlushLayout)`: Retrieve the element at point aX, aY in the window's document.
+- `NodeList nodesFromRect(float aX, float aY, float aTopSize, float aRightSize, float aBottomSize, float aLeftSize, boolean aIgnoreRootScrollFrame, boolean aFlushLayout, boolean aOnlyVisible, float aTransparencyThreshold)`: Retrieve all nodes that intersect a rect in the window's document.
+- `uint32_t compareCanvases(nsISupports aCanvas1, nsISupports aCanvas2, unsigned long aMaxDifference)`: Compare the two canvases, returning the number of differing pixels and
+- `readonly attribute boolean isMozAfterPaintPending`: Returns true if a MozAfterPaint event has been queued but not yet
+- `readonly attribute boolean isWindowFullyOccluded`: (未記入)
+- `readonly attribute boolean isCompositorPaused`: (未記入)
+- `readonly attribute boolean isInputTaskManagerSuspended`: Returns true if the InputTaskManager is suspended.
+- `void suppressEventHandling(boolean aSuppress)`: Suppresses/unsuppresses user initiated event handling in window's document
+- `void disableNonTestMouseEvents(boolean aDisable)`: Disable or enable non synthetic test mouse events on *all* windows.
+- `void getScrollXY(boolean aFlushLayout, long aScrollX, long aScrollY)`: Returns the scroll position of the window's currently loaded document.
+- `void getScrollXYFloat(boolean aFlushLayout, float aScrollX, float aScrollY)`: Returns the scroll position of the window's currently loaded document.
+- `void getScrollbarSize(boolean aFlushLayout, long aWidth, long aHeight)`: Returns the scrollbar width of the window's scroll frame.
+- `DOMRect getBoundsWithoutFlushing(Element aElement)`: Returns the given element's bounds without flushing pending layout changes.
+- `Array<DOMRect> getWidgetOpaqueRegion()`: Returns the opaque region, for testing
+- `const long UPDATE_TYPE_RESTORE`: Scroll the visual viewport to the given coordinates, relative to the
+- `const long UPDATE_TYPE_MAIN_THREAD`: (未記入)
+- `const long SCROLL_MODE_INSTANT`: (未記入)
+- `const long SCROLL_MODE_SMOOTH`: (未記入)
+- `void scrollToVisual(float aOffsetX, float aOffsetY, long aUpdateType, long aScrollMode)`: (未記入)
+- `void getVisualViewportOffsetRelativeToLayoutViewport(float aOffsetX, float aOffsetY)`: Returns the offset of the window's visual viewport relative to the
+- `void getVisualViewportOffset(long aOffsetX, long aOffsetY)`: Returns the scroll position of the window's visual viewport.
+- `DOMRect transformRectLayoutToVisual(float aX, float aY, float aWidth, float aHeight)`: Transforms the passed in rect from layout relative coords (relative to
+- `DOMRect getElementBoundingScreenRect(Element aElement)`: For a given DOM element, returns its position in screen coordinates
+- `DOMRect toScreenRectInCSSUnits(float aX, float aY, float aWidth, float aHeight)`: Transform a rectangle given in coordinates relative to this document
+- `DOMRect toScreenRect(float aX, float aY, float aWidth, float aHeight)`: Transform a rectangle given in coordinates relative to this document
+- `DOMRect toTopLevelWidgetRect(float aX, float aY, float aWidth, float aHeight)`: Transform a rectangle given in coordinates relative to the top level widget
+- `DOMRect convertFromParentProcessWidgetToLocal(float aX, float aY, float aWidth, float aHeight)`: Transform a rectangle given in coordinates relative to the top level
+- `void setDynamicToolbarMaxHeight(uint32_t aHeightInScreen)`: Sets the maximum height of the dynamic toolbar in Screen pixel units.
+- `const long FLUSH_NONE`: (未記入)
+- `const long FLUSH_STYLE`: (未記入)
+- `const long FLUSH_LAYOUT`: (未記入)
+- `boolean needsFlush(long aFlushtype)`: Returns true if a flush of the given type is needed.
+- `void flushLayoutWithoutThrottledAnimations()`: Flush pending layout-type notification without flushing throttled
+- `DOMRect getRootBounds()`: Returns the bounds of the window's currently loaded document. This will
+- `readonly attribute boolean IMEIsOpen`: Get IME open state. TRUE means 'Open', otherwise, 'Close'.
+- `const unsigned long IME_STATUS_DISABLED`: WARNING: These values must be same as nsIWidget's values.
+- `const unsigned long IME_STATUS_ENABLED`: ENABLED means users can use all functions of IME. This state is same as
+- `const unsigned long IME_STATUS_PASSWORD`: PASSWORD means users cannot use most functions of IME. But on GTK2,
+- `readonly attribute unsigned long IMEStatus`: Get IME status, see above IME_STATUS_* definitions.
+- `readonly attribute nsIURI inputContextURI`: Get the document URI which may be retrieved by native IME.
+- `const unsigned long INPUT_CONTEXT_ORIGIN_MAIN`: Get whether current input context (including IME status) in the widget
+- `const unsigned long INPUT_CONTEXT_ORIGIN_CONTENT`: (未記入)
+- `readonly attribute unsigned long inputContextOrigin`: (未記入)
+- `readonly attribute Node nodeObservedByIMEContentObserver`: Get a root node which is observed by IMEContentObserver.
+- `boolean dispatchDOMEventViaPresShellForTesting(Node aTarget, Event aEvent)`: Dispatches aEvent as a synthesized trusted event for tests via the
+- `boolean dispatchEventToChromeOnly(EventTarget aTarget, Event aEvent)`: Sets WidgetEvent::mFlags::mOnlyChromeDispatch to true to ensure that
+- `string getClassName(jsval aObject)`: Returns the real classname (possibly of the mostly-transparent security
+- `const unsigned long CONTENT_COMMAND_FLAG_PREVENT_SET_SELECTION`: If sendContentCommanedEvent()'s aAdditionalFlags argument has no
+- `boolean sendContentCommandEvent(AString aType, nsITransferable aTransferable, AString aString, uint32_t aOffset, AString aReplaceSrcString, unsigned long aAdditionalFlags)`: Generate a content command event.
+- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_SPELLCHECK`: sendQueryContentEvent()'s aAdditionalFlags may have one of following
+- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_IME_RAWINPUT`: (未記入)
+- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_IME_SELECTEDRAWTEXT`: (未記入)
+- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_IME_CONVERTEDTEXT`: (未記入)
+- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_IME_SELECTEDCONVERTEDTEXT`: (未記入)
+- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_ACCESSIBILITY`: (未記入)
+- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_FIND`: (未記入)
+- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_URLSECONDARY`: (未記入)
+- `const unsigned long QUERY_CONTENT_FLAG_SELECTION_URLSTRIKEOUT`: (未記入)
+- `const unsigned long QUERY_CONTENT_FLAG_OFFSET_RELATIVE_TO_INSERTION_POINT`: One of sendQueryContentEvent()'s aAdditionalFlags.  If this is specified,
+- `nsIQueryContentEventResult sendQueryContentEvent(unsigned long aType, long long aOffset, unsigned long aLength, long aX, long aY, unsigned long aAdditionalFlags)`: Synthesize a query content event. Note that the result value returned here
+- `const unsigned long QUERY_SELECTED_TEXT`: QUERY_SELECTED_TEXT queries the first selection range's information.
+- `const unsigned long QUERY_TEXT_CONTENT`: QUERY_TEXT_CONTENT queries the text at the specified range.
+- `const unsigned long QUERY_CARET_RECT`: QUERY_CARET_RECT queries the (collapsed) caret rect of the offset.
+- `const unsigned long QUERY_TEXT_RECT`: QUERY_TEXT_RECT queries the specified text's rect.
+- `const unsigned long QUERY_EDITOR_RECT`: QUERY_TEXT_RECT queries the focused editor's rect.
+- `const unsigned long QUERY_CHARACTER_AT_POINT`: QUERY_CHARACTER_AT_POINT queries the character information at the
+- `const unsigned long QUERY_TEXT_RECT_ARRAY`: QUERY_TEXT_RECT_ARRAY queries the rects per character
+- `void remoteFrameFullscreenChanged(Element aFrameElement, boolean aFullscreenKeyboardLockEnabled)`: Called when the remote child frame has changed its fullscreen state,
+- `void remoteFrameFullscreenReverted()`: Called when the remote frame has popped all fullscreen elements off its
+- `boolean handleFullscreenRequests()`: Calls the document to handle any pending fullscreen requests.
+- `void exitFullscreen(boolean aDontRestoreViewSize)`: Called when the child frame has fully exit fullscreen, so that the parent
+- `const unsigned long SELECTION_SET_FLAG_REVERSE`: If SELECTION_SET_FLAG_REVERSE is set, the selection is set from
+- `const unsigned long SELECTION_EXPAND_TO_CLUSTER_BOUNDARY`: If SELECTION_EXPAND_TO_CLUSTER_BOUNDARY is set, the selection range
+- `boolean sendSelectionSetEvent(unsigned long aOffset, unsigned long aLength, unsigned long aAdditionalFlags)`: Synthesize a selection set event to the window.
+- `const unsigned long SELECT_CHARACTER`: (未記入)
+- `const unsigned long SELECT_CLUSTER`: (未記入)
+- `const unsigned long SELECT_WORD`: (未記入)
+- `const unsigned long SELECT_LINE`: (未記入)
+- `const unsigned long SELECT_BEGINLINE`: (未記入)
+- `const unsigned long SELECT_ENDLINE`: (未記入)
+- `const unsigned long SELECT_PARAGRAPH`: (未記入)
+- `const unsigned long SELECT_WORDNOSPACE`: (未記入)
+- `boolean selectAtPoint(float aX, float aY, unsigned long aSelectBehavior)`: Select content at a client point based on a selection behavior if the
+- `AString getVisitedDependentComputedStyle(Element aElement, AString aPseudoElement, AString aPropertyName)`: Perform the equivalent of:
+- `void enterModalState()`: Put the window into a state where scripts are frozen and events
+- `void leaveModalState()`: Resume normal window state, where scripts can run and events are
+- `boolean isInModalState()`: Is the window is in a modal state? [See enterModalState()]
+- `void suspendTimeouts()`: Suspend/resume timeouts on this window and its descendant windows.
+- `void resumeTimeouts()`: (未記入)
+- `readonly attribute AString layerManagerType`: What type of layer manager the widget associated with this window is
+- `readonly attribute boolean layerManagerRemote`: True if the layer manager for the widget associated with this window is
+- `readonly attribute boolean isWebRenderRequested`: True if webrender was requested by the user (via pref or env-var), false
+- `readonly attribute AString currentAudioBackend`: Returns the current audio backend as a free-form string.
+- `readonly attribute unsigned long currentMaxAudioChannels`: Returns the max channel counts of the current audio device.
+- `Promise defaultDevicesRoundTripLatency()`: Returns the mean round trip latency in seconds for the default input and
+- `readonly attribute unsigned long currentPreferredSampleRate`: Returns the preferred sample rate of the current audio device.
+- `const unsigned short AUDIO_INPUT`: Returns all the audio input/output devices.
+- `const unsigned short AUDIO_OUTPUT`: (未記入)
+- `nsIArray audioDevices(unsigned short aSide)`: (未記入)
+- `void startFrameTimeRecording(unsigned long startIndex)`: Record (and return) frame-intervals for frames which were presented
+- `Array<float> stopFrameTimeRecording(unsigned long startIndex)`: Returns array of frame intervals since the time when the given startIndex
+- `readonly attribute float displayDPI`: The DPI of the display
+- `void advanceTimeAndRefresh(long long aMilliseconds)`: advanceTimeAndRefresh allows the caller to take over the refresh
+- `void restoreNormalRefresh()`: Undoes the effects of advanceTimeAndRefresh.
+- `readonly attribute boolean isTestControllingRefreshes`: Reports whether the current state is test-controlled refreshes
+- `readonly attribute boolean isMouseDown`: Whether this process saw a trusted mousedown and no mouseup or dragend
+- `readonly attribute boolean asyncPanZoomEnabled`: Reports whether APZ is enabled on the widget that this window is attached
+- `void setAsyncScrollOffset(Element aElement, float aX, float aY)`: Set async scroll offset on an element. The next composite will render
+- `void setAsyncZoom(Element aRootElement, float aValue)`: Set async zoom value. aRootElement should be the document element of our
+- `boolean flushApzRepaints(Element aElement)`: Do a round-trip to the compositor to ensure any pending APZ repaint requests
+- `void disableApzForElement(Element aElement)`: Sets a flag on the element to forcibly disable APZ on it. This affects
+- `boolean isApzDisabledForElement(Element aElement)`: Returns whether APZ is being disabled on the given |aElement|.
+- `void zoomToFocusedInput()`: Ask APZ to pan and zoom to the focused input element.
+- `double computeAnimationDistance(Element element, AString property, AString value1, AString value2)`: Method for testing StyleAnimationValue::ComputeDistance.
+- `AString getUnanimatedComputedStyle(Element aElement, AString aPseudoElement, AString aProperty, long aFlushType)`: Returns the computed style for the specified property of given pseudo type
+- `readonly attribute AString canvasBackgroundColor`: Returns the effective canvas background color for the window.
+- `readonly attribute AString focusedInputType`: Get the type of the currently focused html input, if any.
+- `readonly attribute AString focusedActionHint`: Get the action hint of the currently focused html input, if any.
+- `readonly attribute AString focusedInputMode`: Get the inputmode of the currently focused editing host, if any.
+- `readonly attribute AString focusedAutocapitalize`: Get the autocapitalize of the currently focused editing host, if any.
+- `readonly attribute boolean focusedAutocorrect`: Get the autocorrect of the currently focused editing host, if any.
+- `nsViewID getViewId(Element aElement)`: Find the view ID for a given element. This is the reverse of
+- `boolean checkAndClearPaintedState(Element aElement)`: Check if any PaintedLayer painting has been done for this element,
+- `boolean checkAndClearDisplayListState(Element aElement)`: Check if any display list building has been done for this element,
+- `boolean checkAndClearWRDidRasterize()`: Check if WebRender rasterized any tiles during the last frame, and
+- `long long getFileId(jsval aFile)`: Get internal id of the stored blob, file or file handle.
+- `AString getFilePath(jsval aFile)`: Get internal file path of the stored file or file handle.
+- `boolean getFileReferences(AString aDatabaseName, long long aId, long aRefCnt, long aDBRefCnt)`: Get file ref count info for given database and file id.
+- `void flushPendingFileDeletions()`: (未記入)
+- `void startPCCountProfiling()`: Begin opcode-level profiling of all JavaScript execution in the window's
+- `void stopPCCountProfiling()`: Stop opcode-level profiling of JavaScript execution in the runtime, and
+- `void purgePCCounts()`: Purge collected PC counters.
+- `long getPCCountScriptCount()`: Get the number of scripts with opcode-level profiling information.
+- `AString getPCCountScriptSummary(long script)`: Get a JSON string for a short summary of a script and the PC counts
+- `AString getPCCountScriptContents(long script)`: Get a JSON string with full information about a profiled script,
+- `readonly attribute boolean paintingSuppressed`: Returns true if painting is suppressed for this window and false
+- `void setVisualViewportSize(float aWidth, float aHeight)`: Set the viewport size for the purposes of clamping scroll positions for
+- `void disableDialogs()`: These are used to control whether dialogs (alert, prompt, confirm) are
+- `void enableDialogs()`: (未記入)
+- `boolean areDialogsEnabled()`: (未記入)
+- `void resetDialogAbuseState()`: (未記入)
+- `const unsigned long AGENT_SHEET`: (未記入)
+- `const unsigned long USER_SHEET`: (未記入)
+- `const unsigned long AUTHOR_SHEET`: (未記入)
+- `void loadSheet(nsIURI sheetURI, unsigned long type)`: Synchronously loads a style sheet from |sheetURI| and adds it to the list
+- `void loadSheetUsingURIString(ACString sheetURI, unsigned long type)`: Same as the above method but allows passing the URI as a string.
+- `void addSheet(nsIPreloadedStyleSheet sheet, unsigned long type)`: Adds a style sheet to the list of additional style sheets of the document.
+- `void removeSheet(nsIURI sheetURI, unsigned long type)`: Remove the document style sheet at |sheetURI| from the list of additional
+- `void removeSheetUsingURIString(ACString sheetURI, unsigned long type)`: Same as the above method but allows passing the URI as a string.
+- `readonly attribute boolean isHandlingUserInput`: Returns true if a user input is being handled.
+- `readonly attribute double millisSinceLastUserInput`: Returns milliseconds elapsed since last user input was started.
+- `void allowScriptsToClose()`: After calling the method, the window for which this DOMWindowUtils
+- `readonly attribute boolean isParentWindowMainWidgetVisible`: Is the parent window's main widget visible?  If it isn't, we probably
+- `boolean isNodeDisabledForEvents(Node aNode)`: In certain cases the event handling of nodes, form controls in practice,
+- `AString getOMTAStyle(Element aElement, AString aProperty, AString aPseudoElement)`: (未記入)
+- `nsIJSRAIIHelper setHandlingUserInput(boolean aHandlingInput)`: If aHandlingInput is true, this informs the event state manager that
+- `boolean isKeyboardEventUserActivity(Event aKeyboardEvent)`: Returns true if a keyboard event qualifies as "user activity" such that
+- `jsval getContentAPZTestData(Element aElement)`: Get the content- and compositor-side APZ test data instances.
+- `jsval getCompositorAPZTestData(Element aElement)`: (未記入)
+- `void sendMozMouseHitTestEvent(float aX, float aY, Element aElement)`: Send a MozMouseHittest event hit on the given (x, y) on this window.
+- `void postRestyleSelfEvent(Element aElement)`: Posts an RestyleHint::RESTYLE_SELF restyle event for the given element.
+- `void xpconnectArgument(nsISupports aObj)`: This method doesn't do anything useful.  It was solely added for the
+- `void askPermission(nsIContentPermissionRequest aRequest)`: Helper for JS components that need to send permission requests with
+- `readonly attribute unsigned long long restyleGeneration`: Restyle generation for the current document.
+- `readonly attribute unsigned long long framesConstructed`: Number of frames constructed (excluding breaking) for the curent
+- `readonly attribute unsigned long long framesReflowed`: Number of frames reflowed for the curent document.
+- `readonly attribute unsigned long long animationTriggeredRestyles`: Number of restyles triggered by animations.
+- `readonly attribute boolean refreshDriverHasPendingTick`: Indicates whether the current frame's refresh driver has a pending tick,
+- `void setCustomTitlebar(boolean aCustomTitlebar)`: Controls whether we paint to the titlebar of the window.
+- `void setResizeMargin(int32_t aResizeMargin)`: Controls the amount of space on each edge of the window that can be
+- `jsval getFrameUniformityTestData()`: Returns a JSObject which contains a list of frame uniformities
+- `void enterChaosMode()`: (未記入)
+- `void leaveChaosMode()`: Decrease the chaos mode activation level. See enterChaosMode().
+- `void triggerDeviceReset()`: Alerts Gecko of a device reset
+- `boolean hasRuleProcessorUsedByMultipleStyleSets(unsigned long aSheetType)`: Returns whether the document's style set's rule processor for the
+- `void respectDisplayPortSuppression(boolean aEnabled)`: Enable or disable displayport suppression. This is intended to be used by
+- `void forceReflowInterrupt()`: Set a flag that forces the next reflow interrupt check to return true. This
+- `void terminateGPUProcess()`: Terminate the GPU process. Used for testing GPU process restarts.
+- `readonly attribute int32_t gpuProcessPid`: Returns the GPU process pid, or -1 if there is no GPU process.
+- `readonly attribute int32_t rddProcessPid`: Returns the RDD process pid, or -1 if there is no RDD process.
+- `int64_t getStorageUsage(Storage aStorage)`: Returns usage data for a given storage object.
+- `long getDirectionFromText(AString aString)`: Returns the directionality of a string using the first-strong character
+- `void ensureDirtyRootFrame()`: Calls FrameNeedsReflow on that root frame so that a layout flush
+- `void wrCapture()`: Capture the contents of the current WebRender frame and
+- `const uint32_t WR_CAPTURE_SCENE`: Flag bits for use in |wrStartCaptureSequence|'s |aFlags| argument.
+- `const uint32_t WR_CAPTURE_FRAME`: (未記入)
+- `const uint32_t WR_CAPTURE_TILE_CACHE`: (未記入)
+- `const uint32_t WR_CAPTURE_EXTERNAL_RESOURCES`: (未記入)
+- `void wrStartCaptureSequence(uint32_t aFlags)`: Start capturing each WebRender frame to disk.
+- `void wrStopCaptureSequence()`: Stop a capture begun with |wrStartCaptureSequence|.
+- `Promise setCompositionRecording(boolean aValue)`: Toggle recording of composition on and off.
+- `Promise startCompositionRecording()`: Start the composition recorder.
+- `Promise stopCompositionRecording(boolean aWriteToDisk)`: Stop the composition recorder.
+- `boolean isCssPropertyRecordedInUseCounter(ACString aProperty)`: Returns whether the document we're associated to has recorded a given CSS
+- `void resetMobileViewportManager()`: Calls SetInitialViewport on the MobileViewportManager, which effectively
+- `boolean isCoepCredentialless()`: (未記入)
+- `void setHiDPIMode(boolean aHiDPI)`: Change the DPI setting for the primary monitor.
+- `void restoreHiDPIMode()`: Restore the modified HiDPI mode.
+- `attribute ACString systemFont`: NOTE: Currently works only on GTK+.
+- `readonly attribute unsigned long long paintCount`: Returns the number of times this document for this window has
+- `const long DEFAULT_MOUSE_POINTER_ID`: (未記入)
+- `const long DEFAULT_PEN_POINTER_ID`: (未記入)
+- `const long DEFAULT_TOUCH_POINTER_ID`: (未記入)
+- `const long MOUSE_BUTTON_LEFT_BUTTON`: (未記入)
+- `const long MOUSE_BUTTON_MIDDLE_BUTTON`: (未記入)
+- `const long MOUSE_BUTTON_RIGHT_BUTTON`: (未記入)
+- `const long MOUSE_BUTTONS_NO_BUTTON`: (未記入)
+- `const long MOUSE_BUTTONS_LEFT_BUTTON`: (未記入)
+- `const long MOUSE_BUTTONS_RIGHT_BUTTON`: (未記入)
+- `const long MOUSE_BUTTONS_MIDDLE_BUTTON`: (未記入)
+- `const long MOUSE_BUTTONS_4TH_BUTTON`: (未記入)
+- `const long MOUSE_BUTTONS_5TH_BUTTON`: (未記入)
+- `const long DIRECTION_LTR`: (未記入)
+- `const long DIRECTION_RTL`: (未記入)
+- `const long DIRECTION_NOT_SET`: (未記入)
+- `void syncFlushCompositor()`: (未記入)
+- `unsigned long long getLayersId(Element aElement)`: (未記入)
+- `readonly attribute boolean effectivelyThrottlesFrameRequests`: (未記入)
+- `readonly attribute AString webrtcRawDeviceId`: (未記入)
+- `readonly attribute boolean suspendedByBrowsingContextGroup`: (未記入)
+- `readonly attribute boolean hasScrollLinkedEffect`: (未記入)
+- `readonly attribute uint32_t orientationLock`: (未記入)
+- `Element getWheelScrollTarget()`: (未記入)
+- `readonly attribute nsIDragSession dragSession`: (未記入)
+- `attribute unsigned long microTaskLevel`: (未記入)
+
+# nsIJSRAIIHelper (dom/interfaces/base/nsIDOMWindowUtils.idl)
+
+source: dom/interfaces/base/nsIDOMWindowUtils.idl
+source-hash: 400fb84ffc63b2a328d75a0e49779bd5f1194a01
+
+- 継承: nsISupports
+- 役割: JS doesn't do RAII very well. We can use this interface to make remembering
+- 実装: (未記入)
+
+## メソッド / 属性
+- `void destruct()`: (未記入)

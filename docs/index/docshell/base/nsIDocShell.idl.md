@@ -1,0 +1,109 @@
+# nsIDocShell (docshell/base/nsIDocShell.idl)
+
+source: docshell/base/nsIDocShell.idl
+source-hash: 264a665f8f08dd480b8bb9f1a5969ae55cc4a439
+
+- 継承: nsIDocShellTreeItem
+- 役割: nsIDocShell is an interface corresponding to the native nsDocShell object,
+- 実装: (未記入)
+
+## メソッド / 属性
+- `void setCancelContentJSEpoch(long aEpoch)`: (未記入)
+- `void loadURI(nsDocShellLoadStatePtr aLoadState, boolean aSetNavigating)`: Loads a given URI.  This will give priority to loading the requested URI
+- `void prepareForNewContentModel()`: Reset state to a new content model within the current document and the document
+- `void setCurrentURIForSessionStore(nsIURI aURI)`: Helper for the session store to change the URI associated with the
+- `void firePageHideNotification()`: Notify the associated content viewer and all child docshells that they are
+- `readonly attribute nsPresContext presContext`: Presentation context for the currently loaded document.  This may be null.
+- `readonly attribute PresShell presShell`: Presentation shell for the currently loaded document.  This may be null.
+- `readonly attribute PresShell eldestPresShell`: Presentation shell for the oldest document, if this docshell is
+- `readonly attribute nsIDocumentViewer docViewer`: Document Viewer that is currently loaded for this DocShell.  This may
+- `readonly attribute unsigned long long outerWindowID`: Get the id of the outer window that is or will be in this docshell.
+- `attribute EventTarget chromeEventHandler`: This attribute allows chrome to tie in to handle DOM events that may
+- `attribute ACString customUserAgent`: This allows chrome to set a custom User agent on a specific docshell
+- `attribute boolean cssErrorReportingEnabled`: Whether CSS error reporting is enabled.
+- `attribute boolean allowMetaRedirects`: Attribute stating if refresh based redirects can be allowed
+- `attribute boolean allowSubframes`: Attribute stating if it should allow subframes (framesets/iframes) or not
+- `attribute boolean allowImages`: Attribute stating whether or not images should be loaded.
+- `attribute boolean allowMedia`: Attribute stating whether or not media (audio/video) should be loaded.
+- `attribute boolean allowDNSPrefetch`: Attribute that determines whether DNS prefetch is allowed for this subtree
+- `attribute boolean allowWindowControl`: Attribute that determines whether window control (move/resize) is allowed.
+- `attribute boolean allowContentRetargeting`: True if the docshell allows its content to be handled by a content listener
+- `attribute boolean allowContentRetargetingOnChildren`: True if new child docshells should allow content retargeting.
+- `Array<nsIDocShell> getAllDocShellsInSubtree(long aItemType, nsIDocShell_DocShellEnumeratorDirection aDirection)`: (未記入)
+- `attribute nsIDocShell_AppType appType`: (未記入)
+- `attribute boolean allowAuth`: certain docshells (like the message pane)
+- `attribute float zoom`: Set/Get the document scale factor.  When setting this attribute, a
+- `readonly attribute nsIDocShell_BusyFlags busyFlags`: (未記入)
+- `attribute unsigned long loadType`: (未記入)
+- `attribute nsLoadFlags defaultLoadFlags`: (未記入)
+- `boolean isBeingDestroyed()`: (未記入)
+- `readonly attribute boolean isExecutingOnLoadHandler`: (未記入)
+- `attribute nsILayoutHistoryState layoutHistoryState`: (未記入)
+- `readonly attribute nsILoadURIDelegate loadURIDelegate`: Object used to delegate URI loading to an upper context.
+- `void suspendRefreshURIs()`: Cancel the XPCOM timers for each meta-refresh URI in this docshell,
+- `void resumeRefreshURIs()`: Restart the XPCOM timers for each meta-refresh URI in this docshell,
+- `void clearCachedUserAgent()`: (未記入)
+- `void clearCachedPlatform()`: (未記入)
+- `readonly attribute boolean restoringDocument`: (未記入)
+- `attribute boolean useErrorPages`: (未記入)
+- `boolean displayLoadError(nsresult aError, nsIURI aURI, wstring aURL, nsIChannel aFailedChannel)`: Display a load error in a frame while keeping that frame's currentURI
+- `readonly attribute nsIChannel failedChannel`: The channel that failed to load and resulted in an error page.
+- `readonly attribute long previousEntryIndex`: Keeps track of the previous nsISHEntry index and the current
+- `readonly attribute long loadedEntryIndex`: (未記入)
+- `void historyPurged(long numEntries)`: Notification that entries have been removed from the beginning of a
+- `readonly attribute nsIChannel currentDocumentChannel`: Gets the channel for the currently loaded document, if any.
+- `readonly attribute boolean isInUnload`: Find out whether the docshell is currently in the middle of a page
+- `void DetachEditorFromWindow()`: Disconnects this docshell's editor from its window, and stores the
+- `void exitPrintPreview()`: Propagated to the print preview document viewer.  Must only be called on
+- `readonly attribute nsIDRef historyID`: The ID of the docshell in the session history.
+- `nsIDRef HistoryID()`: Helper method for accessing this value from C++
+- `void createAboutBlankDocumentViewer(nsIPrincipal aPrincipal, nsIPrincipal aPartitionedPrincipal, nsIPolicyContainer aPolicyContainer)`: Create a new about:blank document and content viewer.
+- `readonly attribute ACString charset`: Upon getting, returns the canonical encoding label of the document
+- `void forceEncodingDetection()`: (未記入)
+- `void setParentCharset(Encoding parentCharset, int32_t parentCharsetSource, nsIPrincipal parentCharsetPrincipal)`: In a child docshell, this is the charset of the parent docshell
+- `void getParentCharset(Encoding parentCharset, int32_t parentCharsetSource, nsIPrincipal parentCharsetPrincipal)`: (未記入)
+- `DOMHighResTimeStamp now()`: Return a DOMHighResTimeStamp representing the number of
+- `void addWeakPrivacyTransitionObserver(nsIPrivacyTransitionObserver obs)`: Add an observer to the list of parties to be notified when this docshell's
+- `void addWeakReflowObserver(nsIReflowObserver obs)`: Add an observer to the list of parties to be notified when reflows are
+- `void removeWeakReflowObserver(nsIReflowObserver obs)`: Remove an observer from the list of parties to be notified about reflows.
+- `void notifyReflowObservers(boolean interruptible, DOMHighResTimeStamp start, DOMHighResTimeStamp end)`: Notify all attached observers that a reflow has just occurred.
+- `void addWeakScrollObserver(nsIScrollObserver obs)`: Add an observer to the list of parties to be notified when scroll position
+- `void removeWeakScrollObserver(nsIScrollObserver obs)`: Add an observer to the list of parties to be notified when scroll position
+- `void notifyScrollObservers()`: Notify all attached observers that the scroll position of some element
+- `readonly attribute boolean isTopLevelContentDocShell`: Returns true if this docshell is the top level content docshell.
+- `readonly attribute boolean asyncPanZoomEnabled`: True iff asynchronous panning and zooming is enabled for this
+- `readonly attribute boolean mayEnableCharacterEncodingMenu`: Indicates whether the UI may enable the character encoding menu. The UI
+- `attribute nsIEditor editor`: (未記入)
+- `readonly attribute boolean editable`: (未記入)
+- `readonly attribute boolean hasEditingSession`: (未記入)
+- `void makeEditable(boolean inWaitForUriLoad)`: Make this docShell editable, setting a flag that causes
+- `boolean isCommandEnabled(string command)`: Cherry picked parts of nsIController.
+- `void doCommand(string command)`: (未記入)
+- `void doCommandWithParams(string command, nsICommandParams aParams)`: (未記入)
+- `boolean IsInvisible()`: Invisible DocShell are dummy construct to simulate DOM windows
+- `void SetInvisible(boolean aIsInvisibleDocshell)`: (未記入)
+- `nsIScriptGlobalObject GetScriptGlobalObject()`: Get the script global for the document in this docshell.
+- `Document getExtantDocument()`: (未記入)
+- `readonly attribute boolean hasLoadedNonBlankURI`: This attribute determines whether a document which is not about:blank has
+- `attribute boolean windowDraggingAllowed`: Allow usage of -moz-window-dragging:drag for content docshells.
+- `attribute boolean currentScrollRestorationIsManual`: Sets/gets the current scroll restoration mode.
+- `jsval getOriginAttributes()`: Setter and getter for the origin attributes living on this docshell.
+- `void setOriginAttributes(jsval aAttrs)`: (未記入)
+- `readonly attribute nsIEditingSession editingSession`: The editing session for this docshell.
+- `readonly attribute nsIBrowserChild browserChild`: The browser child for this docshell.
+- `BrowserChildRef GetBrowserChild()`: (未記入)
+- `nsCommandManager GetCommandManager()`: (未記入)
+- `attribute boolean useTrackingProtection`: Attribute that determines whether tracking protection is enabled.
+- `void dispatchLocationChangeEvent()`: Fire a dummy location change event asynchronously.
+- `void startDelayedAutoplayMediaComponents()`: Start delayed autoplay media which are in the current document.
+- `UniqueClientSource TakeInitialClientSource()`: Take ownership of the ClientSource representing an initial about:blank
+- `void setColorMatrix(Array<float> aMatrix)`: (未記入)
+- `readonly attribute boolean isForceReloading`: Returns true if the current load is a forced reload,
+- `Array<float> getColorMatrix()`: (未記入)
+- `readonly attribute ContentFrameMessageManager messageManager`: The message manager for this docshell.  This does not throw, but
+- `Promise getHasTrackingContentBlocked()`: This returns a Promise which resolves to a boolean. True when the
+- `readonly attribute boolean isAttemptingToNavigate`: Return whether this docshell is "attempting to navigate" in the
+- `readonly attribute boolean isNavigating`: (未記入)
+- `void synchronizeLayoutHistoryState()`: @see nsISHEntry synchronizeLayoutHistoryState().
+- `void persistLayoutHistoryState()`: This attempts to save any applicable layout history state (like
+- `void cancelPlannedFormNavigation()`: Cancels the planned form submission navigation, if there is any.

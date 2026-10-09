@@ -1,0 +1,74 @@
+# nsISHEntry (docshell/shistory/nsISHEntry.idl)
+
+source: docshell/shistory/nsISHEntry.idl
+source-hash: 01e766b8126d3cfb6e14086be58d6f084b96aca4
+
+- 継承: nsISupports
+- 役割: (未記入)
+- 実装: (未記入)
+
+## メソッド / 属性
+- `attribute nsIURI URI`: The URI of the current entry.
+- `attribute nsIURI originalURI`: The original URI of the current entry. If an entry is the result of a
+- `attribute nsIURI resultPrincipalURI`: URL as stored from nsILoadInfo.resultPrincipalURI.  See nsILoadInfo
+- `attribute nsIURI unstrippedURI`: If non-null, the URI as it was before query stripping was performed.
+- `attribute boolean loadReplace`: This flag remembers whether channel has LOAD_REPLACE set.
+- `attribute AString title`: The title of the current entry.
+- `attribute AString name`: The name of the browsing context.
+- `attribute boolean isSubFrame`: Was the entry created as a result of a subframe navigation?
+- `attribute boolean hasUserInteraction`: Whether the user interacted with the page while this entry was active.
+- `attribute boolean hasUserActivation`: Whether the load that created this entry was triggered by user activation.
+- `attribute nsIReferrerInfo referrerInfo`: Referrer Info
+- `readonly attribute boolean isInBFCache`: (未記入)
+- `attribute boolean sticky`: Whether the content viewer is marked "sticky"
+- `attribute nsIInputStream postData`: Post Data for the document
+- `readonly attribute boolean hasPostData`: (未記入)
+- `attribute nsILayoutHistoryState layoutHistoryState`: LayoutHistoryState for scroll position and form values
+- `attribute nsISHEntry parent`: parent of this entry
+- `attribute unsigned long loadType`: The loadType for this entry. This is typically loadHistory except
+- `attribute unsigned long ID`: An ID to help identify this entry from others during
+- `attribute unsigned long cacheKey`: The cache key for the entry
+- `attribute boolean saveLayoutStateFlag`: Should the layoutHistoryState be saved?
+- `attribute ACString contentType`: attribute to indicate the content-type of the document that this
+- `attribute boolean URIWasModified`: If we created this SHEntry via history.pushState or modified it via
+- `attribute nsIPrincipal triggeringPrincipal`: Get the principal, if any, that was associated with the channel
+- `attribute nsIPrincipal principalToInherit`: Get the principal, if any, that is used when the inherit flag
+- `attribute nsIPrincipal partitionedPrincipalToInherit`: Get the storage principal, if any, that is used when the inherit flag is
+- `attribute nsIPolicyContainer policyContainer`: Get the policyContainer, if any, that was used for this document load. That
+- `attribute nsIStructuredCloneContainer stateData`: Get/set data associated with this history state via a pushState() call,
+- `attribute nsIDRef docshellID`: The history ID of the docshell.
+- `readonly attribute boolean isSrcdocEntry`: True if this SHEntry corresponds to a document created by a srcdoc
+- `attribute AString srcdocData`: Contents of the srcdoc attribute in a srcdoc iframe to be loaded instead
+- `attribute nsIURI baseURI`: The baseURI for situations where it cannot otherwise be determined.
+- `attribute boolean scrollRestorationIsManual`: Sets/gets the current scroll restoration state,
+- `readonly attribute boolean loadedInThisProcess`: Flag to indicate that the history entry was originally loaded in the
+- `attribute nsISHistory shistory`: The session history it belongs to. This is set only on the root entries.
+- `attribute unsigned long lastTouched`: A number that is assigned by the sHistory when the entry is activated
+- `readonly attribute long childCount`: The current number of nsISHEntries which are immediate children of this
+- `boolean isTransient()`: A transient entry will be replaced if a new entry is added for it's
+- `void setTransient()`: Flag the entry to be replaced if a new entry is added for it's
+- `void setScrollPosition(long x, long y)`: Set/Get the visual viewport scroll position if session history is
+- `void getScrollPosition(long x, long y)`: (未記入)
+- `void getViewerBounds(nsIntRect bounds)`: Saved position and dimensions of the content viewer; we must adjust the
+- `void setViewerBounds(nsIntRect bounds)`: (未記入)
+- `nsILayoutHistoryState initLayoutHistoryState()`: Initialises `layoutHistoryState` if it doesn't already exist
+- `void create(nsIURI URI, AString title, nsIInputStream inputStream, unsigned long cacheKey, ACString contentType, nsIPrincipal triggeringPrincipal, nsIPrincipal principalToInherit, nsIPrincipal partitionedPrincipalToInherit, nsIPolicyContainer policyContainer, nsIDRef docshellID, boolean dynamicCreation, nsIURI originalURI, nsIURI resultPrincipalURI, nsIURI unstrippedURI, boolean loadReplace, nsIReferrerInfo referrerInfo, AString srcdoc, boolean srcdocEntry, nsIURI baseURI, boolean saveLayoutState, boolean expired, boolean userActivation)`: Additional ways to create an entry
+- `nsISHEntry clone()`: (未記入)
+- `boolean isDynamicallyAdded()`: Returns true if the related docshell was added because of
+- `boolean hasDynamicallyAddedChild()`: Returns true if any of the child entries returns true
+- `boolean hasBFCacheEntry(SHEntrySharedParentStatePtr aEntry)`: Does this SHEntry point to the given BFCache entry? If so, evicting
+- `void adoptBFCacheEntry(nsISHEntry aEntry)`: Adopt aEntry's BFCacheEntry, so now both this and aEntry point to
+- `boolean sharesDocumentWith(nsISHEntry aEntry)`: Does this SHEntry correspond to the same document as aEntry? This is
+- `void setLoadTypeAsHistory()`: Sets an SHEntry to reflect that it is a history type load. This is the
+- `void AddChild(nsISHEntry aChild, long aOffset, boolean aUseRemoteSubframes)`: Add a new child SHEntry. If offset is -1 adds to the end of the list.
+- `void RemoveChild(nsISHEntry aChild)`: Remove a child SHEntry.
+- `nsISHEntry GetChildAt(long aIndex)`: Get child at an index.
+- `void ReplaceChild(nsISHEntry aNewChild)`: Replaces a child which is for the same docshell as aNewChild
+- `void ClearEntry()`: Remove all children of this entry and call abandonBFCacheEntry.
+- `nsDocShellLoadStatePtr CreateLoadInfo()`: Create nsDocShellLoadState and fill it with information.
+- `readonly attribute unsigned long long bfcacheID`: (未記入)
+- `void SyncTreesForSubframeNavigation(nsISHEntry aEntry, BrowsingContext aTopBC, BrowsingContext aIgnoreBC)`: Sync up the docshell and session history trees for subframe navigation.
+- `attribute jsval wireframe`: If browser.history.collectWireframes is true, this will get populated
+- `attribute nsIDRef navigationKey`: https://html.spec.whatwg.org/#she-navigation-api-key
+- `attribute nsIDRef navigationId`: https://html.spec.whatwg.org/#she-navigation-api-id
+- `SessionHistoryEntryPtr GetAsSessionHistoryEntry()`: Get as SessionHistoryEntry native pointer.
