@@ -1881,8 +1881,8 @@ lines: 9611
 
 ## _SessionStore.#getWindowDimension()
 - 位置: L7602-7666
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウの sizemode(maximized、minimized、normal)を返し、寸法や位置は通常状態の値を優先して返す。最大化・最小化中は根要素の属性から保存値を読み、幅と高さは外枠のサイズに直す。位置はデスクトップピクセル単位で取る。
+- 触るとき: ウィンドウの寸法や位置の保存形式を変えるとき、または最大化・最小化中の寸法が正しく保存されない問題を調べるとき。
 - 呼び出し先: `baseWin.getPosition()`, `getBaseWindow()`
 - 条件付き依存: `if (aWindow.windowState != aWindow.STATE_NORMAL)` → `parseInt()`
 - 条件付き依存: `if (aWindow.windowState != aWindow.STATE_NORMAL)` → `docElem.getAttribute()`
@@ -1893,40 +1893,40 @@ lines: 9611
 
 ## _SessionStore.#needsRestorePage()
 - 位置: L7678-7722
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: セーフモードなら safe_mode を、連続クラッシュ回数が上限を超えたか 6 時間以上前のセッションなら該当理由を返す。どれにも当たらなければ null で、about:sessionrestore や about:welcomeback 単独の場合は判定しない。
+- 触るとき: クラッシュ後にどのような条件で復元ページを出すかの理由コードや、判定の閾値を変えるとき。
 - 呼び出し先: `Date.now()`, `this.#hasSingleTabWithURL()`, `this.#prefBranch.getIntPref()`
 - 参照: `Services.appinfo.inSafeMode`, `aState.session`, `aState.session.lastUpdate`, `aState.windows`, `winData.length`
 - XPCOM: `Services.appinfo`
 
 ## _SessionStore.#hasSingleTabWithURL()
 - 位置: L7732-7744
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 状態がウィンドウ 1 つ・タブ 1 つ・履歴 1 件で、その URL が指定の URL と一致するかを返す。
+- 触るとき: about:sessionrestore などの単独ページを特別扱いする判定を変えるとき。
 - 参照: `aWinData.length`, `aWinData[0].tabs`, `aWinData[0].tabs.length`, `aWinData[0].tabs[0].entries`, `aWinData[0].tabs[0].entries.length`, `aWinData[0].tabs[0].entries[0].url`
 
 ## _SessionStore.#shouldSaveTabState()
 - 位置: L7755-7771
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブの最初の履歴 URL があり、about:blank や about:home などの一時ページだけで、ユーザー入力も無いタブでなければ保存対象とみなす。
+- 触るとき: 閉じたタブやグループを記録するかどうかの判定を変えるとき。
 - 参照: `aTabState.entries`, `aTabState.entries.length`, `aTabState.entries[0]?.url`, `aTabState.splitViewId`, `aTabState.userTypedValue`
 
 ## _SessionStore.shouldSaveTabsToGroup()
 - 位置: L7784-7795
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 渡されたタブのいずれかが #shouldSaveTabState の条件を満たすかを返す。タブが無ければ false。
+- 触るとき: タブグループを保存済みにしてよいかの判定や、選択中のタブを既存グループに加えられるかを変えるとき。
 - 呼び出し先: `lazy.TabState.collect()`, `this.#shouldSaveTabState()`
 
 ## _SessionStore.#shouldSaveTab()
 - 位置: L7808-7818
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ユーザー入力がある、またはカスタマイズモードのタブ、もしくは履歴が about:privatebrowsing 以外の URL で始まるタブを、ディスクに書く対象とみなす。
+- 触るとき: セッションファイルに書くタブの条件(about:blank や about:newtab を含めるか)を変えるとき。
 - 参照: `aTabState.attributes`, `aTabState.attributes.customizemode`, `aTabState.entries`, `aTabState.entries.length`, `aTabState.entries[0].url`, `aTabState.userTypedValue`
 
 ## _SessionStore.keepOnlyWorthSavingTabs()
 - 位置: L7827-7857
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 状態から #shouldSaveTab を満たさないタブを後ろから取り除き、選択位置を直す。タブが空になったウィンドウは、ほかにウィンドウがある場合か、復元すべき閉じたウィンドウがある場合に限って取り除く。
+- 触るとき: セッションファイルに書く前の絞り込みの条件や、空になったウィンドウを残す条件を変えるとき。
 - 呼び出し先: `aState._closedWindows.some()`, `this.#shouldSaveTab()`
 - 条件付き依存: `if (!this.#shouldSaveTab(tab))` → `win.tabs.splice()`
 - 条件付き依存: `if ( !win.tabs.length && (aState.windows.length > 1 || closedWindowShouldRestore || (closedWindowShouldRestore == null && (closedWindowShouldRestore = aState._cl...)` → `aState.windows.splice()`
@@ -1934,8 +1934,8 @@ lines: 9611
 
 ## _SessionStore.#prepDataForDeferredRestore()
 - 位置: L7880-8067
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 起動時の状態を複製し、ピン留めタブだけを持つウィンドウと保存済みグループを「今すぐ復元する状態」に、残りを「後で復元する状態」に分ける。開いていたグループは保存済みに変換し removeAfterRestore を付け、通常タブは閉じたタブとして残す。
+- 触るとき: 遅延復元(defer)でピン留めタブやグループのどれを起動時に出すかを変えるとき、または前回セッションとの二重表示を調べるとき。
 - 呼び出し先: `Cu.cloneInto()`, `defaultState.savedGroups.find()`, `groupsToSave.forEach()`
 - 条件付き依存: `if (PERSIST_SESSIONS)` → `Cu.cloneInto()`
 - 条件付き依存: `if (window.tabs[tIndex].pinned)` → `newWindowState.tabs.concat()`
@@ -1961,8 +1961,8 @@ lines: 9611
 
 ## _SessionStore.#sendRestoreCompletedNotifications()
 - 位置: L8069-8109
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 復元中のウィンドウ数を 1 つずつ減らし、最後の 1 つが終わったら復元完了の通知を出す(起動時は NOTIFY_WINDOWS_RESTORED、setBrowserState 時は別の通知)。その後、全ウィンドウが別の仮想デスクトップにあれば新しいウィンドウを開く。
+- 触るとき: 復元完了通知のタイミングや、起動直後に見えるウィンドウが無くなる場合の挙動を変えるとき。
 - 呼び出し先: `this.#browserWindows [Symbol.iterator]()`, `this.#browserWindows [Symbol.iterator]() .some()`
 - 条件付き依存: `if (this.#restoreCount > 1)` → `this.#log.warn()`
 - 条件付き依存: `if (!this.#browserSetState)` → `Services.obs.notifyObservers()`
@@ -1976,21 +1976,21 @@ lines: 9611
 
 ## _SessionStore.#isNewTabURL()
 - 位置: L8111-8113
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: URL が現在の新規タブページの URL と一致するかを返す。
+- 触るとき: 新規タブ URL を特別扱いする判定(復元後に新規タブを開くかなど)を変えるとき。
 - 参照: `lazy.AboutNewTab.newTabURL`
 
 ## _SessionStore.#getActiveURLFromTabData()
 - 位置: L8115-8123
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブデータの現在の履歴エントリ(範囲内に丸めた位置)の URL を返す。エントリが無ければ null。
+- 触るとき: タブの現在の URL を見て新規タブかどうかを判定する箇所を変えるとき。
 - 呼び出し先: `Math.max()`, `Math.min()`, `this.historyIndex()`
 - 参照: `tabData.entries`, `tabData.entries.length`, `tabData.entries[activeIndex]?.url`, `tabData?.entries?.length`
 
 ## _SessionStore.#maybeOpenNewTabAfterRestore()
 - 位置: L8125-8213
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ユーザーが設定した復元時のみ、設定(newTabOnRestore と showSetting)が有効なら、復元後の最前面ウィンドウに新規タブを開いて選択する。既に新規タブがあれば再利用し、起動時に URL が渡されていれば何もしない。結果は Glean に記録する。
+- 触るとき: 「復元時に新しいタブを開く」機能の条件や、既存の新規タブを再利用する判定を変えるとき。
 - 呼び出し先: `Glean.sessionRestore.startupSessionAutoRestored.record()`, `Services.prefs.getBoolPref()`, `Services.scriptSecurityManager.getSystemPrincipal()`, `lazy.BrowserWindowTracker.getTopWindow()`, `lazy.NimbusFeatures.sessionRestoreNewTab.recordExposureEvent()`, `this.#log.debug()`, `this.#windowIds.get()`, `win.gBrowser.addTrustedTab()`
 - 条件付き依存: `if (!this.#isUserConfiguredRestore)` → `this.#log.debug()`
 - 条件付き依存: `if (!newTabOnRestore || !showSetting)` → `this.#log.debug()`
@@ -2010,88 +2010,88 @@ lines: 9611
 
 ## _SessionStore.#setWindowStateBusyValue()
 - 位置: L8223-8233
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウの busy 値を設定し、まだ読み込まれていなければ復元待ちの状態にも同じ値を書く。
+- 触るとき: busy 状態が getWindowState の結果に正しく反映されるかを確認するとき。
 - 呼び出し先: `this.#isWindowLoaded()`, `this.#windowIds.get()`
 - 条件付き依存: `if (!this.#isWindowLoaded(aWindow))` → `WINDOW_RESTORE_IDS.get()`
 - 参照: `stateToRestore.busy`, `this.#statesToRestore`, `this.#statesToRestore[WINDOW_RESTORE_IDS.get(aWindow)].windows`, `this.#windows`, `this.#windows[this.#windowIds.get(aWindow)].busy`
 
 ## _SessionStore.#setWindowStateReady()
 - 位置: L8241-8252
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウの busy 参照カウントを 1 つ減らし、0 になったら busy を解除して SSWindowStateReady を発火する。負になれば例外。
+- 触るとき: 復元の完了判定や busy 参照カウントの整合性を調べるとき。
 - 呼び出し先: `this.#windowBusyStates.get()`, `this.#windowBusyStates.set()`
 - 条件付き依存: `if (newCount == 0)` → `this.#setWindowStateBusyValue()`
 - 条件付き依存: `if (newCount == 0)` → `this.#sendWindowStateReadyEvent()`
 
 ## _SessionStore.#setWindowStateBusy()
 - 位置: L8260-8268
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウの busy 参照カウントを 1 つ増やし、最初の 1 件なら busy を立てて SSWindowStateBusy を発火する。
+- 触るとき: 復元や状態変更の開始時に busy 表示を出す経路を変えるとき。
 - 呼び出し先: `this.#windowBusyStates.get()`, `this.#windowBusyStates.set()`
 - 条件付き依存: `if (newCount == 1)` → `this.#setWindowStateBusyValue()`
 - 条件付き依存: `if (newCount == 1)` → `this.#sendWindowStateBusyEvent()`
 
 ## _SessionStore.#sendWindowStateReadyEvent()
 - 位置: L8276-8280
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウに SSWindowStateReady イベント(バブルあり、キャンセル不可)を発火する。
+- 触るとき: ウィンドウ状態の準備完了を待つ側のリスナーを追加・変更するとき。
 - 呼び出し先: `aWindow.dispatchEvent()`, `aWindow.document.createEvent()`, `event.initEvent()`
 
 ## _SessionStore.#sendWindowStateBusyEvent()
 - 位置: L8288-8292
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウに SSWindowStateBusy イベント(バブルあり、キャンセル不可)を発火する。
+- 触るとき: ウィンドウ状態の busy 通知を受ける側の動作を確認するとき。
 - 呼び出し先: `aWindow.dispatchEvent()`, `aWindow.document.createEvent()`, `event.initEvent()`
 
 ## _SessionStore.#sendWindowRestoringNotification()
 - 位置: L8300-8304
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウに SSWindowRestoring イベントを発火し、復元が始まることを知らせる。
+- 触るとき: 復元開始を受けて動く外部コンポーネントの扱いを変えるとき。
 - 呼び出し先: `aWindow.dispatchEvent()`, `aWindow.document.createEvent()`, `event.initEvent()`
 
 ## _SessionStore.#sendWindowRestoredNotification()
 - 位置: L8312-8316
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウに SSWindowRestored イベントを発火し、復元完了を知らせる。
+- 触るとき: ウィンドウ復元完了を待つ外部コンポーネントの動作を確認するとき。
 - 呼び出し先: `aWindow.dispatchEvent()`, `aWindow.document.createEvent()`, `event.initEvent()`
 
 ## _SessionStore.#sendTabRestoredNotification()
 - 位置: L8324-8328
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブに SSTabRestored イベントを発火し、そのタブの復元完了を知らせる。
+- 触るとき: タブ単位の復元完了を待つリスナーを変えるとき。
 - 呼び出し先: `aTab.dispatchEvent()`, `aTab.ownerDocument.createEvent()`, `event.initEvent()`
 
 ## _SessionStore.#isWindowLoaded()
 - 位置: L8337-8339
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウの状態が復元待ちのキャッシュ(WINDOW_RESTORE_IDS)に無い、つまり読み込み済みなら真を返す。
+- 触るとき: ウィンドウがまだ復元待ちかを判定する箇所の挙動を確認するとき。
 - 呼び出し先: `WINDOW_RESTORE_IDS.has()`
 
 ## _SessionStore.#capClosedWindows()
 - 位置: L8346-8368
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じたウィンドウ一覧を max_windows_undo の件数に切り詰める。Windows と Linux では、その範囲内に通常ウィンドウ(非ポップアップ)が無ければ、最初の通常ウィンドウまで残す。
+- 触るとき: 閉じたウィンドウの保持件数の上限や、通常ウィンドウを必ず残す条件を変えるとき。
 - 条件付き依存: `if (spliceTo < this.#closedWindows.length)` → `this.#closedWindows.splice()`
 - 参照: `AppConstants.platform`, `this.#closedObjectsChanged`, `this.#closedWindows`, `this.#closedWindows.length`, `this.#closedWindows[normalWindowIndex].isPopup`, `this.#max_windows_undo`
 
 ## _SessionStore.#clearRestoringWindows()
 - 位置: L8379-8383
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じたウィンドウ一覧の各ウィンドウから _shouldRestore 印を外す。
+- 触るとき: 連続して閉じたウィンドウを保存対象から外すタイミングを変えるとき。
 - 参照: `this.#closedWindows`, `this.#closedWindows.length`, `this.#closedWindows[i]._shouldRestore`
 
 ## _SessionStore.#resetRestoringState()
 - 位置: L8388-8391
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブ復元キューを空にし、復元中のタブ数を 0 に戻す。
+- 触るとき: 新しい状態の復元を始める前に、復元の待ち行列を捨てる箇所を変えるとき。
 - 呼び出し先: `TabRestoreQueue.reset()`
 - 参照: `this.#tabsRestoringCount`
 
 ## _SessionStore.#resetLocalTabRestoringState()
 - 位置: L8400-8430
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: browser の復元状態を外し、復元リスナーの解除と復元状態のクリアを行い、pending と discarded の属性を外す。復元中だったタブは復元中の数を減らし、復元待ちだったタブはキューから外す。
+- 触るとき: タブの復元を中断・やり直しするとき(クラッシュ後の再復元など)に、数の整合性が保たれるかを確認するとき。
 - 呼び出し先: `TAB_STATE_FOR_BROWSER.delete()`, `TAB_STATE_FOR_BROWSER.get()`, `aTab.removeAttribute()`, `browser.browsingContext.clearRestoreState()`, `this.#restoreListeners.get()`, `this.#restoreListeners.get(browser.permanentKey)?.unregister()`
 - 条件付き依存: `if (!previousState)` → `console.error()`
 - 条件付き依存: `if (previousState == TAB_STATE_NEEDS_RESTORE)` → `TabRestoreQueue.remove()`
@@ -2099,41 +2099,41 @@ lines: 9611
 
 ## _SessionStore.#resetTabRestoringState()
 - 位置: L8432-8441
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: browser が復元状態にあるときだけ #resetLocalTabRestoringState を呼ぶ。そうでなければエラーログを出して何もしない。
+- 触るとき: タブを削除や上書きする際の復元状態のリセット経路を追うとき。
 - 呼び出し先: `TAB_STATE_FOR_BROWSER.has()`, `this.#resetLocalTabRestoringState()`
 - 条件付き依存: `if (!TAB_STATE_FOR_BROWSER.has(browser))` → `console.error()`
 - 参照: `tab.linkedBrowser`
 
 ## _SessionStore.#startNextEpoch()
 - 位置: L8452-8456
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: browser の現在のエポックを 1 つ進め、新しい値を返す。以前のエポックの古いメッセージを無視させるための番号を発行する。
+- 触るとき: タブの復元をやり直すときに古い状態更新が混ざらないようにする仕組みを調べるとき。
 - 呼び出し先: `this.#browserEpochs.set()`, `this.#getCurrentEpoch()`
 
 ## _SessionStore.#getCurrentEpoch()
 - 位置: L8465-8467
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: browser の現在のエポックを返す。未設定なら 0。
+- 触るとき: エポックの初期値やテストでの前提を確認するとき。
 - 呼び出し先: `this.#browserEpochs.get()`
 
 ## _SessionStore.#isCurrentEpoch()
 - 位置: L8481-8483
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 渡されたエポックが browser の現在のエポックと一致するかを返す。一致しない更新は捨てられる。
+- 触るとき: 子プロセスからの古いタブ状態更新を弾く条件を変えるとき。
 - 呼び出し先: `this.#getCurrentEpoch()`
 
 ## _SessionStore.#resetEpoch()
 - 位置: L8495-8500
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: browser のエポック記録を消し、フレームローダーがあればそのエポックを 0 に戻すよう要求する。新しい docShell が読み込まれたときに呼ぶ。
+- 触るとき: 新しい docShell が入ったときのエポックの初期化を変えるとき。
 - 呼び出し先: `this.#browserEpochs.delete()`
 - 条件付き依存: `if (frameLoader)` → `frameLoader.requestEpochUpdate()`
 
 ## _SessionStore.#looseTimer()
 - 位置: L8511-8535
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 1 秒ごとに繰り返すタイマーで、指定ミリ秒(1 秒単位に切り上げ)が経過すると解決する Promise を返す。タイマーの処理が遅れた場合は拍を飛ばす。終了時のフラッシュ待ちに使う。
+- 触るとき: 終了時のフラッシュ待ちの時間上限の扱いや、タイムアウトの計測を変えるとき。
 - 呼び出し先: `Cc["@mozilla.org/timer;1"].createInstance()`, `Math.ceil()`, `Promise.withResolvers()`, `deferred.promise.then()`, `timer.cancel()`, `timer.initWithCallback()`
 - 条件付き依存: `if (beats <= 0)` → `this.#log.debug()`
 - 条件付き依存: `if (beats <= 0)` → `Glean.sessionRestore.shutdownFlushAllOutcomes.timed_out.add()`
@@ -2143,16 +2143,16 @@ lines: 9611
 
 ## _SessionStore.#waitForStateStop()
 - 位置: L8537-8588
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: browser の進捗リスナーを登録し、トップレベルのウィンドウ読み込みが終わったら解決する。about:blank の誤った終了通知は、期待 URL が about:blank のときだけ受け付ける。既存のリスナーは先に外す。
+- 触るとき: タブの履歴を読み込んだ後の読み込み完了を待つ条件を変えるとき。
 - 呼び出し先: `ChromeUtils.generateQI()`, `Promise.withResolvers()`, `browser.addProgressListener()`, `this.#restoreListeners.get()`, `this.#restoreListeners.get(browser.permanentKey)?.unregister()`, `this.#restoreListeners.set()`
 - 参照: `Ci.nsIWebProgress.NOTIFY_STATE_WINDOW`, `browser.permanentKey`, `deferred.promise`
 - XPCOM: [`nsIWebProgress`](../../../dom/interfaces/base/nsIBrowser.idl.md)
 
 ## _SessionStore.unregister()
 - 位置: L8541-8554
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 進捗リスナーを外して登録簿から消す。reject が真なら待機中の Promise を拒否する。
+- 触るとき: 読み込み待ちをキャンセルしたときに Promise が拒否されるかを確認するとき。
 - 呼び出し先: `SessionStore.#restoreListeners.delete()`, `browser.removeProgressListener()`
 - 条件付き依存: `if (reject)` → `deferred.reject()`
 - 参照: `Ci.nsIWebProgress.NOTIFY_STATE_WINDOW`, `browser.permanentKey`
@@ -2160,8 +2160,8 @@ lines: 9611
 
 ## _SessionStore.onStateChange()
 - 位置: L8556-8571
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: トップレベルのウィンドウの停止通知を受けたら、リスナーを外して Promise を解決する。about:blank の誤通知は期待 URL に合わせて無視する。
+- 触るとき: 読み込み完了の判定条件や、about:blank の扱いを変えるとき。
 - 条件付き依存: `if ( webProgress.isTopLevel && stateFlags & Ci.nsIWebProgressListener.STATE_IS_WINDOW && stateFlags & Ci.nsIWebProgressListener.STATE_STOP )` → `request.QueryInterface()`
 - 条件付き依存: `if (url !== "about:blank" || aboutBlankOK)` → `this.unregister()`
 - 条件付き依存: `if (url !== "about:blank" || aboutBlankOK)` → `deferred.resolve()`
@@ -2170,50 +2170,50 @@ lines: 9611
 
 ## _SessionStore.#listenForNavigations()
 - 位置: L8590-8643
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 履歴の再読み込みと、読み込み開始の進捗通知を待つリスナーを登録する。再読み込みでは onHistoryReload、読み込み開始では onStartRequest の各コールバックを呼ぶ。既存のリスナーは先に外す。
+- 触るとき: 復元後にページ側で起きたナビゲーションを、どのように復元処理へ反映させるかを変えるとき。
 - 呼び出し先: `ChromeUtils.generateQI()`, `browser.addProgressListener()`, `browser.browsingContext?.sessionHistory?.addSHistoryListener()`, `this.#restoreListeners.get()`, `this.#restoreListeners.get(browser.permanentKey)?.unregister()`, `this.#restoreListeners.set()`
 - 参照: `Ci.nsIWebProgress.NOTIFY_STATE_WINDOW`, `browser.permanentKey`
 - XPCOM: [`nsIWebProgress`](../../../dom/interfaces/base/nsIBrowser.idl.md)
 
 ## _SessionStore.unregister()
 - 位置: L8592-8603
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 履歴リスナーと進捗リスナーを外し、登録簿からも消す。
+- 触るとき: ナビゲーション監視を終了する経路を確認するとき。
 - 呼び出し先: `SessionStore.#restoreListeners.delete()`, `browser.browsingContext?.sessionHistory?.removeSHistoryListener()`, `browser.removeProgressListener()`
 - 参照: `Ci.nsIWebProgress.NOTIFY_STATE_WINDOW`, `browser.permanentKey`
 - XPCOM: [`nsIWebProgress`](../../../dom/interfaces/base/nsIBrowser.idl.md)
 
 ## _SessionStore.OnHistoryReload()
 - 位置: L8605-8608
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: リスナーを外してから onHistoryReload コールバックの戻り値を返す。
+- 触るとき: 再読み込み時の復元の続行方法を変えるとき。
 - 呼び出し先: `callbacks.onHistoryReload()`, `this.unregister()`
 
 ## _SessionStore.OnHistoryNewEntry()
 - 位置: L8611-8611
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 何もしない。新しい履歴エントリの通知を無視する。
+- 触るとき: 新規エントリの通知を復元処理に反映する必要が出たとき(TODO bug 2075170)。
 
 ## _SessionStore.OnHistoryGotoIndex()
 - 位置: L8612-8612
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 何もしない。履歴の移動通知を無視する。
+- 触るとき: 履歴の移動を復元処理に反映する必要が出たとき。
 
 ## _SessionStore.OnHistoryPurge()
 - 位置: L8613-8613
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 何もしない。履歴の消去通知を無視する。
+- 触るとき: 履歴の消去を復元処理に反映する必要が出たとき。
 
 ## _SessionStore.OnHistoryReplaceEntry()
 - 位置: L8614-8614
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 何もしない。エントリの置換通知を無視する。
+- 触るとき: エントリの置換を復元処理に反映する必要が出たとき。
 
 ## _SessionStore.onStateChange()
 - 位置: L8616-8625
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: トップレベルのウィンドウで読み込みが始まったら、リスナーを外して onStartRequest を呼ぶ。
+- 触るとき: 拡張機能などが読み込みを始めた場合の、保存済みタブ状態の扱いを変えるとき。
 - 条件付き依存: `if ( webProgress.isTopLevel && stateFlags & Ci.nsIWebProgressListener.STATE_IS_WINDOW && stateFlags & Ci.nsIWebProgressListener.STATE_START )` → `this.unregister()`
 - 条件付き依存: `if ( webProgress.isTopLevel && stateFlags & Ci.nsIWebProgressListener.STATE_IS_WINDOW && stateFlags & Ci.nsIWebProgressListener.STATE_START )` → `callbacks.onStartRequest()`
 - 参照: `Ci.nsIWebProgressListener.STATE_IS_WINDOW`, `Ci.nsIWebProgressListener.STATE_START`, `webProgress.isTopLevel`
@@ -2221,36 +2221,36 @@ lines: 9611
 
 ## _SessionStore.#restoreHistory()
 - 位置: L8653-8701
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 保存済みの履歴を親プロセスから browser の履歴へ流し込み、docShell の状態を復元する。完了後に、再読み込み・開始の監視を設定して #restoreHistoryComplete に進む。
+- 触るとき: タブの履歴復元の順序や、復元後の監視の条件を変えるとき。
 - 呼び出し先: `SessionStoreUtils.restoreDocShellState()`, `browser.stop()`, `lazy.SessionHistory.restoreFromParent()`, `promise.then()`, `promise.then(onResolve).catch()`, `this.#tabStateRestorePromises.set()`, `this.#tabStateToRestore.set()`
 - 参照: `browser.browsingContext`, `browser.browsingContext.sessionHistory`, `browser.permanentKey`, `data.tabData`, `data.tabData.index`, `data.tabData?.disallow`, `data.tabData?.entries`, `data.tabData?.entries[data.tabData.index - 1]?.url`
 
 ## onResolve()
 - 位置: L8675-8698
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: docShell の状態復元が終わったとき、タブがまだ復元中でなければナビゲーション監視を始め、復元待ち Promise を消して #restoreHistoryComplete を呼ぶ。
+- 触るとき: 履歴復元の完了処理の順序や、監視を始める条件を変えるとき。
 - 呼び出し先: `TAB_STATE_FOR_BROWSER.get()`, `this.#restoreHistoryComplete()`, `this.#tabStateRestorePromises.delete()`
 - 条件付き依存: `if (TAB_STATE_FOR_BROWSER.get(browser) !== TAB_STATE_RESTORING)` → `this.#listenForNavigations()`
 - 参照: `browser.permanentKey`
 
 ## onHistoryReload()
 - 位置: L8680-8683
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 再読み込みが起きたとき、タブ内容の復元を続行し、履歴側の処理は行わない(false を返す)。
+- 触るとき: 再読み込み時に保存済みの内容を戻すかどうかを変えるとき。
 - 呼び出し先: `this.#restoreTabContentForBrowser()`
 
 ## onStartRequest()
 - 位置: L8688-8691
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 外部から別の URL が読み込まれたとき、保存済みのタブ状態を捨ててからタブ内容の復元を続ける。
+- 触るとき: 拡張機能が読み込みを上書きしたときに保存済みの状態を残すかどうかを変えるとき。
 - 呼び出し先: `this.#restoreTabContentForBrowser()`, `this.#tabStateToRestore.delete()`
 - 参照: `browser.permanentKey`
 
 ## _SessionStore.#restoreTabEntry()
 - 位置: L8712-8746
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ユーザー入力が無く履歴があれば履歴エントリを復元用データ付きで初期化する。ユーザー入力があれば、それを補正付きで読み込む。どちらも無ければ about:blank を履歴に残さず読み込む。
+- 触るとき: タブの復元で読み込む対象(履歴、入力中の URL、空白ページ)の選び方を変えるとき。
 - 呼び出し先: `Services.scriptSecurityManager.getSystemPrincipal()`, `browser.browsingContext.fixupAndLoadURIString()`, `this.#waitForStateStop()`
 - 条件付き依存: `if (!haveUserTypedValue && tabData.entries.length)` → `SessionStoreUtils.initializeRestore()`
 - 条件付き依存: `if (!haveUserTypedValue && tabData.entries.length)` → `lazy.SessionStoreHelper.buildRestoreData()`
