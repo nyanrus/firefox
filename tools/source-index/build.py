@@ -2,11 +2,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-"""Generate and check the source index under docs/index/.
+"""Generate and check the source index under docs-loka/.
 
   build.py generate <dir-or-file>...   write index docs for JS files and the
                                        XPCOM interfaces they use
   build.py check                       list index docs whose source changed
+  build.py check-links                 list links in index docs that do not
+                                       resolve to a file
 """
 
 import ast
@@ -21,7 +23,7 @@ import extract_idl  # noqa: E402
 import extract_js  # noqa: E402
 
 TOPSRC = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-INDEX_ROOT = "docs/index"
+INDEX_ROOT = "docs-loka"
 IDL_SEARCH_DIRS = ["xpcom", "netwerk", "dom", "toolkit", "browser", "services",
                    "uriloader", "caps", "docshell", "extensions", "devtools"]
 TODO = "(未記入)"
@@ -217,7 +219,30 @@ def check():
     return 1 if stale else 0
 
 
+LINK_RE = re.compile(r"\]\(([^)#]+\.md)\)")
+
+
+def check_links():
+    broken = []
+    root = os.path.join(TOPSRC, INDEX_ROOT)
+    for dirpath, _, names in os.walk(root):
+        for n in names:
+            if not n.endswith(".md"):
+                continue
+            doc = os.path.join(dirpath, n)
+            with open(doc, encoding="utf-8") as f:
+                text = f.read()
+            for target in LINK_RE.findall(text):
+                if not os.path.exists(os.path.normpath(os.path.join(dirpath, target))):
+                    broken.append((os.path.relpath(doc, TOPSRC), target))
+    for doc, target in sorted(set(broken)):
+        print(f"{doc}: {target}")
+    return 1 if broken else 0
+
+
 if __name__ == "__main__":
+    if len(sys.argv) == 2 and sys.argv[1] == "check-links":
+        sys.exit(check_links())
     if len(sys.argv) >= 3 and sys.argv[1] == "generate":
         generate(sys.argv[2:])
     elif len(sys.argv) == 2 and sys.argv[1] == "check":

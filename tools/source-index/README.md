@@ -1,6 +1,6 @@
 # source-index
 
-Generates `docs/index/`, a per-file map of chrome JS and the XPCOM interfaces it uses.
+Generates `docs-loka/`, a per-file map of chrome JS and the XPCOM interfaces it uses.
 Dependencies (functions, calls, XPCOM usage) are extracted mechanically; the
 "役割" and "触るとき" fields are left as `(未記入)` for a summarizer to fill in.
 

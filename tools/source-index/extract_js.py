@@ -148,7 +148,7 @@ class Extractor:
 
     def visit(self, node, class_name, info, condition, parent_info):
         t = node.type
-        if t == "class_declaration" or t == "class":
+        if t in {"class_declaration", "class"}:
             name_node = node.child_by_field_name("name")
             class_name = text(name_node) if name_node is not None else class_name
         if t in FUNCTION_TYPES:
