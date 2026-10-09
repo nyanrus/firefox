@@ -2261,8 +2261,8 @@ lines: 9611
 
 ## _SessionStore.#restoreTabContentForBrowser()
 - 位置: L8757-8779
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 進行中の読み込み監視を外し、復元の開始処理を行う。保存済みの履歴があればその内容を読み込み、無ければ新しい読み込みの完了を待つ。両方が終わったら #restoreTabContentComplete を呼ぶ。
+- 触るとき: タブ内容の復元の順序や、保存済みデータを捨てて別の読み込みを待つ条件を変えるとき。
 - 呼び出し先: `Promise.allSettled()`, `Promise.allSettled(promises).then()`, `this.#restoreListeners.get()`, `this.#restoreListeners.get(browser.permanentKey)?.unregister()`, `this.#restoreTabContentComplete()`, `this.#restoreTabContentStarted()`, `this.#tabStateRestorePromises.get()`, `this.#tabStateToRestore.delete()`, `this.#tabStateToRestore.get()`
 - 条件付き依存: `if (state)` → `promises.push()`
 - 条件付き依存: `if (state)` → `this.#restoreTabEntry()`
@@ -2272,21 +2272,21 @@ lines: 9611
 
 ## _SessionStore.#sendRestoreTabContent()
 - 位置: L8781-8783
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: #restoreTabContentForBrowser に処理を渡す薄いラッパー。
+- 触るとき: タブ内容の復元要求の入口を変えるとき。
 - 呼び出し先: `this.#restoreTabContentForBrowser()`
 
 ## _SessionStore.#restoreHistoryComplete()
 - 位置: L8785-8801
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブのラベルとアイコンを履歴の内容に合わせて更新し、SSTabRestoring イベントを発火する。
+- 触るとき: 履歴復元後にタブの表示を更新する順序や、SSTabRestoring を受ける側の動作を変えるとき。
 - 呼び出し先: `TAB_CUSTOM_VALUES.get()`, `event.initEvent()`, `lazy.TabState.collect()`, `tab.dispatchEvent()`, `this.#updateTabLabelAndIcon()`, `win.document.createEvent()`, `win?.gBrowser.getTabForBrowser()`
 - 参照: `browser.documentGlobal`
 
 ## _SessionStore.#restoreTabContentStarted()
 - 位置: L8803-8870
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 読み込みの開始時に、検索モードと入力中の URL をどう扱うか決める。セッションストア由来でなければ復元中の印を立てる。検索モードは通常の復元では後の完了処理に回し、ナビゲーションを伴う復元では捨てる。入力中の URL だけが残っていた場合は URL バーに戻す。
+- 触るとき: クラッシュや再起動後に URL バーの入力や検索モードが戻る条件を変えるとき。
 - 呼び出し先: `TAB_STATE_FOR_BROWSER.get()`, `lazy.TabStateCache.get()`, `win?.gBrowser.getTabForBrowser()`
 - 条件付き依存: `if (!initiatedBySessionStore || isNavigateAndRestore)` → `lazy.TabStateCache.update()`
 - 条件付き依存: `if (!initiatedBySessionStore)` → `this.#markTabAsRestoring()`
@@ -2298,8 +2298,8 @@ lines: 9611
 
 ## _SessionStore.#restoreTabContentComplete()
 - 位置: L8872-8905
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 保存していた検索モードと入力中の URL を URL バーに戻し、テスト用通知と SSTabRestored を出す。復元中の状態をリセットして、キューの次のタブへ進む。
+- 触るとき: タブ復元の完了処理の順序や、テスト用通知の扱いを変えるとき。
 - 呼び出し先: `Services.obs.notifyObservers()`, `SessionStore.#resetLocalTabRestoringState()`, `SessionStore.#restoreNextTab()`, `lazy.TabStateCache.get()`, `this.#sendTabRestoredNotification()`, `win?.gBrowser.getTabForBrowser()`
 - 条件付き依存: `if (cacheState.searchMode)` → `win.gURLBar.setSearchMode()`
 - 条件付き依存: `if (tab.selected)` → `win.gURLBar.setURI()`
@@ -2310,8 +2310,8 @@ lines: 9611
 
 ## _SessionStore.#sendRestoreHistory()
 - 位置: L8919-8933
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: セッションストレージを先に親から戻し、履歴の復元を始め、フレームローダーにエポックを伝える。
+- 触るとき: タブの履歴を子プロセスへ送る順序や、セッションストレージの扱いを変えるとき。
 - 呼び出し先: `this.#restoreHistory()`
 - 条件付き依存: `if (options.tabData.storage)` → `SessionStoreUtils.restoreSessionStorageFromParent()`
 - 条件付き依存: `if (browser && browser.frameLoader)` → `browser.frameLoader.requestEpochUpdate()`
@@ -2319,50 +2319,50 @@ lines: 9611
 
 ## _SessionStore.addSavedTabGroup()
 - 位置: L8940-8957
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: プライベートウィンドウのグループは拒否する。開いているグループの状態を作り、タブと分割表示を集めて、保存済みグループとして記録する。
+- 触るとき: タブグループを保存するときに記録される内容や、プライベートの除外を変えるとき。
 - 呼び出し先: `PrivateBrowsingUtils.isWindowPrivate()`, `lazy.TabGroupState.savedInOpenWindow()`, `this.#collectClosedTabsForTabGroup()`, `this.#collectSplitViewDataForTabGroup()`, `this.#recordSavedTabGroupState()`, `this.#windowIds.get()`
 - 参照: `tabGroup.documentGlobal`, `tabGroup.tabs`, `tabGroupState.splitViews`, `tabGroupState.tabs`
 
 ## _SessionStore.addTabsToSavedGroup()
 - 位置: L8968-9007
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 指定 ID の保存済みグループに、同じウィンドウ内のタブを追加する。プライベートや別ウィンドウのタブは例外。追加した分の分割表示と、テレメトリを記録し、変更通知を出す。
+- 触るとき: 保存済みグループへタブを追加する条件や、そのとき記録する内容を変えるとき。
 - 呼び出し先: `Glean.tabgroup.addTab.record()`, `PrivateBrowsingUtils.isWindowPrivate()`, `tabGroupState.splitViews.push()`, `tabGroupState.tabs.push()`, `tabs.every()`, `this.#collectClosedTabsForTabGroup()`, `this.#collectSplitViewDataForTabGroup()`, `this.#notifyOfSavedTabGroupsChange()`, `this.getSavedTabGroup()`
 - 参照: `TabMetrics.METRIC_GROUP_TYPE.SAVED`, `TabMetrics.METRIC_SOURCE.UNKNOWN`, `TabMetrics.METRIC_TABS_LAYOUT.HORIZONTAL`, `TabMetrics.METRIC_TABS_LAYOUT.VERTICAL`, `metricsContext?.telemetrySource`, `tab.documentGlobal`, `tabGroupState.splitViews`, `tabs.length`, `tabs[0].documentGlobal`, `win.gBrowser.tabContainer.verticalMode`
 
 ## _SessionStore.#recordSavedTabGroupState()
 - 位置: L9013-9022
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブが 1 つ以上あり、同じ ID のグループがまだ無いときだけ保存済みグループに加え、変更通知を出す。
+- 触るとき: 保存済みグループの重複登録や空グループの扱いを変えるとき。
 - 呼び出し先: `this.#notifyOfSavedTabGroupsChange()`, `this.#savedGroups.push()`, `this.getSavedTabGroup()`
 - 参照: `savedTabGroupState.id`, `savedTabGroupState.tabs.length`
 
 ## _SessionStore.getSavedTabGroup()
 - 位置: L9030-9034
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 保存済みタブグループの一覧から ID が一致するものを返す。無ければ undefined。
+- 触るとき: 保存済みグループの存在確認や、保存済みグループを開く前の検査を変えるとき。
 - 呼び出し先: `this.#savedGroups.find()`
 - 参照: `savedTabGroup.id`
 
 ## _SessionStore.getSavedTabGroups()
 - 位置: L9041-9043
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 保存済みタブグループの一覧を複製して返す。
+- 触るとき: 呼び出し元に渡す保存済みグループの形式を変えるとき。
 - 呼び出し先: `Cu.cloneInto()`
 - 参照: `this.#savedGroups`
 
 ## _SessionStore.#getClosedTabGroup()
 - 位置: L9050-9055
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: source で指定された閉じたウィンドウ(または開いたウィンドウ)の閉じたグループから ID が一致するものを返す。
+- 触るとき: 閉じたタブグループを開き直す経路で、対象グループの探し方を変えるとき。
 - 呼び出し先: `this.#resolveClosedDataSource()`, `winData?.closedGroups.find()`
 - 参照: `closedGroup.id`
 
 ## _SessionStore.undoCloseTabGroup()
 - 位置: L9068-9117
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じたタブグループを対象ウィンドウに作り直し、閉じた一覧から外して選択する。プライバシーが違う、または対象が無いときは例外。テレメトリも記録する。
+- 触るとき: 閉じたタブグループを開き直す挙動や、開く先のウィンドウの選び方を変えるとき。
 - 呼び出し先: `Boolean()`, `Glean.tabgroup.groupInteractions.open_recent.add()`, `Glean.tabgroup.reopen.record()`, `PrivateBrowsingUtils.isWindowPrivate()`, `group.select()`, `this.#createTabsForSavedOrClosedTabGroup()`, `this.#getClosedTabGroup()`, `this.#resolveClosedDataSource()`, `this.#windowIds.get()`, `this.forgetClosedTabGroup()`
 - 条件付き依存: `if (targetWindow && !this.#windowIds.get(targetWindow))` → `Components.Exception()`
 - 条件付き依存: `if (!targetWindow)` → `this.#getTopWindow()`
@@ -2372,8 +2372,8 @@ lines: 9611
 
 ## _SessionStore.openSavedTabGroup()
 - 位置: L9134-9205
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 保存済みグループを対象ウィンドウに開く。プライベートや未追跡のウィンドウは例外。閉じたウィンドウに入っていた場合はそこから参照を外し、作成後に保存済みから消して選択する。開いた経路ごとのテレメトリも記録する。
+- 触るとき: 保存済みタブグループを開く挙動や、閉じたウィンドウとの参照の整理を変えるとき。
 - 呼び出し先: `Glean.tabgroup.reopen.record()`, `PrivateBrowsingUtils.isWindowPrivate()`, `group.select()`, `this.#createTabsForSavedOrClosedTabGroup()`, `this.#windowIds.get()`, `this.forgetSavedTabGroup()`, `this.getSavedTabGroup()`
 - 条件付き依存: `if (!targetWindow)` → `this.#getTopWindow()`
 - 条件付き依存: `if (!this.#windowIds.get(targetWindow))` → `Components.Exception()`
@@ -2388,35 +2388,35 @@ lines: 9611
 
 ## _SessionStore.#createTabsForSavedOrClosedTabGroup()
 - 位置: L9212-9224
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: グループ内のタブ状態を対象ウィンドウに遅延で作り、グループと分割表示を付けてから、即時に復元する。作成したグループの先頭タブのグループを返す。
+- 触るとき: 保存済みや閉じたタブグループを実際のタブに変換する手順を変えるとき。
 - 呼び出し先: `tabGroupData.tabs.map()`, `targetWindow.gBrowser.createTabsForSessionRestore()`, `this.#restoreTabs()`
 - 参照: `tab.state`, `tabGroupData.splitViews`, `tabs[0].group`
 
 ## _SessionStore.#cleanupOrphanedClosedGroups()
 - 位置: L9241-9251
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブが 0 件の閉じたグループを、そのウィンドウの閉じたグループ一覧から取り除く。
+- 触るとき: タブが全部外れたグループが一覧に残る問題を調べるとき。
 - 条件付き依存: `if (winData.closedGroups[index].tabs.length === 0)` → `winData.closedGroups.splice()`
 - 参照: `this.#closedObjectsChanged`, `winData.closedGroups`, `winData.closedGroups.length`, `winData.closedGroups[index].tabs.length`
 
 ## _SessionStore.#removeSavedTabGroupFromClosedWindow()
 - 位置: L9258-9262
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じたウィンドウの groups と tabs から、指定グループの項目を取り除き、変更通知を立てる。
+- 触るとき: 保存済みに移したグループが閉じたウィンドウに二重に残らないようにする処理を変えるとき。
 - 呼び出し先: `removeWhere()`
 - 参照: `closedWinData.groups`, `closedWinData.tabs`, `tab.groupId`, `tabGroup.id`, `this.#closedObjectsChanged`
 
 ## _SessionStore.isFormatVersionCompatible()
 - 位置: L9271-9288
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: version が ["sessionrestore", 数値] の形で、数値が現在の FORMAT_VERSION 以下なら真を返す。それ以外の形式は偽。
+- 触るとき: セッションファイルの形式バージョンの互換判定を変えるとき。
 - 呼び出し先: `Array.isArray()`, `Number.isNaN()`, `Number.parseFloat()`
 
 ## _SessionStore.validateState()
 - 位置: async L9298-9323
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 状態(省略時は現在の状態から前回と遅延の部分を除いたもの)を session.schema.json で検証し、結果を返す。検証に失敗すると警告を出す。
+- 触るとき: セッション状態のスキーマを更新したときや、検証で不正な状態を見つける箇所を調べるとき。
 - 呼び出し先: `console.error()`, `fetch()`, `fetch( "moz-src:///browser/components/sessionstore/session.schema.json" ).then()`, `lazy.JsonSchema.validate()`, `rsp.json()`
 - 条件付き依存: `if (!state)` → `this.getCurrentState()`
 - 条件付き依存: `if (!result.valid)` → `console.warn()`
@@ -2424,62 +2424,62 @@ lines: 9611
 
 ## _SessionStore.historyIndex()
 - 位置: L9333-9335
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブデータの現在の履歴エントリの 0 始まりのインデックスを返す。index が無ければ最後のエントリを指す。
+- 触るとき: 保存済みタブの表示位置を読む箇所で、index の扱い(1 始まりと未設定)を変えるとき。
 - 参照: `tabData.entries.length`, `tabData.index`
 
 ## restoreOnDemand()
 - 位置: L9354-9365
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: sessionstore.restore_on_demand の設定値を初回アクセス時に読み、以後の変更も監視して反映する遅延 getter。
+- 触るとき: オンデマンド復元の設定を TabRestoreQueue が参照する仕組みを変えるとき。
 - 呼び出し先: `Services.prefs.addObserver()`, `updateValue()`
 - XPCOM: `Services.prefs`
 
 ## updateValue()
 - 位置: L9355-9360
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: restore_on_demand の現在値を読み直し、プロパティを固定値に置き換えて返す。監視の通知先でもある。
+- 触るとき: 設定変更の反映が遅れる問題を調べるとき。
 - 呼び出し先: `Object.defineProperty()`, `Services.prefs.getBoolPref()`
 - XPCOM: `Services.prefs`
 
 ## restorePinnedTabsOnDemand()
 - 位置: L9368-9379
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: sessionstore.restore_pinned_tabs_on_demand の設定値を初回アクセス時に読み、以後の変更も監視する遅延 getter。
+- 触るとき: ピン留めタブのオンデマンド復元の設定を変えるとき。
 - 呼び出し先: `Services.prefs.addObserver()`, `updateValue()`
 - XPCOM: `Services.prefs`
 
 ## updateValue()
 - 位置: L9369-9374
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: restore_pinned_tabs_on_demand の現在値を読み直し、プロパティを固定値に置き換えて返す。
+- 触るとき: ピン留めタブ設定の反映タイミングを調べるとき。
 - 呼び出し先: `Object.defineProperty()`, `Services.prefs.getBoolPref()`
 - XPCOM: `Services.prefs`
 
 ## restoreHiddenTabs()
 - 位置: L9382-9393
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: sessionstore.restore_hidden_tabs の設定値を初回アクセス時に読み、以後の変更も監視する遅延 getter。
+- 触るとき: 非表示タブを自動で復元するかの設定を変えるとき。
 - 呼び出し先: `Services.prefs.addObserver()`, `updateValue()`
 - XPCOM: `Services.prefs`
 
 ## updateValue()
 - 位置: L9383-9388
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: restore_hidden_tabs の現在値を読み直し、プロパティを固定値に置き換えて返す。
+- 触るとき: 非表示タブ設定の反映タイミングを調べるとき。
 - 呼び出し先: `Object.defineProperty()`, `Services.prefs.getBoolPref()`
 - XPCOM: `Services.prefs`
 
 ## reset()
 - 位置: L9397-9399
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 3 つのバケット(priority、visible、hidden)を空にする。
+- 触るとき: 復元キューを作り直す場面で、保留中のタブが残らないかを確認するとき。
 - 参照: `this.tabs`
 
 ## add()
 - 位置: L9402-9412
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブを、ピン留めなら priority、非表示なら hidden、それ以外は visible のバケットへ追加する。
+- 触るとき: タブを復元キューに入れる優先度の決め方を変えるとき。
 - 条件付き依存: `if (tab.pinned)` → `priority.push()`
 - 条件付き依存: `if (tab.hidden)` → `hidden.push()`
 - 条件付き依存: `if (!(tab.hidden))` → `visible.push()`
@@ -2487,8 +2487,8 @@ lines: 9611
 
 ## remove()
 - 位置: L9415-9431
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブを priority から探し、無ければ hidden か visible から探して取り除く。
+- 触るとき: 復元待ちのタブを取り消す処理(復元開始や閉じたとき)の挙動を調べるとき。
 - 呼び出し先: `set.indexOf()`
 - 条件付き依存: `if (index == -1)` → `set.indexOf()`
 - 条件付き依存: `if (index > -1)` → `set.splice()`
@@ -2496,15 +2496,15 @@ lines: 9611
 
 ## shift()
 - 位置: L9434-9451
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 次に復元すべきタブを 1 つ取り出す。ピン留めを優先し(オンデマンド時は設定により除外)、オンデマンドでなければ visible、続いて restore_hidden_tabs が真なら hidden の順で選ぶ。
+- 触るとき: 復元の順番や、オンデマンド設定での自動復元の対象を変えるとき。
 - 呼び出し先: `set.shift()`
 - 参照: `hidden.length`, `priority.length`, `this.prefs`, `this.prefs.restoreHiddenTabs`, `this.tabs`, `visible.length`
 
 ## hiddenToVisible()
 - 位置: L9454-9462
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: hidden バケットにあるタブを visible バケットへ移す。
+- 触るとき: 非表示だったタブが表示されたときに、復元の優先度を上げるとき。
 - 呼び出し先: `hidden.indexOf()`
 - 条件付き依存: `if (index > -1)` → `hidden.splice()`
 - 条件付き依存: `if (index > -1)` → `visible.push()`
@@ -2512,8 +2512,8 @@ lines: 9611
 
 ## visibleToHidden()
 - 位置: L9465-9473
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: visible バケットにあるタブを hidden バケットへ移す。
+- 触るとき: 表示中のタブが隠されたときに、復元の優先度を下げるとき。
 - 呼び出し先: `visible.indexOf()`
 - 条件付き依存: `if (index > -1)` → `visible.splice()`
 - 条件付き依存: `if (index > -1)` → `hidden.push()`
@@ -2521,8 +2521,8 @@ lines: 9611
 
 ## willRestoreSoon()
 - 位置: L9484-9506
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブが、自動で復元される候補(ピン留め、オンデマンドでない場合の visible、restore_hidden_tabs のときの hidden)に入っているかを返す。
+- 触るとき: 接続の先行準備を行うタブを決める判定を変えるとき。
 - 呼び出し先: `candidateSet.indexOf()`
 - 条件付き依存: `if (restorePinned && priority.length)` → `candidateSet.push()`
 - 条件付き依存: `if (visible.length)` → `candidateSet.push()`
@@ -2531,90 +2531,90 @@ lines: 9611
 
 ## has()
 - 位置: L9515-9517
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: DyingWindowCache に、そのウィンドウのデータがあるかを返す。
+- 触るとき: 閉じた後のウィンドウ状態の参照範囲を確認するとき。
 - 呼び出し先: `this._data.has()`
 
 ## get()
 - 位置: L9519-9521
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: DyingWindowCache からウィンドウのデータを返す。
+- 触るとき: 閉じた後のウィンドウ状態の読み出し元を追うとき。
 - 呼び出し先: `this._data.get()`
 
 ## set()
 - 位置: L9523-9525
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウのデータを DyingWindowCache に保存する。
+- 触るとき: 閉じるウィンドウの状態を退避するタイミングを変えるとき。
 - 呼び出し先: `this._data.set()`
 
 ## remove()
 - 位置: L9527-9529
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: DyingWindowCache からウィンドウのデータを削除する。
+- 触るとき: 閉じたウィンドウの参照を消すタイミングを調べるとき。
 - 呼び出し先: `this._data.delete()`
 
 ## has()
 - 位置: L9537-9539
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: DirtyWindows に、そのウィンドウが再収集対象として登録されているかを返す。
+- 触るとき: 状態保存時に再収集されるウィンドウの判定を調べるとき。
 - 呼び出し先: `this._data.has()`
 
 ## add()
 - 位置: L9541-9543
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウを DirtyWindows に登録し、次の状態収集で再収集されるようにする。
+- 触るとき: ウィンドウの状態変化を保存に反映させる箇所を追加するとき。
 - 呼び出し先: `this._data.set()`
 
 ## remove()
 - 位置: L9545-9547
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウを DirtyWindows から外す。
+- 触るとき: 個別のウィンドウを収集対象から外すとき。
 - 呼び出し先: `this._data.delete()`
 
 ## clear()
 - 位置: L9549-9551
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: DirtyWindows の全登録を空にする(新しい WeakMap に差し替える)。
+- 触るとき: 状態収集の後に登録を全部消す箇所の挙動を確認するとき。
 - 参照: `this._data`
 
 ## canRestore()
 - 位置: L9561-9563
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 前回セッションの状態が保持されていれば真を返す。
+- 触るとき: 前回セッションの復元可否の判定元を追うとき。
 - 参照: `this._state`
 
 ## getState()
 - 位置: L9565-9567
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 前回セッションの状態を返す。
+- 触るとき: 前回セッションを読み出す箇所を追うとき。
 - 参照: `this._state`
 
 ## setState()
 - 位置: L9569-9571
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 前回セッションの状態を保持する。
+- 触るとき: 前回セッションの状態をいつ保存するかを変えるとき。
 - 参照: `this._state`
 
 ## clear()
 - 位置: L9573-9580
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 前回セッションの状態を消す。silent が偽なら LAST_SESSION_CLEARED を通知する。
+- 触るとき: 前回セッションを破棄する経路で、通知の有無を変えるとき。
 - 条件付き依存: `if (!silent)` → `Services.obs.notifyObservers()`
 - 参照: `this._state`
 - XPCOM: `Services.obs`
 
 ## getBaseWindow()
 - 位置: L9592-9594
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: chrome ウィンドウの nsIBaseWindow を返す。位置は CSS ピクセルではなくデバイスとデスクトップのピクセルで扱える。
+- 触るとき: ウィンドウ位置を正確に扱う処理を追加するとき。
 - 呼び出し先: `win.docShell.treeOwner.QueryInterface()`
 - 参照: `Ci.nsIBaseWindow`
 - XPCOM: `nsIBaseWindow`
 
 ## removeWhere()
 - 位置: L9601-9607
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 配列から述語が真の要素を後ろから順に取り除く(その場で変更する)。
+- 触るとき: 保存済みグループの関連データを閉じたウィンドウから消す処理を変えるとき。
 - 呼び出し先: `predicate()`
 - 条件付き依存: `if (predicate(array[i]))` → `array.splice()`
 - 参照: `array.length`

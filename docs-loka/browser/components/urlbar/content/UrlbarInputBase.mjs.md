@@ -963,8 +963,8 @@ lines: 6715
 
 ## UrlbarInputBase._recordSearch()
 - 位置: L3978-4005
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 検索のテレメトリ情報(エンジン ID、検索元、検索語、一時的な窓か、one-off か、新規タブのセッション ID)をまとめ、タブで開く場合は recordSearchInOpenedTab、それ以外は recordSearch に渡す。
+- 触るとき: 検索のテレメトリや検索履歴の記録項目を追加、変更するとき。
 - 呼び出し先: `this.getSearchSource()`, `this.view.oneOffSearchButtons?.eventTargetIsAOneOff()`, `where.startsWith()`
 - 条件付き依存: `if (where.startsWith("tab"))` → `this.parentController.recordSearchInOpenedTab()`
 - 条件付き依存: `if (!(where.startsWith("tab")))` → `this.parentController.recordSearch()`
@@ -972,15 +972,15 @@ lines: 6715
 
 ## UrlbarInputBase._trimValue()
 - 位置: L4015-4028
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: アドレスバーで trimURLs が真なら BrowserUIUtils.trimURL で http や末尾のスラッシュを削る。ただし削ると RTL になる場合や混在コンテンツの取り消し線を出す場合は削らず元の値を返す。
+- 触るとき: アドレスバーの表示で http や末尾スラッシュが消える、または消えないとき。
 - 呼び出し先: `UrlbarContentUtils.isTextDirectionRTL()`, `UrlbarPrefs.get()`, `lazy.BrowserUIUtils.trimURL()`, `this.#getValueFormatter()`, `this.#getValueFormatter().willShowFormattedMixedContentProtocol()`
 - 参照: `this.#isAddressbar`
 
 ## UrlbarInputBase._maybeCanonizeURL()
 - 位置: L4041-4083
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: キーボード操作で、URL らしくない単語だけの入力なら、locale の urlFixupSuffix を付けて URIFixup で補正し、補正後の値を入力欄にセットして返す。条件を満たさなければ null を返す。
+- 触るとき: Enter で単語だけの入力が .com などの URL に補正される条件を変えるとき。
 - 呼び出し先: `/^\s*[^.:\/\s]+(?:\/.*|\s*)$/i.test()`, `Services.uriFixup.getFixupURIInfo()`, `console.error()`, `suffix.endsWith()`, `this.controller.isCanonizeKeyboardEvent()`, `value.indexOf()`, `value.trim()`
 - 条件付き依存: `if (firstSlash >= 0)` → `value.substring()`
 - 参照: `Ci.nsIURIFixup.FIXUP_FLAGS_MAKE_ALTERNATE_URI`, `Services.locale.urlFixupSuffix`, `info.fixedURI.spec`, `this.value`
@@ -988,23 +988,23 @@ lines: 6715
 
 ## UrlbarInputBase._autofillValue()
 - 位置: L4092-4119
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 自動補完の値を setValue で入れ、スクロールを先頭の端に合わせ、補完範囲を選択して、その内容を _autofillPlaceholder に保存する。
+- 触るとき: 入力欄の補完文字列が入る位置や選択範囲、次の入力での再利用を調べるとき。
 - 呼び出し先: `this.inputField.setSelectionRange()`, `this.setValue()`
 - 参照: `this._autofillPlaceholder`, `this.inputField.scrollLeft`, `this.inputField.scrollLeftMin`
 
 ## UrlbarInputBase.#pickMenuResult()
 - 位置: L4128-4174
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 結果メニューのコマンドを処理する。エンゲージメントを記録し、manage なら検索の設定画面を開き、help なら helpUrl、その他は要素の URL を開く。閉じてから #loadURL で読み込む(help は現在のタブなら新しいタブで開く)。
+- 触るとき: 結果メニューの項目(ヘルプや設定など)を押したときの動作を変えるとき。
 - 呼び出し先: `this.#loadURL()`, `this.controller.engagementEvent.record()`, `this.controller.whereToOpen()`, `this.getSearchSource()`, `this.view.close()`
 - 条件付き依存: `if (element.dataset.command == "manage")` → `this.parentController.openPreferences()`
 - 参照: `element.dataset.command`, `element.dataset.url`, `result.payload.helpUrl`, `result.source`, `result.type`, `this._lastSearchString`, `this.isPrivate`, `this.windowMode`
 
 ## UrlbarInputBase.#loadURL()
 - 位置: async L4207-4300
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: URL または検索を実際に読み込む。Enter のとき読み込みが終わるまで Enter 押下状態を保持し、アドレスバーで現在のタブならまず入力欄の値を書き換える。親の loadURL に渡し、結果が取り消し扱いなら handleRevert し、必要なら結果ビューを閉じる。
+- 触るとき: URL の読み込み先、読み込み後の表示(入力欄の値、ビューを閉じるか)を変えるとき。
 - 呼び出し先: `UrlbarShared.isInstance()`, `keyDownEnterDeferred?.resolve()`, `this.#notifyStartNavigation()`, `this.parentController.loadURL()`
 - 条件付き依存: `if (!(loadRequest.engineSearch))` → `losslessDecodeURL()`
 - 条件付き依存: `if (where == "current")` → `loadRequest.urlLoad?.url.startsWith()`
@@ -1016,15 +1016,15 @@ lines: 6715
 
 ## UrlbarInputBase._initCopyCutController()
 - 位置: L4302-4313
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: アドレスバーに一度だけコピー・カットのコントローラーを先頭に挿入する。他の入力欄は何もしない。
+- 触るとき: アドレスバーでコピーされる URL が非トリミングの形で出ない、またはコントローラーが二重に入るとき。
 - 呼び出し先: `this.inputField.controllers.insertControllerAt()`
 - 参照: `this.#isAddressbar`, `this._copyCutController`
 
 ## UrlbarInputBase.#stripURI()
 - 位置: L4322-4342
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択中の文字列を URI にして QueryStringStripper.stripForCopyOrShare で追跡用パラメータを除き、読める形に直して返す。失敗すれば元の URI を返す。
+- 触るとき: 「リンクのクリーンコピー」で除去される対象や結果を調べるとき。
 - 呼び出し先: `Services.io.newURI()`, `console.warn()`, `lazy.QueryStringStripper.stripForCopyOrShare()`, `this._getSelectedValueForClipboard()`
 - 条件付き依存: `if (strippedURI)` → `this.makeURIReadable()`
 - 参照: `e.message`
@@ -1032,21 +1032,21 @@ lines: 6715
 
 ## UrlbarInputBase.#isClipboardURIValid()
 - 位置: L4349-4356
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: コピーされる選択文字列が URL として解析できるかを返す。
+- 触るとき: URL のコピー項目を表示するかどうかの条件を変えるとき。
 - 呼び出し先: `URL.canParse()`, `this._getSelectedValueForClipboard()`
 
 ## UrlbarInputBase.#canStrip()
 - 位置: L4363-4376
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: コピーされる選択文字列に除去可能なパラメータがあるかを canStripForShare で判定する。解析できなければ false を返す。
+- 触るとき: クリーンコピーが無効表示になる条件を調べるとき。
 - 呼び出し先: `Services.io.newURI()`, `console.warn()`, `lazy.QueryStringStripper.canStripForShare()`, `this._getSelectedValueForClipboard()`
 - XPCOM: `Services.io`
 
 ## UrlbarInputBase.#maybeUntrimUrl()
 - 位置: L4388-4463
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: プロトコルや www を省いている値を、フォーカス中かつ全選択でないときに元の URL に戻し、カーソルや選択範囲を省いた分だけずらして補正する。moveCursorToStart が真なら先頭にカーソルを置く。
+- 触るとき: 入力欄で省略された http や www が戻るタイミングや、戻った後の選択位置がずれるとき。
 - 呼び出し先: `UrlbarPrefs.getScotchBonnetPref()`, `this.setSelectionRange()`, `this.setValue()`
 - 条件付き依存: `if (moveCursorToStart)` → `this.setValue()`
 - 条件付き依存: `if (moveCursorToStart)` → `this.setSelectionRange()`
@@ -1061,33 +1061,33 @@ lines: 6715
 
 ## UrlbarInputBase._initStripOnShare()
 - 位置: L4467-4479
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 文脈メニューの copy の後に、リンクのクリーンコピー項目を登録する。開くたびに項目の表示状態を更新する。
+- 触るとき: 文脈メニューのクリーンコピー項目の位置や表示条件を変えるとき。
 - 呼び出し先: `this.addContextMenuItems()`
 
 ## createItems()
 - 位置: L4470-4474
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: クリーンコピーの menuitem を1つ入れた DocumentFragment を作る。
+- 触るとき: クリーンコピー項目を別の形で出したいとき。
 - 呼び出し先: `fragment.appendChild()`, `this.#createStripOnShareItem()`, `this.document.createDocumentFragment()`
 
 ## onShowing()
 - 位置: L4475-4477
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: メニューを開くとクリーンコピー項目の表示状態を更新する。
+- 触るとき: 項目が出るべきときに出ない、または逆のとき。
 - 呼び出し先: `this.#updateStripOnShareItem()`
 
 ## UrlbarInputBase.#createStripOnShareItem()
 - 位置: L4487-4504
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: クリーンコピーの menuitem を作り、押されたら追跡用パラメータを除いた URL をクリップボードへコピーする。
+- 触るとき: クリーンコピーの押下時にコピーされる値を調べるとき。
 - 呼び出し先: `lazy.ClipboardHelper.copyString()`, `stripOnShare.addEventListener()`, `stripOnShare.setAttribute()`, `this.#stripURI()`, `this.document.createXULElement()`, `this.document.l10n.setAttributes()`
 - 参照: `stripOnShare.id`, `strippedURI.displaySpec`
 
 ## UrlbarInputBase.#updateStripOnShareItem()
 - 位置: L4507-4528
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 機能が無効なら隠す。コピーが不可能、または URL でない場合も隠す。除去できるパラメータが無いなら無効にし、それ以外は有効にして表示する。
+- 触るとき: クリーンコピー項目の隠れる、無効になる条件を変えるとき。
 - 呼び出し先: `UrlbarPrefs.get()`, `controller.isCommandEnabled()`, `stripOnShare.removeAttribute()`, `this.#canStrip()`, `this.#isClipboardURIValid()`, `this.document.commandDispatcher.getControllerForCommand()`
 - 条件付き依存: `if (!UrlbarPrefs.get("privacy.query_stripping.strip_on_share.enabled"))` → `stripOnShare.setAttribute()`
 - 条件付き依存: `if ( !controller.isCommandEnabled("cmd_copy") || !this.#isClipboardURIValid() )` → `stripOnShare.setAttribute()`
@@ -1095,22 +1095,22 @@ lines: 6715
 
 ## UrlbarInputBase._initPasteAndGo()
 - 位置: L4530-4590
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 文脈メニューの paste の後に、貼り付けて移動の項目を登録する。押されたら検索開始を抑止し、選択して貼り付け、結果を解除してから handleCommand で移動する。
+- 触るとき: 貼り付けて移動の項目の動作を変えるとき。
 - 呼び出し先: `this.addContextMenuItems()`
 
 ## createItems()
 - 位置: L4533-4556
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 貼り付けて移動の menuitem を作り、ラベルを browser.properties から読んで入れた DocumentFragment を返す。
+- 触るとき: 貼り付けて移動のラベルや項目の作りを変えるとき。
 - 呼び出し先: `Services.strings .createBundle()`, `Services.strings .createBundle("chrome://browser/locale/browser.properties") .GetStringFromName()`, `fragment.appendChild()`, `pasteAndGo.addEventListener()`, `pasteAndGo.setAttribute()`, `this.document.createDocumentFragment()`, `this.document.createXULElement()`, `this.handleCommand()`, `this.parentController.clearLastQueryContextCache()`, `this.select()`, `this.setResultForCurrentValue()`, `this.window.goDoCommand()`
 - 参照: `pasteAndGo.id`, `this._suppressStartQuery`
 - XPCOM: `Services.strings`
 
 ## onShowing()
 - 位置: L4557-4588
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 貼り付けて移動のメニューを開くときに結果ビューを閉じ、共有の文脈メニューに衝突マーカーを付ける(閉じたら外す)。クリップボードに貼り付け可能なものがあるかで項目の有効・無効を切り替える。
+- 触るとき: 文脈メニューの貼り付けて移動が有効にならない、または結果ビューが勝手に閉じるとき。
 - 呼び出し先: `controller.isCommandEnabled()`, `popup.addEventListener()`, `popup.setAttribute()`, `this.document.commandDispatcher.getControllerForCommand()`, `this.view.close()`
 - 条件付き依存: `if (popup.state == "closed")` → `popup.removeAttribute()`
 - 条件付き依存: `if (enabled)` → `pasteAndGo.removeAttribute()`
@@ -1119,78 +1119,78 @@ lines: 6715
 
 ## UrlbarInputBase._initAutofillDismiss()
 - 位置: L4594-4637
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 文脈メニューの select-all の後に、自動補完の「除外」と「履歴から削除」の項目と区切り線を登録する。
+- 触るとき: 自動補完の除外や削除を文脈メニューから行う項目を追加・変更するとき。
 - 呼び出し先: `this.addContextMenuItems()`
 
 ## createItems()
 - 位置: L4597-4628
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 区切り線、除外、履歴から削除の3つの要素を作り、それぞれの押下で #dismissAdaptiveAutofillFromContextMenu を呼ぶ DocumentFragment を返す。
+- 触るとき: 除外や削除の項目の文言や押下時の動作を変えるとき。
 - 呼び出し先: `dismiss.addEventListener()`, `dismiss.setAttribute()`, `forget.addEventListener()`, `forget.setAttribute()`, `fragment.append()`, `separator.setAttribute()`, `this.#dismissAdaptiveAutofillFromContextMenu()`, `this.document.createDocumentFragment()`, `this.document.createXULElement()`, `this.document.l10n.setAttributes()`
 
 ## onShowing()
 - 位置: L4629-4635
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: メニューを開くたびに #autofillDismissContextMenuVisibility の結果で区切り線、除外、削除の hidden を設定する。
+- 触るとき: 自動補完の項目がいつ出る・消えるかを調べるとき。
 - 呼び出し先: `this.#autofillDismissContextMenuVisibility()`
 - 参照: `dismiss.hidden`, `forget.hidden`, `separator.hidden`
 
 ## UrlbarInputBase.#autofillDismissContextMenuVisibility()
 - 位置: L4651-4677
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 適応履歴の自動補完が有効で、ヒューリスティック結果が adaptive_url か adaptive_origin か origin の自動補完なら、除外は非プライベートのとき、削除は URL がオリジンでないときに表示すると判定する。それ以外は両方非表示。
+- 触るとき: 除外や削除の項目が出る条件(種類、プライベート窓、深いリンクか)を変えるとき。
 - 呼び出し先: `UrlbarPrefs.get()`, `UrlbarShared.isOriginUrl()`
 - 参照: `result.autofill`, `result.autofill.type`, `result.payload.url`, `result?.heuristic`, `this._resultForCurrentValue`, `this.isPrivate`
 
 ## UrlbarInputBase.#dismissAdaptiveAutofillFromContextMenu()
 - 位置: async L4686-4702
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ヒューリスティックな自動補完結果を、指定の動作(除外か削除)で親に伝える。完了後、入力値を直前の検索語に戻し、自動補完なしで検索し直す。
+- 触るとき: 除外や削除を押した後に入力欄の値や結果がどう戻るかを調べるとき。
 - 呼び出し先: `this.parentController .dismissAutofill()`, `this.parentController .dismissAutofill(result.payload.url, action) .catch()`, `this.setValue()`, `this.startQuery()`
 - 参照: `console.error`, `result.autofill`, `result.payload.url`, `result?.heuristic`, `this._lastSearchString`, `this._resultForCurrentValue`
 
 ## UrlbarInputBase.#initShareURL()
 - 位置: L4708-4752
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: macOS のアドレスバーだけに、共有、QR コード、リンクのクリーンコピーを含む共有グループを文脈メニューの select-all の後に登録する。
+- 触るとき: macOS の共有メニューの項目や並びを変えるとき。
 - 呼び出し先: `this.addContextMenuItems()`
 
 ## createItems()
 - 位置: L4711-4734
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 区切り線、共有(Mac の共有ピッカー)、QR コード、クリーンコピーの項目を並べた DocumentFragment を作る。
+- 触るとき: macOS の共有グループの項目構成を変えるとき。
 - 呼び出し先: `fragment.appendChild()`, `lazy.SharingUtils.shareOnMacPicker()`, `lazy.SharingUtils.showQRCode()`, `qrCodeItem.addEventListener()`, `qrCodeItem.classList.add()`, `shareItem.addEventListener()`, `shareItem.classList.add()`, `this.#createStripOnShareItem()`, `this.document.createDocumentFragment()`, `this.document.createXULElement()`, `this.document.l10n.setAttributes()`
 - 参照: `qrCodeItem.id`
 
 ## onShowing()
 - 位置: L4735-4750
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: メニューを開くたびに、クリーンコピーの状態を更新し、選択中ブラウザの URL を共有対象として両項目に設定する。共有可能かどうかで項目を無効にし、QR コードは browser.shareqrcode.enabled で表示を切り替える。
+- 触るとき: 共有項目が無効になる、または QR コードが出ない条件を調べるとき。
 - 呼び出し先: `Cu.getWeakReference()`, `Services.prefs.getBoolPref()`, `lazy.SharingUtils.getLinkToShare()`, `qrCodeItem.toggleAttribute()`, `shareItem.toggleAttribute()`, `this.#updateStripOnShareItem()`
 - 参照: `lazy.SharingUtils.getLinkToShare(shareItem).urlToShare`, `qrCodeItem.contextBrowserToShare`, `qrCodeItem.hidden`, `shareItem.browsersToShare`, `shareItem.contextBrowserToShare`, `this.window.gBrowser?.selectedBrowser`
 - XPCOM: `Services.prefs`
 
 ## UrlbarInputBase.#notifyStartNavigation()
 - 位置: L4764-4771
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: アドレスバーでだけ urlbar-user-start-navigation を監視者に通知する。
+- 触るとき: ナビゲーション開始を監視する仕組みに影響するかを確かめるとき。
 - 条件付き依存: `if (this.#isAddressbar)` → `Services.obs.notifyObservers()`
 - 参照: `this.#isAddressbar`
 - XPCOM: `Services.obs`
 
 ## UrlbarInputBase._searchModeForResult()
 - 位置: L4785-4839
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 結果のキーワードやエンジンから検索モードの設定を作る。キーワードに対応する検索モードがなければエンジン名を使い、制限の種類と入り口(topsites_urlbar、tabtosearch、keywordoffer など)を付ける。作れなければ null を返す。
+- 触るとき: 結果を選んだときに検索モードへ入る条件や入り口の記録を変えるとき。
 - 呼び出し先: `this.searchModeForToken()`
 - 条件付き依存: `if (!(result.type == UrlbarShared.RESULT_TYPE.RESTRICT))` → `UrlbarShared.SEARCH_MODE_RESTRICT.has()`
 - 参照: `UrlbarShared.RESULT_TYPE.RESTRICT`, `result.payload.dynamicType`, `result.payload.engine`, `result.payload.keyword`, `result.payload.originalEngine`, `result.providerName`, `result.type`, `searchMode.entry`, `searchMode.restrictType`, `this.view.selectedElement.dataset.engine`, `this.view.selectedElement.dataset?.engine`, `this.view.selectedElement?.dataset.engine`
 
 ## UrlbarInputBase._updateSearchModeUI()
 - 位置: L4847-4915
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 検索モードの表示を更新する。モードを抜けるなら searchmode 属性と placeholder を戻す。入るならエンジン名または結果の種類を見出しに出し、プレースホルダーを切り替える。固定ページの値は消し、自動補完を外す。
+- 触るとき: 検索モードの見出しやプレースホルダーの文言、または入った時の値の扱いを変えるとき。
 - 呼び出し先: `lazy?.UrlbarSearchTermsPersistence.onSearchModeChanged()`, `this.dispatchEvent()`, `this.getAttribute()`, `this.hasAttribute()`, `this.toggleAttribute()`
 - 条件付き依存: `if (this._searchModeIndicatorTitle)` → `this._searchModeIndicatorTitle.removeAttribute()`
 - 条件付き依存: `if (!engineName && !source)` → `this.removeAttribute()`
@@ -1204,8 +1204,8 @@ lines: 6715
 
 ## UrlbarInputBase.#handlePersistedSearchTerms()
 - 位置: L4935-5002
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 永続検索語が有効なときだけ、ブラウザごとの状態から永続の判定を行い、必要なら検索語を入力欄の値にする。永続しなくなったら入力値を外す。永続の表示状態と計測も更新する。
+- 触るとき: 検索結果ページで入力欄に検索語が残る、または消える条件を調べるとき。
 - 呼び出し先: `lazy.UrlbarSearchTermsPersistence.shouldPersist()`, `lazy.UrlbarUtils.isPersistedSearchTermsEnabled()`, `state.persist.originalURI.equals()`, `this.toggleAttribute()`
 - 条件付き依存: `if (state.persist)` → `this.removeAttribute()`
 - 条件付き依存: `if (firstView || cachedUriDidChange)` → `lazy.UrlbarSearchTermsPersistence.setPersistenceState()`
@@ -1214,16 +1214,16 @@ lines: 6715
 
 ## UrlbarInputBase.#initPlaceholderFromPref()
 - 位置: L5011-5022
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: navigation が有効で、エンジンストアが失敗していなければ、保存された placeholderName の pref からエンジン名を読み、プレースホルダーに使う。
+- 触るとき: 起動直後にプレースホルダーのエンジン名が一時的に空になる、または古い名前が出るとき。
 - 呼び出し先: `UrlbarPrefs.get()`
 - 条件付き依存: `if (engineName)` → `this._setPlaceholder()`
 - 参照: `this.#navigationEnabled`, `this.controller.engineStore.failed`, `this.isPrivate`
 
 ## UrlbarInputBase.#initEngineStoreAfterPaint()
 - 位置: async L5035-5044
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 文書が読み込み中なら DOMContentLoaded の後、idle callback を待ってから engineStore.init を呼ぶ。起動時の検索サービス初期化を描画後まで遅らせる。
+- 触るとき: 起動時の検索サービスの初期化タイミングや、描画後の遅延を変えるとき。
 - 呼び出し先: `this.controller.engineStore.init()`
 - 条件付き依存: `if (document.readyState == "loading")` → `document.addEventListener()`
 - 条件付き依存: `if (document.readyState == "loading")` → `this.window.requestIdleCallback()`
@@ -1231,8 +1231,8 @@ lines: 6715
 
 ## UrlbarInputBase.#deferUpdatePlaceholder()
 - 位置: async L5056-5099
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: smartbar 以外で、値が空ならプレースホルダーを更新し、入力か TabSelect の最初の時点で検索アイコンとプレースホルダーを更新するリスナーを付ける。値があれば即座に updatePlaceholder を呼ぶ。
+- 触るとき: 起動直後のプレースホルダーや検索アイコンの更新がいつ行われるかを調べるとき。
 - 条件付き依存: `if (this.inputField.dataset.l10nId == "urlbar-placeholder-with-name")` → `this.updatePlaceholder()`
 - 条件付き依存: `if (!this.value)` → `this.inputField.addEventListener()`
 - 条件付き依存: `if (!this.value)` → `tabContainer?.addEventListener()`
@@ -1241,8 +1241,8 @@ lines: 6715
 
 ## updateListener()
 - 位置: L5081-5092
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 入力されるか、タブが切り替わった時点で、検索モードでなければ検索アイコンとプレースホルダーを更新し、自分を外す。
+- 触るとき: 入力後や別タブへ切り替えた後にプレースホルダーが更新されないとき。
 - 条件付き依存: `if (this.value && !this.searchMode)` → `this.searchModeSwitcher.updateSearchIcon().catch()`
 - 条件付き依存: `if (this.value && !this.searchMode)` → `this.searchModeSwitcher.updateSearchIcon()`
 - 条件付き依存: `if (this.value && !this.searchMode)` → `this.updatePlaceholder()`
@@ -1252,8 +1252,8 @@ lines: 6715
 
 ## UrlbarInputBase.setUnifiedSearchButtonAvailability()
 - 位置: L5106-5123
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 統合検索ボタンの表示可否を設定する。検索窓か unifiedSearchButton.always の設定なら常に可能にし、オフスクリーンと aria-hidden を切り替える。アドレスバーではタブごとの状態にも保存する。
+- 触るとき: 統合検索ボタンが出ない、またはタブごとに戻らないとき。
 - 呼び出し先: `UrlbarPrefs.get()`, `switcher.toggleAttribute()`, `this.querySelector()`
 - 条件付き依存: `if (available)` → `switcher.removeAttribute()`
 - 条件付き依存: `if (!(available))` → `switcher.setAttribute()`
@@ -1262,39 +1262,39 @@ lines: 6715
 
 ## UrlbarInputBase.updatePlaceholder()
 - 位置: L5128-5143
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 検索モードでなく navigation が有効なら、既定エンジンが設定エンジンならその名前、それ以外は名前なしのプレースホルダーを設定する。
+- 触るとき: 既定エンジンを変えたときにプレースホルダーの名前が変わらないとき。
 - 条件付き依存: `if (defaultEngine?.isConfigEngine)` → `this._setPlaceholder()`
 - 条件付き依存: `if (!(defaultEngine?.isConfigEngine))` → `this._setPlaceholder()`
 - 参照: `defaultEngine.name`, `defaultEngine?.isConfigEngine`, `this.#navigationEnabled`, `this.controller.engineStore.default`, `this.searchMode`
 
 ## UrlbarInputBase._setPlaceholder()
 - 位置: L5152-5174
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: navigation が無効なら searchbar-input を使う。キーワードが有効なら、名前ありか無しかで urlbar-placeholder-with-name か urlbar-placeholder を選び、無効なら keyword-disabled の文言を使って l10n 属性を設定する。
+- 触るとき: プレースホルダーの文言を変えるとき、またはキーワードの有効・無効で表示が変わる仕組みを調べるとき。
 - 呼び出し先: `UrlbarShared.keywordEnabled()`, `this.document.l10n.setAttributes()`
 - 条件付き依存: `if (!this.#navigationEnabled)` → `this.document.l10n.setAttributes()`
 - 参照: `this.#navigationEnabled`, `this.#sapName`, `this.inputField`
 
 ## UrlbarInputBase.#maybeSelectAll()
 - 位置: L5186-5195
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: クリックで、既にフォーカスがなく、変換中でなく、選択が空のときだけ全選択する。
+- 触るとき: クリック時の全選択の条件を変えるとき。
 - 条件付き依存: `if ( !this.#preventClickSelectsAll && this.#compositionState != UrlbarShared.COMPOSITION.COMPOSING && this.focused && this.inputField.selectionStart == this.inpu...)` → `this.select()`
 - 参照: `UrlbarShared.COMPOSITION.COMPOSING`, `this.#compositionState`, `this.#preventClickSelectsAll`, `this.focused`, `this.inputField.selectionEnd`, `this.inputField.selectionStart`
 
 ## UrlbarInputBase._on_command()
 - 位置: L5199-5211
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: コマンド実行によるフォーカス移動をエンゲージメントの放棄とみなさないよう、結果メニュー項目や one-off からの検索モード入りなら記録を捨てずに残す。それ以外は記録を捨てる。
+- 触るとき: 結果メニューや one-off を押したときに放棄として記録されてしまうとき。
 - 呼び出し先: `event.target.classList.contains()`
 - 条件付き依存: `if ( !event.target.classList.contains("urlbarView-result-menuitem") && (!event.target.classList.contains("searchbar-engine-one-off-item") || this.searchMode?.ent...)` → `this.controller.engagementEvent.discard()`
 - 参照: `this.searchMode?.entry`
 
 ## UrlbarInputBase._on_blur()
 - 位置: L5213-5295
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: フォーカスを外れたときの後始末。結果メニューが開いていれば何もしない。エンゲージメントを記録し、フォーカス関連の状態を消し、入力値を入力中の文字列か元の URL に戻し、補完や操作の上書きを解除し、結果ビューを閉じ、Enter の保留を解く。
+- 触るとき: 入力欄から離れた後に値や結果ビューがどう戻るかを調べるとき。
 - 呼び出し先: `UrlbarPrefs.get()`, `lazy?.ExtensionSearchHandler.hasActiveInputSession()`, `logger()`, `logger().debug()`, `this._clearActionOverride()`, `this._resetSearchState()`, `this.controller.engagementEvent.record()`, `this.getAttribute()`, `this.getSearchSource()`, `this.removeAttribute()`, `this.view.isResultMenuOpen()`
 - 条件付き依存: `if (!( this.value == this._untrimmedValue && !this.userTypedValue && !this.focused ))` → `this.formatValue()`
 - 条件付き依存: `if (lazy?.ExtensionSearchHandler.hasActiveInputSession())` → `lazy.ExtensionSearchHandler.handleInputCancelled()`
@@ -1307,30 +1307,30 @@ lines: 6715
 
 ## UrlbarInputBase._on_click()
 - 位置: L5297-5328
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 入力欄かそのコンテナのクリックで全選択と URL の再整形を行い、検索モード解除ボタンなら検索モードを外して結果があれば検索し直し、戻すボタンなら handleRevert、Go ボタンなら handleCommand を呼ぶ。
+- 触るとき: 入力欄や周辺ボタンのクリックで起きる動作を変えるとき。
 - 呼び出し先: `this.#maybeSelectAll()`, `this.#maybeUntrimUrl()`, `this.handleCommand()`, `this.handleRevert()`, `this.select()`
 - 条件付き依存: `if (this.view.isOpen)` → `this.startQuery()`
 - 参照: `event.button`, `event.target`, `this._inputContainer`, `this._revertButton`, `this._searchModeIndicatorClose`, `this.goButton`, `this.inputField`, `this.searchMode`, `this.view.isOpen`, `this.view.oneOffSearchButtons`, `this.view.oneOffSearchButtons.selectedButton`
 
 ## UrlbarInputBase._on_auxclick()
 - 位置: L5330-5342
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 中ボタンなどの補助クリックで、入力欄なら全選択と URL の再整形、Go ボタンなら handleCommand を呼ぶ。
+- 触るとき: 中ボタンクリックの挙動を変えるとき。
 - 呼び出し先: `this.#maybeSelectAll()`, `this.#maybeUntrimUrl()`, `this.handleCommand()`
 - 参照: `event.target`, `this._inputContainer`, `this.goButton`, `this.inputField`
 
 ## UrlbarInputBase._on_contextmenu()
 - 位置: L5344-5351
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: マウス操作による文脈メニューの表示時だけ、全選択を試みる。キーボードでの表示では何もしない。
+- 触るとき: 右クリックで全選択される条件を変えるとき。
 - 呼び出し先: `this.#maybeSelectAll()`
 - 参照: `event.button`
 
 ## UrlbarInputBase._on_focus()
 - 位置: L5353-5426
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: フォーカスを受けたとき、focused 属性を付け、トリムされた URL を必要なら元に戻す判定を行い、マウス由来なら結果ビューを自動で開き、キー操作ならすぐに再整形する。ツールチップ、装飾、ポップアップ通知を更新する。
+- 触るとき: フォーカス時に URL が元に戻る条件、または結果ビューの自動表示を変えるとき。
 - 呼び出し先: `logger()`, `logger().debug()`, `this._updateUrlTooltip()`, `this.formatValue()`, `this.getAttribute()`
 - 条件付き依存: `if (!this._hideFocus)` → `this.toggleAttribute()`
 - 条件付き依存: `if (!untrim)` → `UrlbarContentUtils.getFixupPrimitives()`
@@ -1350,21 +1350,21 @@ lines: 6715
 
 ## UrlbarInputBase._on_mouseover()
 - 位置: L5428-5430
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: マウスが載ったときにツールチップを更新する。
+- 触るとき: あふれた URL のツールチップの出方を調べるとき。
 - 呼び出し先: `this._updateUrlTooltip()`
 
 ## UrlbarInputBase._on_draggableregionleftmousedown()
 - 位置: L5432-5436
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: Windows で、ドラッグ領域を左クリックしたとき、自動非表示が有効なら結果ビューを閉じる。
+- 触るとき: タイトルバー付近の操作で結果ビューが閉じない、または閉じすぎるとき。
 - 呼び出し先: `UrlbarPrefs.get()`
 - 条件付き依存: `if (!UrlbarPrefs.get("ui.popup.disable_autohide"))` → `this.view.close()`
 
 ## UrlbarInputBase._on_mousedown()
 - 位置: L5438-5513
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 入力欄や window へのマウス押下を処理する。入力欄の押下ではマウス由来のフォーカスを記録し、左クリックなら選択を消して結果ビューを自動表示する。window 側の押下では、タブ以外なら自動非表示のときに結果ビューを閉じ、閉じる前に放棄のエンゲージメントを記録する。
+- 触るとき: クリックで結果ビューが開く・閉じる条件や、放棄の記録のタイミングを変えるとき。
 - 呼び出し先: `UrlbarPrefs.get()`, `event.target.closest()`, `this.hasAttribute()`, `this.view.autoOpen()`
 - 条件付き依存: `if (event.target != this.inputField)` → `this.focus()`
 - 条件付き依存: `if (this.focusedViaMousedown)` → `this.inputField.setSelectionRange()`
@@ -1376,8 +1376,8 @@ lines: 6715
 
 ## UrlbarInputBase._on_input()
 - 位置: L5515-5642
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 入力で起きる検索の中心。自動補完の削除を記録し、入力値を未加工の値と入力値として保存し、構成の状態を整える。IME 変換中は検索を止め、それ以外は自動補完を判定して startQuery で検索を始める。
+- 触るとき: 文字を入力したときに検索が始まらない、補完が出ない、IME 変換中の挙動が変なとき。
 - 呼び出し先: `UrlbarPrefs.get()`, `UrlbarShared.isPasteEvent()`, `event.inputType?.startsWith()`, `this._maybeAutofillPlaceholder()`, `this.getAttribute()`, `this.removeAttribute()`, `this.startQuery()`, `this.toggleAttribute()`, `this.view.removeAccessibleFocus()`
 - 条件付き依存: `if ( this._autofillPlaceholder && this.value === this.userTypedValue && (event.inputType === "deleteContentBackward" || event.inputType === "deleteContentForward") )` → `this.parentController.recordAutofillDeletion()`
 - 条件付き依存: `if ( UrlbarPrefs.get("autoFill.adaptiveHistory.enabled") && event.inputType?.startsWith("deleteContent") && !this.isPrivate && this._autofillPlaceholder && this....)` → `this.parentController.recordAutofillBackspace()`
@@ -1393,36 +1393,36 @@ lines: 6715
 
 ## UrlbarInputBase._on_selectionchange()
 - 位置: L5644-5657
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 自動補完のプレースホルダーが選択を外されたら、その補完を入力値として確定し、ユーザー入力の値にする。
+- 触るとき: 補完された文字をカーソル移動で編集したときに補完が確定しない、または残るとき。
 - 参照: `this._autofillPlaceholder`, `this._autofillPlaceholder.selectionEnd`, `this._autofillPlaceholder.selectionStart`, `this._autofillPlaceholder.value`, `this.selectionEnd`, `this.selectionStart`, `this.userTypedValue`, `this.value`
 
 ## UrlbarInputBase._on_select()
 - 位置: L5659-5693
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ユーザーの選択をプライマリ選択へコピーする。プログラムによる選択、またはプライマリ選択に対応していない環境では何もしない。
+- 触るとき: 選択したテキストが中クリックで貼られる内容(プライマリ選択)を調べるとき。
 - 呼び出し先: `Services.clipboard.isClipboardTypeSupported()`, `lazy.ClipboardHelper.copyStringToClipboard()`, `this._getSelectedValueForClipboard()`
 - 参照: `Services.clipboard.kSelectionClipboard`, `this._suppressPrimaryAdjustment`, `this.window.windowUtils.isHandlingUserInput`
 - XPCOM: `Services.clipboard`
 
 ## UrlbarInputBase._on_overflow()
 - 位置: L5695-5698
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 文字があふれたことを記録し、テキストのあふれ表示を更新する。
+- 触るとき: 長い URL のあふれ表示が出ない、または残るとき。
 - 呼び出し先: `this.updateTextOverflow()`
 - 参照: `this._overflowing`
 
 ## UrlbarInputBase._on_underflow()
 - 位置: L5700-5704
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: あふれの解消を記録し、テキストのあふれ表示とツールチップを更新する。
+- 触るとき: あふれ表示やツールチップが解消されないとき。
 - 呼び出し先: `this._updateUrlTooltip()`, `this.updateTextOverflow()`
 - 参照: `this._overflowing`
 
 ## UrlbarInputBase._on_paste()
 - 位置: L5706-5757
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 貼り付けた文字列をサニタイズし、元の内容と違えばイベントを止めて、貼り付けた値を入力欄へ入れ直す。カーソルを貼り付け後へ移し、検索を始める。先頭に空でない文字がある場合は何もしない。
+- 触るとき: URL を貼り付けたときに値が書き換わる、または書き換わらない条件を調べるとき。
 - 呼び出し先: `UrlbarContentUtils.getFixupPrimitives()`, `UrlbarShared.sanitizeTextFromClipboard()`, `event.clipboardData.getData()`, `oldStart.trim()`, `oldValue.substring()`
 - 条件付き依存: `if (originalPasteData != pasteData)` → `event.preventDefault()`
 - 条件付き依存: `if (originalPasteData != pasteData)` → `event.stopImmediatePropagation()`
@@ -1436,8 +1436,8 @@ lines: 6715
 
 ## UrlbarInputBase.#makeQueryContext()
 - 位置: L5773-5823
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 検索のクエリ文脈を作る。検索モードのときはその元とソースを設定し、ブラウザ窓では利用者のコンテキスト ID、タブグループ、現在のページを加える。貼り付け時は長すぎる文字列でリモート結果を止める。結果件数は maxRichResults(アクション検索では無制限の 99)。
+- 触るとき: 検索の結果件数、リモート候補の可否、現在のページ情報などクエリの条件を変えるとき。
 - 呼び出し先: `UrlbarPrefs.get()`, `UrlbarShared.isPasteEvent()`
 - 条件付き依存: `if (this.window.gBrowser)` → `parseInt()`
 - 条件付き依存: `if (this.window.gBrowser)` → `this.window.gBrowser.selectedBrowser?.getAttribute()`
@@ -1446,37 +1446,37 @@ lines: 6715
 
 ## UrlbarInputBase._on_scrollend()
 - 位置: L5825-5827
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: スクロールが終わったら、テキストのあふれ表示を更新する。
+- 触るとき: スクロール後のあふれ表示の向きが合わないとき。
 - 呼び出し先: `this.updateTextOverflow()`
 
 ## UrlbarInputBase._on_TabSelect()
 - 位置: L5829-5835
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブ切り替えの通知を受け、キー操作による全展開(untrim)の予定を取り消してから、タブ切り替えとフォーカス変化の後処理を呼ぶ。
+- 触るとき: タブ切り替え時に結果ビューや入力欄の値が戻るタイミングを調べるとき。
 - 呼び出し先: `this._afterTabSelectAndFocusChange()`
 - 参照: `this._gotTabSelect`, `this._untrimOnFocusAfterKeydown`
 
 ## UrlbarInputBase._on_TabClose()
 - 位置: L5837-5846
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じたタブのバウンス計測を送り、結果ビューが開いていれば検索を始め直して、閉じたタブへの切り替え候補を消す。
+- 触るとき: タブを閉じた後も切り替え候補が残るとき。
 - 呼び出し先: `lazy.handleBounceEventTrigger()`
 - 条件付き依存: `if (this.view.isOpen)` → `this.startQuery()`
 - 参照: `event.target.linkedBrowser`, `this.view.isOpen`
 
 ## UrlbarInputBase._on_beforeinput()
 - 位置: L5848-5857
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: Enter 処理中の文字入力を止め、スペースで結果メニューが開く場合はスペースの入力を止める。
+- 触るとき: Enter や Space を押したときに文字が入ってしまう、または入らないとき。
 - 呼び出し先: `this.view.shouldSpaceActivateSelectedElement()`
 - 条件付き依存: `if ( // Ignore char key input while processing enter key. (event.data && this._keyDownEnterDeferred) || // Ignore space key while the result menu will be activat...)` → `event.preventDefault()`
 - 参照: `event.data`, `this._keyDownEnterDeferred`
 
 ## UrlbarInputBase._on_keydown()
 - 位置: L5859-5925
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: キーダウンを処理する。結果メニューが開いていれば何もしない。Enter なら遅延用の Promise を作って修飾キーの状態を記録し、修飾キーの押下を追跡し、イベントの遅延を経て controller.handleKeyNavigation に渡す。
+- 触るとき: キー操作(矢印、Enter、Tab など)で結果が選ばれない、または二重に動くとき。
 - 呼び出し先: `this.controller.handleKeyNavigation()`, `this.eventBufferer.maybeDeferEvent()`, `this.eventBufferer.shouldDeferEvent()`, `this.view.isResultMenuOpen()`
 - 条件付き依存: `if (this._keyDownEnterDeferred)` → `this._keyDownEnterDeferred.reject()`
 - 条件付き依存: `if (event.keyCode === KeyEvent.DOM_VK_RETURN)` → `Promise.withResolvers()`
@@ -1487,8 +1487,8 @@ lines: 6715
 
 ## UrlbarInputBase._on_keyup()
 - 位置: L5927-5962
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: キーアップを処理する。全選択されていた場合は Home 押下でカーソルを先頭に置き、URL を再整形する。修飾キーの状態を解除し、Enter の遅延処理が残っていれば #finishDeferredEnter を呼ぶ。
+- 触るとき: Enter の後の読み込みや修飾キー解除の順序を調べるとき。
 - 呼び出し先: `this._toggleActionOverride()`
 - 条件付き依存: `if (this.#allTextSelectedOnKeyDown)` → `this.#isHomeKeyUpEvent()`
 - 条件付き依存: `if (this.#allTextSelectedOnKeyDown)` → `this.#maybeUntrimUrl()`

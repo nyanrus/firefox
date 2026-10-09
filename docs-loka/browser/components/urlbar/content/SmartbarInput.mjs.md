@@ -1557,23 +1557,23 @@ lines: 8002
 
 ## SmartbarInput._searchModeForResult()
 - 位置: L5689-5737
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 結果のキーワードかエンジンから検索モードを作る。制限語なら restrictType を keyword か symbol にし、入る経路(entry)は引数、無ければ提供元が TopSites、TabToSearch、その他によって決める。
+- 触るとき: 候補を選んだときに検索モードへ入る条件や、検索モードの entry(テレメトリの入口)を変えるとき。
 - 呼び出し先: `this.searchModeForToken()`
 - 条件付き依存: `if (!(result.type == UrlbarShared.RESULT_TYPE.RESTRICT))` → `UrlbarShared.SEARCH_MODE_RESTRICT.has()`
 - 参照: `UrlbarShared.RESULT_TYPE.RESTRICT`, `result.payload.dynamicType`, `result.payload.engine`, `result.payload.keyword`, `result.payload.originalEngine`, `result.providerName`, `result.type`, `searchMode.entry`, `searchMode.restrictType`
 
 ## SmartbarInput.#updateCtaSearchEngineInfo()
 - 位置: async L5742-5777
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: スマートバーでエンジンストアを初期化し、「検索先」として選ばれたエンジン(無ければ既定)の名前とアイコン、および一覧(ワンオフ非表示を除く)を CTA に渡す。
+- 触るとき: CTA に表示する検索エンジンの候補や既定の選び方を変えるとき。
 - 呼び出し先: `Promise.all()`, `e.getIconURL()`, `engine.getIconURL()`, `this.controller.engineStore .getEngines()`, `this.controller.engineStore .getEngines() .filter()`, `this.controller.engineStore .getEngines() .filter(e => !e.hideOneOffButton) .map()`, `this.controller.engineStore.getEngineByName()`, `this.controller.engineStore.init()`
 - 参照: `e.hideOneOffButton`, `e.name`, `engine.name`, `this.#isSmartbarMode`, `this.#smartbarSearchEngineName`, `this._inputCta.searchEngineInfo`, `this._inputCta.searchEngines`, `this.controller.engineStore.default`
 
 ## SmartbarInput._updateSearchModeUI()
 - 位置: L5785-5850
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 検索モードの表示を更新する。アドレスバーでは表示名と placeholder を、検索元なら対応する文言を設定し、searchmode 属性を付ける。プレビューの自動補完は消し、固定表示ページでは値を空にする。
+- 触るとき: 検索モードに入ったときの表示名や placeholder が正しいかを確かめるとき。
 - 呼び出し先: `lazy.UrlbarSearchTermsPersistence.onSearchModeChanged()`, `this.dispatchEvent()`, `this.getAttribute()`, `this.hasAttribute()`, `this.toggleAttribute()`
 - 条件付き依存: `if (this._searchModeIndicatorTitle)` → `this._searchModeIndicatorTitle.removeAttribute()`
 - 条件付き依存: `if (!engineName && !source)` → `this.removeAttribute()`
@@ -1586,8 +1586,8 @@ lines: 8002
 
 ## SmartbarInput.#handlePersistedSearchTerms()
 - 位置: L5870-5940
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: アドレスバーで、検索語の永続化(persist)を状態に応じて設定する。必要なら persistence の状態を作り直し、永続化するなら userTypedValue を検索語にする。外れたら値を戻し、persistsearchterms 属性とテレメトリを更新する。
+- 触るとき: 検索結果ページで検索語を入力欄に残す、または戻す条件を変えるとき。
 - 呼び出し先: `lazy.UrlbarSearchTermsPersistence.shouldPersist()`, `lazy.UrlbarUtils.isPersistedSearchTermsEnabled()`, `state.persist.originalURI.equals()`, `this.toggleAttribute()`
 - 条件付き依存: `if (state.persist)` → `this.removeAttribute()`
 - 条件付き依存: `if (firstView || cachedUriDidChange)` → `lazy.UrlbarSearchTermsPersistence.setPersistenceState()`
@@ -1596,16 +1596,16 @@ lines: 8002
 
 ## SmartbarInput.#initPlaceholderFromPref()
 - 位置: L5949-5960
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: アドレスバーで、保存済みの既定エンジン名(私用ウィンドウは別の設定)があれば、それで placeholder を初期化する。エンジンストアが失敗していれば何もしない。
+- 触るとき: 起動直後に placeholder のエンジン名が一瞬古く見える問題を追うとき。
 - 呼び出し先: `UrlbarPrefs.get()`
 - 条件付き依存: `if (engineName)` → `this._setPlaceholder()`
 - 参照: `this.#isAddressbar`, `this.controller.engineStore.failed`, `this.isPrivate`
 
 ## SmartbarInput.#initEngineStoreAfterPaint()
 - 位置: async L5973-5982
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 読み込み中なら DOMContentLoaded の後、requestIdleCallback を待ってからエンジンストアを初期化する。検索サービスの起動を最初の描画の後に遅らせる。
+- 触るとき: 起動時の性能を守るために検索サービスの初期化タイミングを変えるとき。
 - 呼び出し先: `this.controller.engineStore.init()`
 - 条件付き依存: `if (document.readyState == "loading")` → `document.addEventListener()`
 - 条件付き依存: `if (document.readyState == "loading")` → `this.window.requestIdleCallback()`
@@ -1613,8 +1613,8 @@ lines: 8002
 
 ## SmartbarInput.#deferUpdatePlaceholder()
 - 位置: async L5994-6037
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: スマートバーでは何もしない。入力が空なら、保存済みの名前を使っていた placeholder だけ即時に更新し、アイコンと placeholder は入力・タブ切替の後に更新するリスナーを付ける。入力があれば即時に更新する。
+- 触るとき: 入力中に placeholder や検索アイコンが急に変わらないよう更新を遅らせる仕組みを調べるとき。
 - 条件付き依存: `if (this.inputField.dataset.l10nId == "urlbar-placeholder-with-name")` → `this.updatePlaceholder()`
 - 条件付き依存: `if (!this.value)` → `this.inputField.addEventListener()`
 - 条件付き依存: `if (!this.value)` → `this.window.gBrowser.tabContainer.addEventListener()`
@@ -1623,8 +1623,8 @@ lines: 8002
 
 ## updateListener()
 - 位置: L6013-6027
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 入力された、または検索モードでない状態でタブ切替が起きたら、検索アイコンと placeholder を最新の既定エンジンに更新し、自分のリスナーを外す。
+- 触るとき: 遅延した placeholder 更新が一度だけ走って止まるかを確かめるとき。
 - 条件付き依存: `if (this.value && !this.searchMode)` → `this.searchModeSwitcher.updateSearchIcon().catch()`
 - 条件付き依存: `if (this.value && !this.searchMode)` → `this.searchModeSwitcher.updateSearchIcon()`
 - 条件付き依存: `if (this.value && !this.searchMode)` → `this.updatePlaceholder()`
@@ -1634,8 +1634,8 @@ lines: 8002
 
 ## SmartbarInput.setUnifiedSearchButtonAvailability()
 - 位置: L6044-6058
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: スマートバーでは何もしない。それ以外は統合検索ボタンの表示属性と aria-hidden を切り替え、選択中ブラウザの状態に可否を記録する。
+- 触るとき: 統合検索ボタンが出る条件やアクセシビリティ属性の扱いを変えるとき。
 - 呼び出し先: `this.getBrowserState()`, `this.querySelector()`, `this.toggleAttribute()`
 - 条件付き依存: `if (available)` → `switcher.removeAttribute()`
 - 条件付き依存: `if (!(available))` → `switcher.setAttribute()`
@@ -1643,16 +1643,16 @@ lines: 8002
 
 ## SmartbarInput.updatePlaceholder()
 - 位置: L6063-6078
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: アドレスバーで検索モードでなければ、既定エンジンが設定エンジンのときだけエンジン名入りの placeholder にし、それ以外は既定の文言にする。エンジンストアが未初期化なら既定の文言になる。
+- 触るとき: 既定エンジンを変えたときに placeholder の名前が切り替わるかを確かめるとき。
 - 条件付き依存: `if (defaultEngine?.isConfigEngine)` → `this._setPlaceholder()`
 - 条件付き依存: `if (!(defaultEngine?.isConfigEngine))` → `this._setPlaceholder()`
 - 参照: `defaultEngine.name`, `defaultEngine?.isConfigEngine`, `this.#isAddressbar`, `this.controller.engineStore.default`, `this.searchMode`
 
 ## SmartbarInput._setPlaceholder()
 - 位置: L6087-6114
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: スマートバーは smartbar-placeholder、検索バーは searchbar-input、アドレスバーは keyword.enabled に応じて、名前入りか既定か無効時の文言を設定する。
+- 触るとき: placeholder の文言(エンジン名入り、キーワード無効時など)の出し分けを変えるとき。
 - 呼び出し先: `UrlbarPrefs.get()`, `this.document.l10n.setAttributes()`
 - 条件付き依存: `if (this.#isSmartbarMode)` → `this.document.l10n.setAttributes()`
 - 条件付き依存: `if (!this.#isAddressbar)` → `this.document.l10n.setAttributes()`
@@ -1660,23 +1660,23 @@ lines: 8002
 
 ## SmartbarInput.#maybeSelectAll()
 - 位置: L6120-6132
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: スマートバーでは何もしない。それ以外は、クリックで全選択を抑止していない、IME 変換中でない、フォーカス中で選択が空のときに全選択する。
+- 触るとき: クリックしたときに URL 全体が選ばれる挙動を変えるとき、または選択が消える不具合を調べるとき。
 - 条件付き依存: `if ( !this._preventClickSelectsAll && this.#compositionState != UrlbarShared.COMPOSITION.COMPOSING && this.focused && this.selectionStart == this.selectionEnd )` → `this.select()`
 - 参照: `UrlbarShared.COMPOSITION.COMPOSING`, `this.#compositionState`, `this.#isSmartbarMode`, `this._preventClickSelectsAll`, `this.focused`, `this.selectionEnd`, `this.selectionStart`
 
 ## SmartbarInput._on_command()
 - 位置: L6136-6148
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: コマンド実行によるフォーカス移動を離脱扱いしないよう、engagement を破棄する。結果メニューの項目や one-off 由来の検索モード入りは例外として残す。
+- 触るとき: メニューのコマンドで検索の記録が誤って中断扱いになる不具合を調べるとき。
 - 呼び出し先: `event.target.classList.contains()`
 - 条件付き依存: `if ( !event.target.classList.contains("urlbarView-result-menuitem") && (!event.target.classList.contains("searchbar-engine-one-off-item") || this.searchMode?.ent...)` → `this.controller.engagementEvent.discard()`
 - 参照: `this.searchMode?.entry`
 
 ## SmartbarInput._on_blur()
 - 位置: L6150-6237
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: フォーカスが外れたときの後始末。engagement を記録し、属性と引き継ぎ状態を消す。自動補完を外して入力値を戻し、必要なら値を trim し直す。アクションの上書きや拡張の入力を解除し、ボタン列以外へ移れば候補を閉じる。Enter の待機を解決して urlbar-blur を通知する。
+- 触るとき: 入力欄から離れたときの表示や記録の扱いを変えるとき、または候補が閉じない・残る不具合を調べるとき。
 - 呼び出し先: `Services.obs.notifyObservers()`, `UrlbarPrefs.get()`, `lazy.ExtensionSearchHandler.hasActiveInputSession()`, `logger()`, `logger().debug()`, `this.#isInsideContainer()`, `this._clearActionOverride()`, `this._resetSearchState()`, `this.controller.engagementEvent.record()`, `this.getAttribute()`, `this.getSearchSource()`, `this.removeAttribute()`, `this.view.resultMenu.hasAttribute()`
 - 条件付き依存: `if (!( this.value == this._untrimmedValue && !this.userTypedValue && !this.focused ))` → `this.formatValue()`
 - 条件付き依存: `if (lazy.ExtensionSearchHandler.hasActiveInputSession())` → `lazy.ExtensionSearchHandler.handleInputCancelled()`
@@ -1688,23 +1688,23 @@ lines: 8002
 
 ## SmartbarInput._on_click()
 - 位置: L6239-6270
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: クリック先に応じて、入力欄なら全選択と URL の展開、検索モードの閉じるボタンなら検索モードを解除、戻すボタンなら入力を元に戻す、移動ボタンなら送信する。
+- 触るとき: 入力欄の周辺ボタンの押下動作を追加・変更するとき。
 - 呼び出し先: `this.#maybeSelectAll()`, `this.#maybeUntrimUrl()`, `this.handleCommand()`, `this.handleRevert()`, `this.select()`
 - 条件付き依存: `if (this.view.isOpen)` → `this.startQuery()`
 - 参照: `event.button`, `event.target`, `this._inputContainer`, `this._revertButton`, `this._searchModeIndicatorClose`, `this.goButton`, `this.inputField`, `this.searchMode`, `this.view.isOpen`, `this.view.oneOffSearchButtons`, `this.view.oneOffSearchButtons.selectedButton`
 
 ## SmartbarInput._on_contextmenu()
 - 位置: L6272-6279
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: キーボードで開いた文脈メニュー(button が 0)では何もせず、マウスの右クリックでは全選択を試みる。
+- 触るとき: 右クリックで全選択される条件を変えるとき。
 - 呼び出し先: `this.#maybeSelectAll()`
 - 参照: `event.button`
 
 ## SmartbarInput._on_focus()
 - 位置: L6281-6350
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: フォーカスを受けたときに focused 属性を付け、トリムされた URL を必要なら展開する。マウスで来た場合は候補を自動で開き、キーボードで来た場合は必要に応じて展開して全選択する。ツールチップ、書式、ポップアップ通知を更新し、urlbar-focus を通知する。
+- 触るとき: フォーカス時に URL が展開される条件や、フォーカス直後に候補が開く条件を変えるとき。
 - 呼び出し先: `Services.obs.notifyObservers()`, `logger()`, `logger().debug()`, `this._updateUrlTooltip()`, `this.formatValue()`, `this.getAttribute()`
 - 条件付き依存: `if (!this._hideFocus)` → `this.toggleAttribute()`
 - 条件付き依存: `if (!untrim)` → `UrlbarContentUtils.getFixupPrimitives()`
@@ -1723,21 +1723,21 @@ lines: 8002
 
 ## SmartbarInput._on_mouseover()
 - 位置: L6352-6354
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: マウスが乗ったときに URL のツールチップを更新する。
+- 触るとき: はみ出した URL の全文表示の出し方を確かめるとき。
 - 呼び出し先: `this._updateUrlTooltip()`
 
 ## SmartbarInput._on_draggableregionleftmousedown()
 - 位置: L6356-6360
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: Windows のドラッグ可能領域で左ボタンが押されたら、自動非表示が有効なら候補を閉じる。
+- 触るとき: タイトルバー付近の押下で候補が閉じる挙動を変えるとき。
 - 呼び出し先: `UrlbarPrefs.get()`
 - 条件付き依存: `if (!UrlbarPrefs.get("ui.popup.disable_autohide"))` → `this.view.close()`
 
 ## SmartbarInput._on_mousedown()
 - 位置: L6362-6445
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: マウス押下を処理する。ボタン列内なら既定の動作を止め、入力欄なら、フォーカスの移し方とスマートバー以外の選択の解除を行い、左ボタンなら候補を自動で開く。
+- 触るとき: マウスでフォーカスや選択が移る条件、またはボタン列の押下の扱いを変えるとき。
 - 呼び出し先: `UrlbarPrefs.get()`, `event.target.closest()`, `this.#isInsideContainer()`, `this.hasAttribute()`, `this.view.autoOpen()`
 - 条件付き依存: `if ( !this.#isInsideContainer(event.composedTarget, this.inputField) && event.composedTarget != this._inputContainer )` → `this.#isInsideContainer()`
 - 条件付き依存: `if ( this.#isInsideContainer( event.composedTarget, this.smartbarButtonContainer ) )` → `event.preventDefault()`
@@ -1751,8 +1751,8 @@ lines: 8002
 
 ## SmartbarInput._on_input()
 - 位置: L6447-6596
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 入力のたびに値、入力の控え、文字列の状態をそろえ、補完を外して検索を走らせる。IME の変換中や直後は検索を抑え、メンションやエージェントコマンドの入力中は検索を止める。結果を開く前に候補を消すか閉じ、補完が使えれば補完付きで検索する。
+- 触るとき: 入力に応じて候補が出る条件や、IME 変換中に検索が走る問題を追うとき。
 - 呼び出し先: `UrlbarPrefs.get()`, `UrlbarShared.isPasteEvent()`, `event.inputType?.startsWith()`, `getAgentCommandId()`, `this._maybeAutofillPlaceholder()`, `this.getAttribute()`, `this.removeAttribute()`, `this.startQuery()`, `this.toggleAttribute()`, `this.view.removeAccessibleFocus()`
 - 条件付き依存: `if ( this._autofillPlaceholder && this.value === this.userTypedValue && (event.inputType === "deleteContentBackward" || event.inputType === "deleteContentForward") )` → `this.parentController.recordAutofillDeletion()`
 - 条件付き依存: `if ( this.getAttribute("pageproxystate") == "valid" && this.value != this._lastValidURLStr )` → `this.setPageProxyState()`
@@ -1775,36 +1775,36 @@ lines: 8002
 
 ## SmartbarInput._on_selectionchange()
 - 位置: L6598-6612
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 補完の placeholder が、ユーザーの選択変更で選び直されたら、それを入力として確定させる(補完の一部を外すと入力扱いに変える)。
+- 触るとき: 補完文字をクリックや矢印キーで触ったときに、補完がユーザー入力として残る挙動を確かめるとき。
 - 参照: `this._applyingAutofill`, `this._autofillPlaceholder`, `this._autofillPlaceholder.selectionEnd`, `this._autofillPlaceholder.selectionStart`, `this._autofillPlaceholder.value`, `this.selectionEnd`, `this.selectionStart`, `this.userTypedValue`, `this.value`
 
 ## SmartbarInput._on_select()
 - 位置: L6614-6648
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ユーザーの操作で選択が変わったときだけ、選択中の URL 相当の文字列を選択クリップボード(Linux)にコピーする。
+- 触るとき: 選択をマウスで変えたときに、プライマリ選択へ入る内容を変えるとき。
 - 呼び出し先: `Services.clipboard.isClipboardTypeSupported()`, `lazy.ClipboardHelper.copyStringToClipboard()`, `this._getSelectedValueForClipboard()`
 - 参照: `Services.clipboard.kSelectionClipboard`, `this._suppressPrimaryAdjustment`, `this.window.windowUtils.isHandlingUserInput`
 - XPCOM: `Services.clipboard`
 
 ## SmartbarInput._on_overflow()
 - 位置: L6650-6653
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 入力欄がはみ出したことを記録し、はみ出し表示の属性を更新する。
+- 触るとき: 長い URL のフェードの表示が遅れる不具合を追うとき。
 - 呼び出し先: `this.updateTextOverflow()`
 - 参照: `this._overflowing`
 
 ## SmartbarInput._on_underflow()
 - 位置: L6655-6659
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: はみ出しが解消したことを記録し、はみ出し表示の属性とツールチップを更新する。
+- 触るとき: はみ出しが解消したあとに属性やツールチップが残る不具合を調べるとき。
 - 呼び出し先: `this._updateUrlTooltip()`, `this.updateTextOverflow()`
 - 参照: `this._overflowing`
 
 ## SmartbarInput._on_paste()
 - 位置: L6661-6712
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 貼り付けの内容に、無害化で除かれる部分(プロトコルなど)があれば既定の貼り付けを止め、無害化した内容で値と選択を置き換えて検索を走らせる。前に非空白の内容があれば何もしない。
+- 触るとき: 貼り付けた URL が意図せず書き換えられる、または貼り付けが届かない不具合を調べるとき。
 - 呼び出し先: `UrlbarContentUtils.getFixupPrimitives()`, `UrlbarShared.sanitizeTextFromClipboard()`, `event.clipboardData.getData()`, `oldStart.trim()`, `oldValue.substring()`
 - 条件付き依存: `if (originalPasteData != pasteData)` → `event.preventDefault()`
 - 条件付き依存: `if (originalPasteData != pasteData)` → `event.stopImmediatePropagation()`
@@ -1818,8 +1818,8 @@ lines: 8002
 
 ## SmartbarInput.#makeQueryContext()
 - 位置: L6728-6783
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 検索の文脈を作る。検索モードの元と最大件数(アクションは無制限、スマートバーは専用の上限)、プライベート、文脈タブ、現在のページなどを入れ、検索モードでは提供元を絞る。
+- 触るとき: 検索に渡す条件(最大件数、スポンサー結果の除外、リモート候補の抑止、検索モードの絞り込み)を変えるとき。
 - 呼び出し先: `UrlbarPrefs.get()`, `UrlbarShared.isPasteEvent()`
 - 条件付き依存: `if (this.#isSmartbarMode)` → `UrlbarPrefs.get()`
 - 条件付き依存: `if (!(this.#isSmartbarMode))` → `UrlbarPrefs.get()`
@@ -1830,52 +1830,52 @@ lines: 8002
 
 ## SmartbarInput._on_scroll()
 - 位置: L6794-6802
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 結果パネルのスクロールを受けて、CSS の scroll() が使えない場合だけ影の表示を更新する。
+- 触るとき: 結果一覧の端の影が出ない環境の挙動を確かめるとき。
 - 呼び出し先: `CSS.supports()`, `this.#updatePanelScrollFade()`
 - 参照: `event.target`, `this.view.panel`
 
 ## SmartbarInput.#updatePanelScrollFade()
 - 位置: L6804-6823
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 次のフレームでパネルのスクロール量を計算し、スクロールできるかどうかの属性と進み具合の CSS 変数を設定する。同じフレームでの重複要求は無視する。
+- 触るとき: 結果一覧のスクロール表示の進捗や、スクロールできるかの判定を変えるとき。
 - 呼び出し先: `progress.toFixed()`, `this.view.panel.style.setProperty()`, `this.view.panel.toggleAttribute()`, `this.window.requestAnimationFrame()`
 - 参照: `this.#scrollAnimationId`, `this.view.panel`
 
 ## SmartbarInput._on_scrollend()
 - 位置: L6825-6827
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: スクロールが終わったら、入力欄のはみ出し表示を更新する。
+- 触るとき: スクロール後にはみ出しのフェードが合わなくなる不具合を調べるとき。
 - 呼び出し先: `this.updateTextOverflow()`
 
 ## SmartbarInput._on_TabSelect()
 - 位置: L6829-6840
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブ切替でトリミングのフォーカス時展開を無効にし、タブ選択を記録して切替後の処理を呼ぶ。サイドバーでは文脈チップも更新する。
+- 触るとき: タブを切り替えたあとに候補や文脈チップが古いままになるかを確かめるとき。
 - 呼び出し先: `this._afterTabSelectAndFocusChange()`
 - 条件付き依存: `if (this.#isSidebarMode)` → `this.#updateContextChips()`
 - 参照: `this.#isSidebarMode`, `this._gotTabSelect`, `this._untrimOnFocusAfterKeydown`
 
 ## SmartbarInput._on_TabAttrModified()
 - 位置: L6842-6851
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: サイドバーで、選択中タブのアイコンかラベルが変わったときに文脈チップを更新する。
+- 触るとき: タブの表題や画像の変化がチップに反映されない不具合を調べるとき。
 - 呼び出し先: `event.detail.changed.includes()`
 - 条件付き依存: `if ( this.#isSidebarMode && event.target == this.window.gBrowser.selectedTab && (event.detail.changed.includes("image") || event.detail.changed.includes("label")) )` → `this.#updateContextChips()`
 - 参照: `event.target`, `this.#isSidebarMode`, `this.window.gBrowser.selectedTab`
 
 ## SmartbarInput._on_TabClose()
 - 位置: L6853-6862
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブを閉じたときに、そのブラウザの履歴による移動の処理を行い、候補が開いていれば検索を取り直して閉じたタブへの切替結果を消す。
+- 触るとき: 閉じたタブが候補に残る、または閉じたときの bounce 記録を調べるとき。
 - 呼び出し先: `lazy.handleBounceEventTrigger()`
 - 条件付き依存: `if (this.view.isOpen)` → `this.startQuery()`
 - 参照: `event.target.linkedBrowser`, `this.view.isOpen`
 
 ## SmartbarInput._on_beforeinput()
 - 位置: L6864-6881
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: Enter の処理中の文字入力を止め、スマートバーでは選択中の結果メニューのボタンを押すスペースキーを編集部に入れないようにする。
+- 触るとき: Enter 直後の入力が消える問題や、スペースでメニューが開く挙動を確かめるとき。
 - 呼び出し先: `this.view?.shouldSpaceActivateSelectedElement()`
 - 条件付き依存: `if (event.data && this._keyDownEnterDeferred)` → `event.preventDefault()`
 - 条件付き依存: `if ( this.#isSmartbarMode && event.data == " " && this.view?.shouldSpaceActivateSelectedElement?.() )` → `event.preventDefault()`
@@ -1883,8 +1883,8 @@ lines: 8002
 
 ## SmartbarInput._on_keydown()
 - 位置: L6883-6974
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: キー押下を処理する。結果メニューが開いていればそちらに任せる。ウィンドウ側では、ボタン列の Tab 処理と untrim の判定を行う。入力欄側では、スマートバーで Shift+Enter や生成中の Enter を止め、Enter は保留の準備をし、修飾キーの状態と動作の上書きを更新してから、キーのナビゲーションをイベントバッファーに通す。
+- 触るとき: キー操作で候補が動く、または Enter の送信が遅れる、修飾キーで動作が変わる不具合を調べるとき。
 - 呼び出し先: `this.controller.handleKeyNavigation()`, `this.eventBufferer.maybeDeferEvent()`, `this.eventBufferer.shouldDeferEvent()`, `this.view.resultMenu.hasAttribute()`
 - 条件付き依存: `if (event.currentTarget == this.window)` → `this.#isInsideContainer()`
 - 条件付き依存: `if ( this.#isInsideContainer( event.composedTarget, this.smartbarButtonContainer ) )` → `this.#onActionButtonsKeyDown()`
@@ -1898,8 +1898,8 @@ lines: 8002
 
 ## SmartbarInput._on_keyup()
 - 位置: L6976-7009
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウ側では untrim の判定を解除する。入力欄では全選択からのホームキーを処理して URL を展開し直し、修飾キーの状態と動作の上書きを解除し、保留中の Enter があれば完了処理を始める。
+- 触るとき: Home キーや修飾キーの離し方で選択や URL 表示がずれる不具合を調べるとき。
 - 呼び出し先: `this._toggleActionOverride()`
 - 条件付き依存: `if (this.#allTextSelectedOnKeyDown)` → `this.#isHomeKeyUpEvent()`
 - 条件付き依存: `if (this.#allTextSelectedOnKeyDown)` → `this.#maybeUntrimUrl()`
@@ -1908,8 +1908,8 @@ lines: 8002
 
 ## SmartbarInput.#finishDeferredEnter()
 - 位置: async L7015-7052
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: Enter の押下から保留していた処理を keyup で完了させる。読み込みが始まっていれば、読み込み先のブラウザにフォーカスを移してから、ドメインを見せるため選択を先頭に置く。読み込みが無ければ保留を解決する。
+- 触るとき: Enter で読み込んだあとのフォーカスや選択位置の挙動を調べるとき。
 - 条件付き依存: `if (keyDownEnterDeferred.loadedContent)` → `this.parentController.focusBrowser()`
 - 条件付き依存: `if (focused && keyDownEnterDeferred.inputEpoch === this.#inputEpoch)` → `this.setSelectionRange()`
 - 条件付き依存: `if (!(keyDownEnterDeferred.loadedContent))` → `keyDownEnterDeferred.resolve()`
@@ -1917,8 +1917,8 @@ lines: 8002
 
 ## SmartbarInput._on_compositionstart()
 - 位置: L7054-7084
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: IME の変換開始を記録する。候補を保持する設定が無ければ、検索モードを確定してから候補を閉じる。
+- 触るとき: 変換中に候補が閉じる、または検索モードが消える挙動を追うとき。
 - 呼び出し先: `UrlbarPrefs.get()`
 - 条件付き依存: `if (this.searchMode)` → `this.confirmSearchMode()`
 - 条件付き依存: `if (this.view.isOpen)` → `this.view.close()`
@@ -1926,8 +1926,8 @@ lines: 8002
 
 ## SmartbarInput._on_compositionend()
 - 位置: L7086-7119
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 変換の終了を記録し、選択と結果のキャッシュを消す(保持設定が無い場合)。変換が空のまま候補を閉じた IME では、候補を開き直す。
+- 触るとき: 日本語入力の確定後に候補が出ない、または古い結果が残る不具合を調べるとき。
 - 呼び出し先: `UrlbarPrefs.get()`
 - 条件付き依存: `if (!UrlbarPrefs.get("keepPanelOpenDuringImeComposition"))` → `this.view.clearSelection()`
 - 条件付き依存: `if ( !event.data && !this.#compositionHadText && this.#compositionClosedPopup && !UrlbarPrefs.get("keepPanelOpenDuringImeComposition") )` → `this.startQuery()`
@@ -1935,22 +1935,22 @@ lines: 8002
 
 ## SmartbarInput._on_dragstart()
 - 位置: L7121-7157
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 入力欄からのドラッグなら候補を閉じ、全選択中の読み込み済み URL なら、そのリンクをテキスト、URL、HTML の形でドラッグデータに入れる。
+- 触るとき: URL をドラッグしたときのデータ形式を変えるとき。
 - 呼び出し先: `UrlbarShared.escapeHtmlEntities()`, `event.dataTransfer.setData()`, `event.stopPropagation()`, `this.getAttribute()`, `this.inputField.compareDocumentPosition()`, `this.makeURIReadable()`, `this.view.close()`
 - 参照: `Node.DOCUMENT_POSITION_CONTAINED_BY`, `event.dataTransfer.effectAllowed`, `event.originalTarget`, `event.target`, `this.#allTextSelected`, `this.inputField`, `this.window.gBrowser.contentTitle`, `this.window.gBrowser.currentURI`, `uri.displaySpec`
 
 ## SmartbarInput._on_dragover()
 - 位置: L7164-7168
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ドロップ可能なデータが無ければ、ドロップの効果を none にする。
+- 触るとき: 入力欄へのドロップ可否の判定を変えるとき。
 - 呼び出し先: `getDroppableData()`
 - 参照: `event.dataTransfer.dropEffect`
 
 ## SmartbarInput._on_drop()
 - 位置: L7175-7200
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ドロップされた URL を入力欄に入れ、ページ状態を無効にして、移動を処理する。アドレスバーでは、場合によっては現在のページの表示を保つ。
+- 触るとき: リンクや文字列をドロップしたときの移動先や表示を変えるとき。
 - 呼び出し先: `URL.isInstance()`, `getDroppableData()`
 - 条件付き依存: `if (droppedURL && droppedURL !== this.window.gBrowser.currentURI.spec)` → `Services.droppedLinkHandler.getTriggeringPrincipal()`
 - 条件付き依存: `if (droppedURL && droppedURL !== this.window.gBrowser.currentURI.spec)` → `this.setPageProxyState()`
@@ -1965,82 +1965,82 @@ lines: 8002
 
 ## SmartbarInput._on_customizationstarting()
 - 位置: L7202-7205
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ツールバーのカスタマイズ開始時に、ポップオーバーのブロッカーを増やして入力欄からフォーカスを外す。
+- 触るとき: カスタマイズ画面の間に入力欄の展開やフォーカスが残る不具合を調べるとき。
 - 呼び出し先: `this.blur()`, `this.incrementPopoverBlockerCount()`
 
 ## SmartbarInput._on_aftercustomization()
 - 位置: L7207-7210
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: カスタマイズ終了時にブロッカーを減らし、ポップオーバーのアンカーを測り直す。
+- 触るとき: カスタマイズ後に入力欄の高さや展開が合わない不具合を追うとき。
 - 呼び出し先: `this.#updatePopoverAnchor()`, `this.decrementPopoverBlockerCount()`
 
 ## SmartbarInput.uiDensityChanged()
 - 位置: L7212-7217
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 表示密度が変わったとき、ブロッカーが無ければポップオーバーのアンカーを測り直す。
+- 触るとき: 密度の変更で入力欄の高さが古いままになる不具合を調べるとき。
 - 呼び出し先: `this.#updatePopoverAnchor()`
 - 参照: `this.#popoverBlockerCount`
 
 ## SmartbarInput.#allTextSelected()
 - 位置: L7220-7222
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 入力欄の全文が選択されているかを返す。
+- 触るとき: 全選択を前提にした untrim や、ドラッグで URL を渡す判定を追うとき。
 - 参照: `this.selectionEnd`, `this.selectionStart`, `this.value.length`
 
 ## SmartbarInput.#getSchemelessInput()
 - 位置: L7233-7239
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 入力が http://、https://、file:// のいずれでも始まらなければスキーマなし、始まれば明示のスキーマありを返す。
+- 触るとき: スキーマなし入力の HTTPS 優先の判定を変えるとき。
 - 呼び出し先: `["http://", "https://", "file://"].every()`, `value.trim()`, `value.trim().startsWith()`
 - 参照: `Ci.nsILoadInfo.SchemelessInputTypeSchemeful`, `Ci.nsILoadInfo.SchemelessInputTypeSchemeless`
 - XPCOM: [`nsILoadInfo`](../../../../dom/base/nsIContentPolicy.idl.md)
 
 ## SmartbarInput.#isOpenedPageInBlankTargetLoading()
 - 位置: L7241-7248
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択中ブラウザの履歴が空で、読み込み中の URI が「空白の遷移先」から来たものなら、その URI を返す。
+- 触るとき: target=_blank で開いたタブの読み込み中の URL を表示する判定を追うとき。
 - 参照: `this.window.gBrowser.selectedBrowser.browsingContext .nonWebControlledLoadingURI`, `this.window.gBrowser.selectedBrowser.browsingContext.sessionHistory ?.count`
 
 ## SmartbarInput.#selectedText()
 - 位置: L7270-7277
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 編集部の選択範囲を、整形なしのプレーンテキストとして返す。
+- 触るとき: 選択文字列をコピー用の値として扱う箇所を追うとき。
 - 呼び出し先: `this.editor.selection.toStringWithFormat()`
 - 参照: `Ci.nsIDocumentEncoder.OutputPreformatted`, `Ci.nsIDocumentEncoder.OutputRaw`
 - XPCOM: [`nsIDocumentEncoder`](../../../../dom/serializers/nsIDocumentEncoder.idl.md)
 
 ## SmartbarInput.#isHomeKeyUpEvent()
 - 位置: L7285-7309
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 離されたキーが Home 相当か判定する。Home キーに加え、Windows と Linux の Ctrl+Left、Mac の Ctrl+A や Cmd+Left を含む。
+- 触るとき: 行頭へ移動する操作の種類を増やす、または Mac の組み合わせを変えるとき。
 - 呼び出し先: `UrlbarContentUtils.getPlatform()`
 - 参照: `KeyEvent.DOM_VK_HOME`, `KeyEvent.DOM_VK_META`, `KeyboardEvent.DOM_VK_A`, `KeyboardEvent.DOM_VK_LEFT`, `event.ctrlKey`, `event.keyCode`, `event.shiftKey`, `this._isKeyDownWithMetaAndLeft`
 
 ## SmartbarInput.#updateSmartbarCTAButton()
 - 位置: L7317-7345
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 先頭結果の種類から検出した動作(URL や キーワードは navigate、チャットは chat、検索は search、それ以外は既定)を決める。動作が手動で固定されていなければ CTA の動作に反映し、送信ボタンの guardrail も更新する。
+- 触るとき: 入力に応じて CTA が 移動、検索、チャットのどれに変わるかを変えるとき。
 - 呼び出し先: `this.#updateGoGuardrail()`
 - 参照: `UrlbarShared.RESULT_TYPE.AI_CHAT`, `UrlbarShared.RESULT_TYPE.KEYWORD`, `UrlbarShared.RESULT_TYPE.SEARCH`, `UrlbarShared.RESULT_TYPE.URL`, `firstResult.heuristic`, `firstResult.type`, `this.#detectedIntent`, `this.#smartbarActionLocked`, `this.smartbarAction`, `this.value`
 
 ## SmartbarInput.getCurrentContextData()
 - 位置: L7354-7359
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 現在のページ URL と解決済みの文脈サイトをまとめて返す。プロンプトが入力欄の外からクリックされたときに使われる。
+- 触るとき: 入力欄の外のスターターのプロンプトに文脈を渡す経路を追うとき。
 - 呼び出し先: `this.getContextPageUrl()`, `this.getResolvedContextWebsites()`
 
 ## SmartbarInput.getContextPageUrl()
 - 位置: L7367-7376
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: サイドバーで、選択中タブの URL を URL オブジェクトにして返す。ただし利用者が暗黙のタブのチップを外していれば null を返す。
+- 触るとき: 次に送るメッセージに付くページ URL の決め方を変えるとき。
 - 呼び出し先: `URL.parse()`, `lazy.getCurrentTabUrl()`
 - 参照: `currentTabUrl?.spec`, `this.#isSidebarMode`, `this.#removedImplicitTabUrl`, `this.window`
 
 ## SmartbarInput.getResolvedContextWebsites()
 - 位置: L7384-7411
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 追加された文脈サイトに、サイドバーでは選択中タブを先頭に加えたうえで、重複を除き最大 5 件に絞って返す。
+- 触るとき: 文脈チップの件数の上限や、先頭に入る既定のタブの扱いを変えるとき。
 - 呼び出し先: `candidates .filter()`, `getContextMentionKey()`, `seen.add()`, `seen.has()`
 - 条件付き依存: `if (url && url != this.#removedImplicitTabUrl)` → `candidates.unshift()`
 - 条件付き依存: `if (url && url != this.#removedImplicitTabUrl)` → `this.#resolveTabIconSrc()`
@@ -2048,80 +2048,80 @@ lines: 8002
 
 ## SmartbarInput.#updateContextChips()
 - 位置: L7416-7426
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 解決済みの文脈サイトにアイコンを付け、ヘッダーのチップ列へ渡して表示する。件数が 0 なら列を隠す。
+- 触るとき: 文脈チップの表示が古いままになる、または列が出ない不具合を調べるとき。
 - 呼び出し先: `finalWebsites.forEach()`, `this.#ensureWebsiteIcon()`, `this.#findWebsiteContextChipsContainer()`, `this.getResolvedContextWebsites()`
 - 参照: `container.hidden`, `container.removable`, `container.websites`, `finalWebsites.length`
 
 ## SmartbarInput.updateContextChips()
 - 位置: L7432-7434
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 文脈チップの表示を更新する外部からの入口。サイドバーを開き直したときなどに使う。
+- 触るとき: サイドバーを開いたあとにチップが現在のタブを指すかを確かめるとき。
 - 呼び出し先: `this.#updateContextChips()`
 
 ## SmartbarInput.contextChips()
 - 位置: L7442-7444
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 利用者が追加した文脈チップ(暗黙の現在タブを除く)を返す。
+- 触るとき: 保存する文脈チップの中身を確かめるとき。
 - 参照: `this.#contextWebsites`
 
 ## SmartbarInput.removedImplicitContextChip()
 - 位置: L7452-7454
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 暗黙の現在タブのチップを外したかどうかを返す。
+- 触るとき: タブごとに外した状態を保存・復元する箇所を追うとき。
 - 参照: `this.#removedImplicitTabUrl`
 
 ## SmartbarInput.restoreContextChips()
 - 位置: L7465-7473
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 保存済みの文脈チップと、暗黙チップを外した状態を戻し、表示を更新する。この操作では変更イベントを出さない。
+- 触るとき: タブの状態を復元したときにチップが正しく戻るか、また変更イベントが戻し処理で回らないかを確かめるとき。
 - 呼び出し先: `this.#updateContextChips()`
 - 参照: `this.#contextWebsites`, `this.#removedImplicitTabUrl`, `this.window.gBrowser?.selectedTab?.linkedBrowser?.currentURI?.spec`
 
 ## SmartbarInput.#resolveTabIconSrc()
 - 位置: L7485-7489
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブのアイコンが chrome: URL ならそれを使い、それ以外は URL からの既定アイコンを使う。
+- 触るとき: チップに表示するアイコンの取り方を変えるとき。
 - 呼び出し先: `UrlbarShared.getIconForUrl()`, `tabImage?.startsWith()`
 
 ## SmartbarInput.#ensureWebsiteIcon()
 - 位置: L7496-7501
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブグループ以外で、アイコンが無ければ URL から既定のアイコンを設定する。既存のオブジェクトを直接書き換える。
+- 触るとき: チップのアイコンが空のまま表示される不具合を調べるとき。
 - 呼び出し先: `UrlbarShared.getIconForUrl()`
 - 参照: `CONTEXT_MENTION_TYPE.TAB_GROUP`, `site.iconSrc`, `site.type`, `site.url`
 
 ## SmartbarInput.#findWebsiteContextChipsContainer()
 - 位置: L7507-7517
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: チップ列の要素をキャッシュして返す。切断されていれば検索し直す。
+- 触るとき: チップ列の参照が古くなる問題を調べるとき。
 - 呼び出し先: `this.querySelector()`
 - 参照: `this.#websiteContextChipsContainer`, `this.#websiteContextChipsContainer?.isConnected`
 
 ## SmartbarInput.isSidebarMode()
 - 位置: L7519-7521
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: サイドバー表示かどうかを返す。
+- 触るとき: サイドバー専用の挙動を分けている箇所を確かめるとき。
 - 参照: `this.#isSidebarMode`
 
 ## SmartbarInput.isSidebarMode()
 - 位置: L7526-7535
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: サイドバー表示の設定を保存し、チップを更新し、モデル選択の表示にも反映する。
+- 触るとき: サイドバーに切り替えたときに、チップとモデル選択の見た目がそろうかを確かめるとき。
 - 呼び出し先: `this.#updateContextChips()`, `this.querySelector()`
 - 参照: `modelSelect.sidebarMode`, `this.#isSidebarMode`
 
 ## SmartbarInput.addContextMention()
 - 位置: L7542-7563
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブかタブグループを、同じキーの項目が無ければ文脈チップに加える。暗黙チップを外していた現在タブなら先頭に戻す。変更イベントを出す。
+- 触るとき: メンションからタブを文脈に加える重複判定や並び順を変えるとき。
 - 呼び出し先: `getContextMentionKey()`, `this.#contextWebsites.some()`, `this.#updateContextChips()`, `this.dispatchEvent()`
 - 参照: `mention.url`, `this.#contextWebsites`, `this.#removedImplicitTabUrl`
 
 ## SmartbarInput.removeContextMention()
 - 位置: L7570-7594
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: URL またはグループ ID に一致する文脈項目を外す。現在のタブなら暗黙チップを外した状態として記録する。変化があれば表示を更新して変更イベントを出す。
+- 触るとき: チップを閉じたときに対象が正しく消えるかを確かめるとき。
 - 呼び出し先: `this.#contextWebsites.filter()`
 - 条件付き依存: `if (this.#contextWebsites.length !== originalLength || isCurrentTab)` → `this.#updateContextChips()`
 - 条件付き依存: `if (this.#contextWebsites.length !== originalLength || isCurrentTab)` → `this.dispatchEvent()`
@@ -2129,8 +2129,8 @@ lines: 8002
 
 ## getDroppableData()
 - 位置: L7606-7653
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ドラッグのデータから URL を取り出す。安全でない URL(javascript: など)や、権限の確認に落ちた場合は null を返し、それ以外は URL か文字列を返す。
+- 触るとき: 入力欄へのドロップの受け入れ条件を変えるとき。
 - 呼び出し先: `Services.droppedLinkHandler.dropLinks()`, `event.dataTransfer.getData()`
 - 条件付き依存: `if (links[0]?.url)` → `event.preventDefault()`
 - 条件付き依存: `if (links[0]?.url)` → `UrlbarShared.stripUnsafeProtocolOnPaste()`
@@ -2143,8 +2143,8 @@ lines: 8002
 
 ## losslessDecodeURI()
 - 位置: L7664-7744
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: URI を、再度 Enter しても同じ URI になるように表示用に復号する。http、https、file、ftp では UTF-8 として復号し、他は ASCII の範囲だけ復号する。見えない文字や紛らわしい書式文字は符号化して残す。
+- 触るとき: URL 欄に表示する文字列の復号範囲(ASCII だけか UTF-8 か)や、符号化する文字の集合を変えるとき。
 - 呼び出し先: `/%25(?:3B|2F|3F|3A|40|26|3D|2B|24|2C|23)/i.test()`, `value.replace()`
 - 条件付き依存: `if (!/%25(?:3B|2F|3F|3A|40|26|3D|2B|24|2C|23)/i.test(value))` → `["https", "http", "file", "ftp"].includes()`
 - 条件付き依存: `if (decodeASCIIOnly)` → `value.replace()`
@@ -2153,14 +2153,14 @@ lines: 8002
 
 ## CopyCutController.constructor()
 - 位置: L7754-7756
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 対象の SmartbarInput を保持する。
+- 触るとき: コピーとカットのコントローラーがどの入力欄に紐づくかを確かめるとき。
 - 参照: `this.urlbar`
 
 ## CopyCutController.doCommand()
 - 位置: L7762-7787
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: コピー対象の文字列を取り、カットなら選択を消して input イベントを出した後、クリップボードへ入れる。
+- 触るとき: コピーやカットで入るクリップボードの内容(表示用 URL か選択文字列か)を変えるとき。
 - 呼び出し先: `lazy.ClipboardHelper.copyString()`, `this.isCommandEnabled()`, `urlbar._getSelectedValueForClipboard()`
 - 条件付き依存: `if (command == "cmd_cut" && this.isCommandEnabled(command))` → `urlbar.inputField.value.substring()`
 - 条件付き依存: `if (command == "cmd_cut" && this.isCommandEnabled(command))` → `urlbar.inputField.setSelectionRange()`
@@ -2169,52 +2169,52 @@ lines: 8002
 
 ## CopyCutController.supportsCommand()
 - 位置: L7795-7802
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: cmd_copy と cmd_cut だけを扱うと答える。
+- 触るとき: コピー・カット以外のコマンドを追加するとき。
 
 ## CopyCutController.isCommandEnabled()
 - 位置: L7810-7816
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: cmd_copy と cmd_cut を扱い、カットは読み取り専用でなく、選択がある場合だけ有効とする。
+- 触るとき: 選択が無いときにコピーやカットが無効に見える不具合を調べるとき。
 - 呼び出し先: `this.supportsCommand()`
 - 参照: `this.urlbar.readOnly`, `this.urlbar.selectionEnd`, `this.urlbar.selectionStart`
 
 ## CopyCutController.onEvent()
 - 位置: L7818-7818
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 何もしない(イベントは扱わない)。
+- 触るとき: コントローラーのイベント購読を追加するとき。
 
 ## AddSearchEngineHelper.constructor()
 - 位置: L7843-7846
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 対象の入力欄を保持し、ワンオフ検索ボタンの一覧を取る。
+- 触るとき: 検索エンジン追加の項目がどのビューに属するかを追うとき。
 - 参照: `input.view.oneOffSearchButtons`, `this.input`, `this.shortcutButtons`
 
 ## AddSearchEngineHelper.maxInlineEngines()
 - 位置: L7854-7856
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ワンオフ側の、メニューに直接並べる上限の数を返す。これを超えると、サブメニューにまとめる。
+- 触るとき: ページが多数の検索エンジンを提供した場合の見せ方の閾値を変えるとき。
 - 参照: `this.shortcutButtons._maxInlineAddEngines`
 
 ## AddSearchEngineHelper.setEnginesFromBrowser()
 - 位置: L7864-7872
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ブラウザのブラウジングコンテキストと、ページが提供する検索エンジンの一覧を保存する。一覧が変わったときだけワンオフのウェブ検索項目を更新する。
+- 触るとき: ページが検索エンジンを提供するのに、メニューに追加項目が出ない不具合を調べるとき。
 - 呼び出し先: `engines.slice()`, `this._sameEngines()`
 - 条件付き依存: `if (!this._sameEngines(this.engines, engines))` → `this.shortcutButtons?.updateWebEngines()`
 - 参照: `browser.browsingContext`, `this.browsingContext`, `this.engines`
 
 ## AddSearchEngineHelper._sameEngines()
 - 位置: L7874-7882
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 二つの一覧の件数と、各エンジンのタイトルの並びが同じかを返す。
+- 触るとき: 一覧の変化を判断する条件を変えるとき。
 - 呼び出し先: `UrlbarShared.deepEqual()`, `engines1.map()`, `engines2.map()`
 - 参照: `e.title`, `engines1?.length`, `engines2?.length`
 
 ## AddSearchEngineHelper._createMenuitem()
 - 位置: L7884-7901
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: エンジン一件分の menuitem を作る。名前付きのラベルとアイコンを設定し、押されたら _onCommand を呼ぶ。
+- 触るとき: 検索エンジン追加の項目の文言やアイコンを変えるとき。
 - 呼び出し先: `doc.createXULElement()`, `doc.l10n.setAttributes()`, `elt.addEventListener()`, `elt.classList.add()`, `elt.setAttribute()`, `this._onCommand.bind()`
 - 条件付き依存: `if (engine.icon)` → `elt.setAttribute()`
 - 条件付き依存: `if (!(engine.icon))` → `elt.removeAttribute()`
@@ -2222,8 +2222,8 @@ lines: 8002
 
 ## AddSearchEngineHelper._createMenu()
 - 位置: L7903-7916
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: エンジンが多いときの、サブメニュー用の menu 要素を作る。アイコンは先頭のエンジンのものを使う。
+- 触るとき: サブメニューの見た目やアイコンの決め方を変えるとき。
 - 呼び出し先: `doc.createXULElement()`, `doc.l10n.setAttributes()`, `elt.appendChild()`, `elt.classList.add()`, `elt.setAttribute()`
 - 条件付き依存: `if (engine.icon)` → `elt.setAttribute()`
 - 条件付き依存: `if (engine.icon)` → `ChromeUtils.encodeURIForSrcset()`
@@ -2231,15 +2231,15 @@ lines: 8002
 
 ## AddSearchEngineHelper.createContextSeparator()
 - 位置: L7933-7940
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: エンジン項目の前に置く区切り線を作り、初期状態では隠す。
+- 触るとき: 検索エンジン追加の項目の区切りが出ない、または常に出る不具合を調べるとき。
 - 呼び出し先: `this.contextSeparator.classList.add()`, `this.contextSeparator.setAttribute()`, `this.input.ownerDocument.createXULElement()`
 - 参照: `this.contextSeparator`, `this.contextSeparator.collapsed`
 
 ## AddSearchEngineHelper.refreshContextMenu()
 - 位置: L7948-7985
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 前回の項目を外して、現在のエンジン一覧から項目を作り直す。上限を超えたらサブメニューにまとめる。区切り線と項目を返して、項目セットに登録させる。
+- 触るとき: ページが提供するエンジンが変わったときに、メニューの項目が古いままにならないかを確かめるとき。
 - 呼び出し先: `elt.remove()`, `this._createMenuitem()`
 - 条件付き依存: `if (engines.length > this.maxInlineEngines)` → `this._createMenu()`
 - 条件付き依存: `if (engines.length > this.maxInlineEngines)` → `this.contextSeparator.insertAdjacentElement()`
@@ -2251,8 +2251,8 @@ lines: 8002
 
 ## AddSearchEngineHelper._onCommand()
 - 位置: async L7987-7998
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 項目の URI を OpenSearch で追加する。追加できたら、メニューを作り直して一覧から外す。
+- 触るとき: 検索エンジンの追加後に、その項目がメニューから消えるかを確かめるとき。
 - 呼び出し先: `event.target.getAttribute()`, `lazy.SearchUIUtils.addOpenSearchEngine()`
 - 条件付き依存: `if (added)` → `this.refreshContextMenu()`
 - 参照: `console.error`, `this.browsingContext`
