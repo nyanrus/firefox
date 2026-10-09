@@ -1497,8 +1497,8 @@ lines: 6715
 
 ## UrlbarInputBase.#finishDeferredEnter()
 - 位置: async L5968-6009
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: キーアップで Enter の保留を完了させる。読み込みが始まっていれば親に読み込み先のブラウザへのフォーカスを頼み、入力中の新しい検索がなければドメインが見えるよう選択位置を先頭に置く。読み込みがなければ保留をすぐ解決する。最後に保留と再入防止のフラグを外す。
+- 触るとき: Enter の後に読み込み先のタブへフォーカスが移らない、またはカーソル位置が飛ぶとき。
 - 条件付き依存: `if (keyDownEnterDeferred.loadedContent)` → `this.parentController.focusBrowser()`
 - 条件付き依存: `if ( this.#isAddressbar && focused && keyDownEnterDeferred.inputEpoch === this.#inputEpoch )` → `this.inputField.setSelectionRange()`
 - 条件付き依存: `if (!(keyDownEnterDeferred.loadedContent))` → `keyDownEnterDeferred.resolve()`
@@ -1506,14 +1506,14 @@ lines: 6715
 
 ## UrlbarInputBase.isComposing()
 - 位置: L6017-6019
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: IME の変換中かどうかを返す getter。
+- 触るとき: 変換中の入力を検索や Enter 処理から外す判定を追うとき。
 - 参照: `UrlbarShared.COMPOSITION.COMPOSING`, `this.#compositionState`
 
 ## UrlbarInputBase._on_compositionstart()
 - 位置: L6021-6051
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 変換開始を記録する。keepPanelOpenDuringImeComposition が偽なら、結果ビューを閉じ、検索モードが預けられていれば確定してから閉じたことを記録する。
+- 触るとき: IME 変換中に結果ビューが閉じる、または閉じないとき。
 - 呼び出し先: `UrlbarPrefs.get()`
 - 条件付き依存: `if (this.searchMode)` → `this.confirmSearchMode()`
 - 条件付き依存: `if (this.view.isOpen)` → `this.view.close()`
@@ -1521,8 +1521,8 @@ lines: 6715
 
 ## UrlbarInputBase._on_compositionend()
 - 位置: L6053-6086
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 変換終了を記録する。keepPanelOpenDuringImeComposition が偽なら選択と結果のキャッシュを消す。確定かキャンセルかを状態に保存し、空の変換で結果ビューを閉じていた場合は検索を始め直す。
+- 触るとき: IME の確定やキャンセル後に結果ビューが開かない、または古い結果が残るとき。
 - 呼び出し先: `UrlbarPrefs.get()`
 - 条件付き依存: `if (!UrlbarPrefs.get("keepPanelOpenDuringImeComposition"))` → `this.view.clearSelection()`
 - 条件付き依存: `if ( !event.data && !this.#compositionHadText && this.#compositionClosedPopup && !UrlbarPrefs.get("keepPanelOpenDuringImeComposition") )` → `this.startQuery()`
@@ -1530,15 +1530,15 @@ lines: 6715
 
 ## UrlbarInputBase._on_dragstart()
 - 位置: L6088-6124
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 入力欄からのドラッグを処理する。結果ビューを閉じ、全選択かつ読み込み済みのページなら、ページの URL とタイトルを text/x-moz-url、text/plain、text/html としてドラッグデータに入れる。
+- 触るとき: アドレスバーをドラッグしたときに渡される形式(リンクか文字列)を変えるとき。
 - 呼び出し先: `UrlbarShared.escapeHtmlEntities()`, `event.dataTransfer.setData()`, `event.stopPropagation()`, `this.getAttribute()`, `this.inputField.compareDocumentPosition()`, `this.makeURIReadable()`, `this.view.close()`
 - 参照: `Node.DOCUMENT_POSITION_CONTAINED_BY`, `event.dataTransfer.effectAllowed`, `event.originalTarget`, `event.target`, `this.#allTextSelected`, `this.inputField`, `this.window.gBrowser.contentTitle`, `this.window.gBrowser.currentURI`, `uri.displaySpec`
 
 ## UrlbarInputBase._on_dragover()
 - 位置: L6131-6142
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ドラッグ中の入力欄で、アドレスバーではリンクをドロップできないなら dropEffect を none にする。検索窓では text/plain 以外を none にする。
+- 触るとき: ドロップ先として受け付けるデータの種類を変えるとき。
 - 呼び出し先: `Services.droppedLinkHandler.canDropLink()`
 - 条件付き依存: `if (!this.#isAddressbar)` → `event.dataTransfer.types.includes()`
 - 参照: `event.dataTransfer.dropEffect`, `this.#isAddressbar`
@@ -1546,55 +1546,55 @@ lines: 6715
 
 ## UrlbarInputBase._on_drop()
 - 位置: L6149-6193
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 検索窓では値を空にして、ドロップされた値を次の入力で使わせる。アドレスバーでは getDroppableData で得た値を入力し、そのまま handleNavigation で開く。読み込み完了まで現在のページの URL を表示し続ける。
+- 触るとき: ドロップした URL や文字列が開かれない、または表示がずれるとき。
 - 呼び出し先: `Services.droppedLinkHandler.getTriggeringPrincipal()`, `UrlbarShared.isInstance()`, `getDroppableData()`, `this.#makeQueryContext()`, `this.controller.engagementEvent.start()`, `this.focus()`, `this.handleNavigation()`, `this.parentController.setLastQueryContextCache()`, `this.setPageProxyState()`, `this.setURI()`
 - 参照: `droppedData.href`, `this.#isAddressbar`, `this.userTypedValue`, `this.value`, `this.window.gBrowser.currentURI.spec`
 - XPCOM: `Services.droppedLinkHandler`
 
 ## UrlbarInputBase.#allTextSelected()
 - 位置: L6196-6198
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 入力欄の値が先頭から末尾まで全選択されているかを返す getter。
+- 触るとき: 全選択を前提にする操作(ドラッグや URL の再整形)の条件を調べるとき。
 - 参照: `this.selectionEnd`, `this.selectionStart`, `this.value.length`
 
 ## UrlbarInputBase.#getSchemelessInput()
 - 位置: L6208-6214
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 入力値が http://、https://、file:// のいずれでも始まらなければ schemeless、始まれば schemeful を返す。
+- 触るとき: HTTPS 優先の判定に渡す schemeless の値がどう決まるかを確かめるとき。
 - 呼び出し先: `["http://", "https://", "file://"].every()`, `value.trim()`, `value.trim().startsWith()`
 
 ## UrlbarInputBase.#isOpenedPageInBlankTargetLoading()
 - 位置: L6216-6223
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択中のブラウザの履歴が空で、読み込み中の URI が残っているかを返す getter。
+- 触るとき: 新しいタブで開いたページの読み込み中の表示を調べるとき。
 - 参照: `this.window.gBrowser.selectedBrowser.browsingContext .nonWebControlledLoadingURI`, `this.window.gBrowser.selectedBrowser.browsingContext.sessionHistory ?.count`
 
 ## UrlbarInputBase.#selectedText()
 - 位置: L6245-6252
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: エディタの選択範囲をプレーンテキストで返す getter。
+- 触るとき: コピーや URL の再整形で選択文字列を使う箇所を追うとき。
 - 呼び出し先: `this.editor.selection.toStringWithFormat()`
 - 参照: `Ci.nsIDocumentEncoder.OutputPreformatted`, `Ci.nsIDocumentEncoder.OutputRaw`
 - XPCOM: [`nsIDocumentEncoder`](../../../../dom/serializers/nsIDocumentEncoder.idl.md)
 
 ## UrlbarInputBase.#isHomeKeyUpEvent()
 - 位置: L6260-6284
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: キーアップが Home 相当かを判定する。Mac では Home、Fn+Left、Ctrl+A、Cmd+Left(keydown で記録)、Windows と Linux では Home と Ctrl+Left を対象にする。
+- 触るとき: 先頭へ移動するキーの組み合わせを増やすとき、または Mac で URL の再整形が効かないとき。
 - 呼び出し先: `UrlbarContentUtils.getPlatform()`
 - 参照: `KeyEvent.DOM_VK_HOME`, `KeyEvent.DOM_VK_META`, `KeyboardEvent.DOM_VK_A`, `KeyboardEvent.DOM_VK_LEFT`, `event.ctrlKey`, `event.keyCode`, `event.shiftKey`, `this._isKeyDownWithMetaAndLeft`
 
 ## UrlbarInputBase.#canHandleAsBlankPage()
 - 位置: L6286-6288
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: URL が空白ページ、または about:privatebrowsing かを返す。
+- 触るとき: 空白ページを特別扱いする条件を変えるとき。
 - 呼び出し先: `this.window.isBlankPageURL()`
 
 ## getDroppableData()
 - 位置: L6302-6349
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ドロップされたデータを取り出す。リンクがあれば安全性を確かめ、URL オブジェクトを返す。失敗や安全性違反なら null。リンクでなければテキストを返す。
+- 触るとき: ドロップ時に URL として扱うかテキストとして扱うかの判定を変えるとき。
 - 呼び出し先: `Services.droppedLinkHandler.dropLinks()`, `event.dataTransfer.getData()`
 - 条件付き依存: `if (links[0]?.url)` → `event.preventDefault()`
 - 条件付き依存: `if (links[0]?.url)` → `UrlbarShared.stripUnsafeProtocolOnPaste()`
@@ -1607,8 +1607,8 @@ lines: 6715
 
 ## losslessDecodeDisplaySpec()
 - 位置: L6360-6440
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 表示用の URL を、読み込み結果が変わらない範囲でデコードする。http、https、file、ftp は UTF-8 としてデコードし、他はASCII の範囲だけ戻す。見えない文字や余計な空白、紛らわしい文字は符号化して残す。
+- 触るとき: アドレスバーに URL をどう見せるか、またはデコードで読み込み先が変わる問題を調べるとき。
 - 呼び出し先: `/%25(?:3B|2F|3F|3A|40|26|3D|2B|24|2C|23)/i.test()`, `displaySpec.indexOf()`, `displaySpec.slice()`, `value.replace()`
 - 条件付き依存: `if (!/%25(?:3B|2F|3F|3A|40|26|3D|2B|24|2C|23)/i.test(value))` → `["https", "http", "file", "ftp"].includes()`
 - 条件付き依存: `if (decodeASCIIOnly)` → `value.replace()`
@@ -1616,21 +1616,21 @@ lines: 6715
 
 ## losslessDecodeURL()
 - 位置: L6450-6454
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: URL の表示用の文字列を getDisplaySpec から取り、losslessDecodeDisplaySpec でデコードして返す。
+- 触るとき: 入力欄に表示する URL の文字列をどこで作るかを追うとき。
 - 呼び出し先: `UrlbarContentUtils.getDisplaySpec()`, `losslessDecodeDisplaySpec()`
 - 参照: `url.href`
 
 ## CopyCutController.constructor()
 - 位置: L6464-6466
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 対象の UrlbarInputBase を保持する。
+- 触るとき: コピーやカットを扱うコントローラーの対象を確かめるとき。
 - 参照: `this.urlbar`
 
 ## CopyCutController.doCommand()
 - 位置: L6472-6497
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: コピーやカットを実行する。選択文字列を _getSelectedValueForClipboard で得てクリップボードへ入れ、カットなら選択範囲を入力欄から削除して input イベントを発行する。
+- 触るとき: アドレスバーのコピーやカットで入るクリップボードの内容を変えるとき。
 - 呼び出し先: `lazy.ClipboardHelper.copyString()`, `this.isCommandEnabled()`, `urlbar._getSelectedValueForClipboard()`
 - 条件付き依存: `if (command == "cmd_cut" && this.isCommandEnabled(command))` → `urlbar.inputField.value.substring()`
 - 条件付き依存: `if (command == "cmd_cut" && this.isCommandEnabled(command))` → `urlbar.inputField.setSelectionRange()`
@@ -1639,52 +1639,52 @@ lines: 6715
 
 ## CopyCutController.supportsCommand()
 - 位置: L6505-6512
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: cmd_copy と cmd_cut だけを扱うと返す。
+- 触るとき: このコントローラーが扱うコマンドを増やすとき。
 
 ## CopyCutController.isCommandEnabled()
 - 位置: L6520-6526
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: コピーは選択があれば有効、カットは読み取り専用でなく選択があれば有効と判定する。
+- 触るとき: コピーやカットのメニュー項目が無効になる条件を調べるとき。
 - 呼び出し先: `this.supportsCommand()`
 - 参照: `this.urlbar.readOnly`, `this.urlbar.selectionEnd`, `this.urlbar.selectionStart`
 
 ## CopyCutController.onEvent()
 - 位置: L6528-6528
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 空の実装で、イベントは何もしない。
+- 触るとき: コントローラーにイベント処理を足すとき。
 
 ## AddSearchEngineHelper.constructor()
 - 位置: L6557-6560
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 入力欄を保持し、入力欄の one-off 検索ボタンを参照する。
+- 触るとき: 検索エンジン追加の項目が表示する対象を確かめるとき。
 - 参照: `input.view.oneOffSearchButtons`, `this.input`, `this.shortcutButtons`
 
 ## AddSearchEngineHelper.maxInlineEngines()
 - 位置: L6568-6570
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: SearchModeSwitcher.MAX_OPENSEARCH_ENGINES を返す。この数を超えると項目はサブメニューにまとめられる。
+- 触るとき: サブメニューに移る件数の基準を変えるとき。
 - 参照: `SearchModeSwitcher.MAX_OPENSEARCH_ENGINES`
 
 ## AddSearchEngineHelper.setEnginesFromBrowser()
 - 位置: L6578-6586
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ブラウザの browsingContext と、ページが提供するエンジン一覧を保存する。タイトルの並びが変わったときだけ、one-off ボタンの Web エンジン表示を更新する。
+- 触るとき: ページが提供する検索エンジンが追加や変更されたのにメニューに出ないとき。
 - 呼び出し先: `engines.slice()`, `this._sameEngines()`
 - 条件付き依存: `if (!this._sameEngines(this.engines, engines))` → `this.shortcutButtons?.updateWebEngines()`
 - 参照: `browser.browsingContext`, `this.browsingContext`, `this.engines`
 
 ## AddSearchEngineHelper._sameEngines()
 - 位置: L6588-6596
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 2つのエンジン一覧の件数とタイトルの並びが同じかを返す。
+- 触るとき: エンジン一覧の変更を検知する条件を変えるとき。
 - 呼び出し先: `UrlbarShared.deepEqual()`, `engines1.map()`, `engines2.map()`
 - 参照: `e.title`, `engines1?.length`, `engines2?.length`
 
 ## AddSearchEngineHelper._createMenuitem()
 - 位置: L6598-6614
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: エンジン1件分の menuitem を作る。タイトル付きのラベル、アイコン、URI を設定し、押されたら _onCommand を呼ぶ。
+- 触るとき: エンジン追加の項目の表示文言やアイコンを変えるとき。
 - 呼び出し先: `elt.addEventListener()`, `elt.classList.add()`, `elt.setAttribute()`, `this._onCommand.bind()`, `this.input.document.createXULElement()`, `this.input.document.l10n.setAttributes()`
 - 条件付き依存: `if (engine.icon)` → `elt.setAttribute()`
 - 条件付き依存: `if (!(engine.icon))` → `elt.removeAttribute()`
@@ -1692,8 +1692,8 @@ lines: 6715
 
 ## AddSearchEngineHelper._createMenu()
 - 位置: L6616-6631
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: エンジンが多いときにまとめる、サブメニュー用の menu 要素と空の menupopup を作る。
+- 触るとき: エンジンが多い場合のサブメニューの見た目や作り方を変えるとき。
 - 呼び出し先: `elt.appendChild()`, `elt.classList.add()`, `elt.setAttribute()`, `this.input.document.createXULElement()`, `this.input.document.l10n.setAttributes()`
 - 条件付き依存: `if (engine.icon)` → `elt.setAttribute()`
 - 条件付き依存: `if (engine.icon)` → `ChromeUtils.encodeURIForSrcset()`
@@ -1701,15 +1701,15 @@ lines: 6715
 
 ## AddSearchEngineHelper.createContextSeparator()
 - 位置: L6648-6655
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: エンジン項目の前に置く区切り線を作って保持する。エンジンが無ければ畳んでおく。
+- 触るとき: エンジン追加の項目の区切り線の位置を変えるとき。
 - 呼び出し先: `this.contextSeparator.classList.add()`, `this.contextSeparator.setAttribute()`, `this.input.document.createXULElement()`
 - 参照: `this.contextSeparator`, `this.contextSeparator.collapsed`
 
 ## AddSearchEngineHelper.refreshContextMenu()
 - 位置: L6663-6700
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 以前の項目を消し、エンジンが多ければサブメニューを1つ挟んで、区切り線の後に項目を並べ直す。並べた区切り線と項目の配列を返し、メニュー項目の集合が受け取る。
+- 触るとき: メニューを開いたときに検索エンジン追加の項目が重複したり並びがおかしいとき。
 - 呼び出し先: `elt.remove()`, `this._createMenuitem()`
 - 条件付き依存: `if (engines.length > this.maxInlineEngines)` → `this._createMenu()`
 - 条件付き依存: `if (engines.length > this.maxInlineEngines)` → `this.contextSeparator.insertAdjacentElement()`
@@ -1721,8 +1721,8 @@ lines: 6715
 
 ## AddSearchEngineHelper._onCommand()
 - 位置: async L6702-6713
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 押された項目の URI とアイコンで OpenSearch エンジンを追加する。追加できたらメニューを作り直して、その項目を外す。
+- 触るとき: エンジン追加の後に項目が残る、または追加に失敗するとき。
 - 呼び出し先: `event.target.getAttribute()`, `lazy.SearchUIUtils.addOpenSearchEngine()`
 - 条件付き依存: `if (added)` → `this.refreshContextMenu()`
 - 参照: `console.error`, `this.browsingContext`
