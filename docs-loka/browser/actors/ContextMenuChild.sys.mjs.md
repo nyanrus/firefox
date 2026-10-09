@@ -5,34 +5,34 @@ source-hash: bdb925257894ad76f7eaab179f41847e3f1d7d33
 lines: 1303
 
 ## <module>
-- 役割: (未記入)
+- 役割: コンテキストメニューのコンテンツ側アクター。右クリック対象の情報（リンク・画像・メディア・編集欄など）を集めて親へ送り、親からの操作要求（メディア操作・画像保存・検索エンジン追加など）を実行する。
 - 呼び出し先: `ChromeUtils.defineESModuleGetters()`
 
 ## ContextMenuChild.constructor()
 - 位置: L22-28
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 対象・文脈・最後のメニュー対象を空の状態で初期化する。
+- 触るとき: 右クリックの状態を保持する項目を増やすときに見る。
 - 呼び出し先: `super()`
 - 参照: `this.context`, `this.lastMenuTarget`, `this.target`
 
 ## ContextMenuChild.getTarget()
 - 位置: L30-40
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ブラウジングコンテキストに対応するアクターを探し、その対象を返す（無ければ例外）。
+- 触るとき: 拡張機能などが右クリック対象を外から取り出す経路を調べるときに見る。
 - 呼び出し先: `actor.getTarget()`, `contextMenus.get()`
 - 参照: `browsingContext.id`
 
 ## ContextMenuChild.getLastTarget()
 - 位置: L42-45
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ブラウジングコンテキストの最後のメニュー対象を返す。
+- 触るとき: メニュー表示後に対象を参照する処理（拡張機能の API など）を調べるときに見る。
 - 呼び出し先: `contextMenus.get()`
 - 参照: `contextMenu.lastMenuTarget`
 
 ## ContextMenuChild.receiveMessage()
 - 位置: L47-311
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 親からの要求（フレームのタイトル、キャンバスの Blob 化、メディア操作、画像の再読み込み、検索エンジン情報、背景設定、テキストフラグメントなど）を種類ごとに実行し、結果を返す。
+- 触るとき: メニュー項目から子プロセスへ届く操作を追加・変更するときに見る。
 - 呼び出し先: `Array.from()`, `Promise.resolve()`, `Services.io.newURI()`, `canvas.getContext()`, `canvas.toDataURL()`, `ctxDraw.drawImage()`, `formData.set()`, `formData.values()`, `formData.values().some()`, `img.recognizeCurrentImageText()`, `img.recognizeCurrentImageText().then()`, `input.setUserInput()`, `lazy.ContentDOMReference.resolve()`, `lazy.E10SUtils.wrapHandlingUserInput()`, `media.pause()`, `media.play()`, `media.removeAttribute()`, `media.setAttribute()`, `node.form.getAttribute()`, `node.form.method.toUpperCase()`, `resolve()`, `sel.getRangeAt()`, `target.ownerDocument.location.reload()`, `target.toBlob()`, `this._disableSetDesktopBackground()`, `this.contentWindow.URL.createObjectURL()`, `this.contentWindow.getComputedStyle()`, `this.contentWindow.getSelection()`, `this.contentWindow.history.replaceState()`, `this.contentWindow.windowUtils.dispatchEventToChromeOnly()`, `this.document.createElementNS()`, `this.document.fragmentDirective .createTextDirectiveForRanges()`, `this.document.fragmentDirective .createTextDirectiveForRanges(ranges) .then()`, `this.document.fragmentDirective.getTextDirectiveRanges()`, `this.document.fragmentDirective.removeAllTextDirectives()`
 - 条件付き依存: `if (this.document.fullscreenEnabled)` → `media.requestFullscreen()`
 - 条件付き依存: `if (image instanceof Ci.nsIImageLoadingContent)` → `image.forceReload()`
@@ -53,36 +53,36 @@ lines: 1303
 
 ## ContextMenuChild.getTarget()
 - 位置: L322-324
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 保持している対象を優先し、無ければメッセージの objects から指定キーの対象を返す。
+- 触るとき: 親から届くメッセージの対象解決の順序を変えるときに見る。
 - 参照: `aMessage.objects`, `this.target`
 
 ## ContextMenuChild._isXULTextLinkLabel()
 - 位置: L327-336
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: XUL の text-link ラベルが href を持つリンクかを判定する。
+- 触るとき: XUL 側のリンク表示をメニューに出すかの条件を調べるときに見る。
 - 呼び出し先: `aNode.classList.contains()`
 - 参照: `aNode.href`, `aNode.namespaceURI`, `aNode.tagName`
 
 ## ContextMenuChild._getLinkURL()
 - 位置: L339-362
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: リンク要素の href（SVG の animVal を含む）を完全な URL にし、空なら例外を投げる。
+- 触るとき: リンクのコピーや保存で URL が正しく取れないときに見る。
 - 呼び出し先: `href.match()`, `this.context.link.getAttribute()`, `this.context.link.getAttributeNS()`
 - 参照: `href.animVal`, `new URL(href, this.context.link.baseURI).href`, `new URL(href.animVal, this.context.link.baseURI).href`, `this.context.link.baseURI`, `this.context.link.href`
 
 ## ContextMenuChild._getLinkURI()
 - 位置: L364-372
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: リンク URL を nsIURI に変換し、失敗時は null を返す。
+- 触るとき: リンクの URI 判定が必要な機能で値が取れない問題を調べるときに見る。
 - 呼び出し先: `Services.io.newURI()`
 - 参照: `this.context.linkURL`
 - XPCOM: `Services.io`
 
 ## ContextMenuChild._getLinkText()
 - 位置: L375-389
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: リンクの本文テキストを取り、空なら title、alt、URL の順に代替する。
+- 触るとき: リンクのメニュー項目に出す表示名を変えるときに見る。
 - 呼び出し先: `text.match()`, `this._gatherTextUnder()`
 - 条件付き依存: `if (!text || !text.match(/\S/))` → `this.context.link.getAttribute()`
 - 条件付き依存: `if (!text || !text.match(/\S/))` → `text.match()`
@@ -90,76 +90,76 @@ lines: 1303
 
 ## ContextMenuChild._getLinkProtocol()
 - 位置: L391-397
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: リンク URI のスキーム（mailto・tel など）を返す。
+- 触るとき: リンク種別によるメニュー項目の出し分けを調べるときに見る。
 - 参照: `this.context.linkURI`, `this.context.linkURI.scheme`
 
 ## ContextMenuChild._isLinkSaveable()
 - 位置: L400-413
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: mailto・tel・javascript・news などを除き、保存できるリンクかを判定する。
+- 触るとき: リンク先を保存できるかの条件を変えるときに見る。
 - 参照: `this.context.linkProtocol`
 
 ## ContextMenuChild._gatherTextUnder()
 - 位置: L418-423
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ノード以下のプレーンテキストを、ドキュメントエンコーダーで取り出して整える。
+- 触るとき: リンクや要素の本文テキスト抽出を変えるときに見る。utilityOverlay.js の gatherTextUnder と合わせること。
 - 呼び出し先: `Cu.createDocumentEncoder()`, `encoder.encodeToString()`, `encoder.encodeToString().trim()`, `encoder.init()`, `encoder.setContainerNode()`
 - 参照: `root.ownerDocument`
 
 ## ContextMenuChild._getComputedURL()
 - 位置: L426-440
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 指定プロパティの計算済みスタイルから url() を 1 つ取り出し、複数あれば例外を投げる。
+- 触るとき: 背景画像の判定（単一か複数か）を変えるときに見る。
 - 呼び出し先: `aElem.documentGlobal .getComputedStyle()`, `aElem.documentGlobal .getComputedStyle(aElem) .getCSSImageURLs()`
 - 参照: `urls.length`
 
 ## ContextMenuChild._isProprietaryDRM()
 - 位置: L442-448
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 暗号化されたメディアで、clearkey 以外の鍵システムを使うかを判定する。
+- 触るとき: DRM 付きメディアで保存や再利用の操作を止める条件を調べるときに見る。
 - 参照: `this.context.target.isEncrypted`, `this.context.target.mediaKeys`, `this.context.target.mediaKeys.keySystem`
 
 ## ContextMenuChild._isMediaURLReusable()
 - 位置: L450-456
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: blob URL ならブロブに結び付いているかを確かめ、それ以外は再利用可能とみなす。
+- 触るとき: 画像やメディアの URL を後で使えるかを判断する条件を変えるときに見る。
 - 呼び出し先: `aURL.startsWith()`
 - 条件付き依存: `if (aURL.startsWith("blob:"))` → `URL.isBoundToBlob()`
 
 ## ContextMenuChild._maybeGetVideoElementAtPoint()
 - 位置: L466-494
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 設定が有効なとき、座標の下にあるオーバーレイ越しの動画要素を nodesFromRect で探す。
+- 触るとき: 動画の上に重なった操作 UI の下にある動画を右クリックで扱うときに見る。
 - 呼び出し先: `Services.prefs.getBoolPref()`, `this.contentWindow.HTMLVideoElement.isInstance()`, `this.contentWindow.windowUtils.nodesFromRect()`
 - XPCOM: `Services.prefs`
 
 ## ContextMenuChild._isTargetATextBox()
 - 位置: L496-502
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 対象がテキスト入力欄か textarea かを判定する。
+- 触るとき: 入力欄向けのメニュー項目の出し分けを調べるときに見る。
 - 呼び出し先: `this.contentWindow.HTMLInputElement.isInstance()`, `this.contentWindow.HTMLTextAreaElement.isInstance()`
 - 条件付き依存: `if (this.contentWindow.HTMLInputElement.isInstance(node))` → `node.mozIsTextField()`
 
 ## ContextMenuChild._isSpellCheckEnabled()
 - 位置: L504-523
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: テキスト入力欄なら常に真、編集可能な要素では spellcheck 属性を見てスペルチェックの可否を返す。
+- 触るとき: スペルチェック候補の表示条件を変えるときに見る。
 - 呼び出し先: `this._isTargetATextBox()`
 - 参照: `aNode.isContentEditable`, `aNode.ownerDocument`, `aNode.ownerDocument.designMode`, `aNode.spellcheck`
 
 ## ContextMenuChild._disableSetDesktopBackground()
 - 位置: L525-551
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 画像が読み込み中、失敗、javascript URL、または現在のリクエストが無い場合に、デスクトップ背景設定を無効にすべきと判定する。
+- 触るとき: 「デスクトップの背景に設定」の有効条件を変えるときに見る。
 - 呼び出し先: `aTarget.currentURI.schemeIs()`, `aTarget.getRequest()`, `this.contentWindow.HTMLCanvasElement.isInstance()`
 - 参照: `Ci.nsIImageLoadingContent`, `Ci.nsIImageLoadingContent.CURRENT_REQUEST`, `aTarget.complete`
 - XPCOM: [`nsIImageLoadingContent`](../../dom/base/nsIImageLoadingContent.idl.md)
 
 ## ContextMenuChild.handleEvent()
 - 位置: async L553-746
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: contextmenu イベントを受け、対象の文脈・画像情報・ログイン入力欄の情報・参照元を集めて親へ送り、元のイベントは止める。
+- 触るとき: 右クリックメニューに親へ渡す情報を追加・変更するときに見る。
 - 呼び出し先: `Cc["@mozilla.org/referrer-info;1"].createInstance()`, `Services.obs.notifyObservers()`, `Services.prefs.getBoolPref()`, `aEvent.composedTarget.documentGlobal.updateCommands()`, `aEvent.stopPropagation()`, `contextMenus.set()`, `docState.getFieldContext()`, `lazy.E10SUtils.serializeReferrerInfo()`, `lazy.LoginManagerChild.forWindow()`, `lazy.SelectionUtils.getSelectionDetails()`, `lazy.SpellCheckHelper.isEditable()`, `loginManagerChild.stateForDocument()`, `referrerInfo.initWithElement()`, `this._setContext()`, `this.docShell.docViewer .QueryInterface()`, `this.docShell.docViewer .QueryInterface(Ci.nsIDocumentViewerEdit) .setCommandNode()`, `this.sendAsyncMessage()`
 - 条件付き依存: `if (!doc && Cu.isInAutomation)` → `dump()`
 - 条件付き依存: `if (composedTarget.nodeType == composedTarget.ELEMENT_NODE)` → `this.contentWindow.HTMLCanvasElement.isInstance()`
@@ -180,14 +180,14 @@ lines: 1303
 
 ## ContextMenuChild.setWebExtContextData()
 - 位置: L724-726
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: on-prepare-contextmenu の通知を受けた拡張機能が、送信データに拡張用の文脈を付けられるようにする。
+- 触るとき: 拡張機能向けのメニュー文脈の受け渡しを調べるときに見る。
 - 参照: `data.webExtContextData`
 
 ## ContextMenuChild._cleanContext()
 - 位置: L755-803
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 送信できないオブジェクトを、メニューに必要な値だけの安全な形に縮める。
+- 触るとき: メディアやリンクの文脈を親へ送るときに、送るべき項目を変えるときに見る。
 - 呼び出し先: `Object.assign()`, `Object.create()`
 - 条件付き依存: `if (onMedia)` → `Object.assign()`
 - 条件付き依存: `if (context.onVideo)` → `Object.assign()`
@@ -195,8 +195,8 @@ lines: 1303
 
 ## ContextMenuChild._setContext()
 - 位置: L805-955
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: イベントの座標・入力元・対象ノードから、メニューの文脈（画像、リンク、入力欄、PDF、テキストフラグメントなど）の全項目を決める。
+- 触るとき: メニューの表示可否や項目の種類を決める条件を変えるときに見る。
 - 呼び出し先: `Cu.getWeakReference()`, `Object.create()`, `lazy.ContentDOMReference.get()`, `lazy.E10SUtils.serializePolicyContainer()`, `lazy.SpellCheckHelper.isEditable()`, `node.containingShadowRoot?.isUAWidget()`, `this._isXULTextLinkLabel()`, `this._setContextForNodesNoChildren()`, `this._setContextForNodesWithChildren()`, `this.document.documentURI.startsWith()`, `this.document.fragmentDirective?.getTextDirectiveRanges()`
 - 条件付き依存: `if (node.containingShadowRoot?.isUAWidget())` → `this.contentWindow.HTMLMediaElement.isInstance()`
 - 条件付き依存: `if (node.containingShadowRoot?.isUAWidget())` → `this.contentWindow.HTMLEmbedElement.isInstance()`
@@ -205,8 +205,8 @@ lines: 1303
 
 ## ContextMenuChild._setContextForNodesNoChildren()
 - 位置: L963-1162
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: テキストノードや要素自体を見て、画像・キャンバス・動画・音声・入力欄・背景画像の文脈を設定する。
+- 触るとき: 画像や動画、入力欄向けメニューの判定を変えるときに見る。
 - 呼び出し先: `this._isSpellCheckEnabled()`
 - 条件付き依存: `if (context.target.nodeType == context.target.TEXT_NODE)` → `this._isSpellCheckEnabled()`
 - 条件付き依存: `if ( context.target instanceof Ci.nsIImageLoadingContent && (context.target.currentRequestFinalURI || context.target.currentURI) )` → `this.contentWindow.ImageDocument.isInstance()`
@@ -233,8 +233,8 @@ lines: 1303
 
 ## ContextMenuChild._setContextForNodesWithChildren()
 - 位置: L1170-1285
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 対象から祖先をたどり、最も内側のリンク・背景画像・フレーム・編集可能領域を文脈に設定する。
+- 触るとき: リンクや背景画像の判定、フレーム内判定、編集可能な文書の扱いを変えるときに見る。
 - 条件付き依存: `if (elem.nodeType == elem.ELEMENT_NODE)` → `this.contentWindow.HTMLAnchorElement.isInstance()`
 - 条件付き依存: `if (elem.nodeType == elem.ELEMENT_NODE)` → `this.contentWindow.HTMLAreaElement.isInstance()`
 - 条件付き依存: `if (elem.nodeType == elem.ELEMENT_NODE)` → `this.contentWindow.HTMLLinkElement.isInstance()`
@@ -257,19 +257,19 @@ lines: 1303
 
 ## ContextMenuChild.registerDestructionObserver()
 - 位置: L1288-1290
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: アクター破棄時に通知を受けるオブジェクトを登録する。
+- 触るとき: アクターの破棄に合わせて後始末が必要な機能を追加するときに見る。
 - 呼び出し先: `this._destructionObservers.add()`
 
 ## ContextMenuChild.unregisterDestructionObserver()
 - 位置: L1292-1294
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 登録済みの破棄通知の受け手を外す。
+- 触るとき: 破棄通知の解除漏れを調べるときに見る。
 - 呼び出し先: `this._destructionObservers.delete()`
 
 ## ContextMenuChild.didDestroy()
 - 位置: L1296-1301
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 登録された各オブジェクトへ actorDestroyed を通知し、一覧を破棄する。
+- 触るとき: アクター破棄時の後始末の順序を変えるときに見る。
 - 呼び出し先: `obs.actorDestroyed()`
 - 参照: `this._destructionObservers`
