@@ -1378,8 +1378,8 @@ lines: 9611
 
 ## _SessionStore.restoreLastSession()
 - 位置: L5340-5517
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 前回セッション(LastSession)を現在のセッションへ統合する。既存ウィンドウに入れられるものは再利用し、残りは新規に開いて逆 z 順で復元し、閉じたウィンドウや保存済みグループ、クラッシュ回数も引き継ぐ。
+- 触るとき: 「前回のセッションを復元」の動作、既存ウィンドウの再利用条件、または復元後に閉じたタブ一覧がどう統合されるかを変えるとき。
 - 呼び出し先: `LastSession.clear()`, `LastSession.getState()`, `Services.obs.notifyObservers()`, `lazy.AIWindow.isAIWindowActive()`, `lazy.AIWindow.isAIWindowEnabled()`, `lazy.DevToolsShim.restoreDevToolsSession()`, `lazy.SessionCookies.restore()`, `openWindows.concat()`, `this.#canRestoreIntoExistingWindow()`, `this.#getTopWindow()`, `this.#globalState.setFromState()`, `this.#lastSessionWindowIds.get()`, `this.#notifyOfClosedObjectsChange()`, `this.#openWindows()`, `this.#openWindows({ windows: windowsToOpen }).then()`, `this.#restoreWindowsInReversedZOrder()`, `this.#savedGroups.filter()`, `this.#updateSessionStartTime()`, `this.forgetSavedTabGroup()`
 - 条件付き依存: `if (!this.canRestoreLastSession)` → `Components.Exception()`
 - 条件付き依存: `if (this.#lastSessionWindowIds.get(window))` → `this.#lastSessionWindowIds.get()`
@@ -1404,31 +1404,31 @@ lines: 9611
 
 ## _SessionStore.#removeDuplicateClosedWindows()
 - 位置: L5527-5537
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 前回セッションの _closedWindows から、現在の閉じたウィンドウと closedId が重なるものを除く。何度も復元した場合の重複を防ぐ。
+- 触るとき: 復元を繰り返したときに閉じたウィンドウが二重に並ぶ問題を調べるとき。
 - 呼び出し先: `currentClosedIds.has()`, `lastSessionState._closedWindows.filter()`, `this.#closedWindows.map()`
 - 参照: `lastSessionState._closedWindows`, `win.closedId`, `window.closedId`
 
 ## _SessionStore.reviveCrashedTab()
 - 位置: L5547-5585
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: クラッシュ中として記録された browser の属性を外し、一度 about:blank を読み込んでから、タブの状態を強制的に遅延復元する。クラッシュ中でなければ何もしない。残っていれば例外。
+- 触るとき: クラッシュしたタブを復活させるときの読み込み先や遅延復元の扱いを変えるとき。
 - 呼び出し先: `Services.scriptSecurityManager.createNullPrincipal()`, `TAB_CUSTOM_VALUES.get()`, `aTab.removeAttribute()`, `browser.loadURI()`, `lazy.TabState.collect()`, `this.#crashedBrowsers.has()`, `this.#restoreTab()`
 - 参照: `aTab.linkedBrowser`, `aTab.userContextId`, `browser.isRemoteBrowser`, `browser.permanentKey`, `lazy.E10SUtils.NOT_REMOTE`, `lazy.blankURI`
 - XPCOM: `Services.scriptSecurityManager`
 
 ## _SessionStore.reviveAllCrashedTabs()
 - 位置: L5590-5596
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 開いている全ウィンドウの全タブについて reviveCrashedTab を呼ぶ。
+- 触るとき: クラッシュしたタブを一括で復活させる挙動を確認するとき。
 - 呼び出し先: `Services.wm.getEnumerator()`, `this.reviveCrashedTab()`
 - 参照: `window.gBrowser.tabs`
 - XPCOM: `Services.wm`
 
 ## _SessionStore.getSessionHistory()
 - 位置: L5612-5628
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブの現在の状態から履歴エントリと現在のインデックス(0 始まり)を返す。updatedCallback があれば、フラッシュ後の最新の履歴でも呼び出す。タブが閉じていれば null。
+- 触るとき: 履歴一覧の取得元や、フラッシュ後に更新されるタイミングを確認するとき。
 - 条件付き依存: `if (updatedCallback)` → `lazy.TabStateFlusher.flush(tab.linkedBrowser).then()`
 - 条件付き依存: `if (updatedCallback)` → `lazy.TabStateFlusher.flush()`
 - 条件付き依存: `if (updatedCallback)` → `this.getSessionHistory()`
@@ -1439,15 +1439,15 @@ lines: 9611
 
 ## _SessionStore.#canRestoreIntoExistingWindow()
 - 位置: L5642-5673
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 既存ウィンドウと前回のウィンドウ状態について、ポップアップ、プライベート、taskbar tab の性質と引数(args)が一致するかを判定する。一致しなければ既存ウィンドウへの復元を許さない。
+- 触るとき: 前回セッションのウィンドウを既存ウィンドウに入れてよい条件を変えるとき。
 - 呼び出し先: `Boolean()`, `Object.entries()`, `Object.entries(existingArgs).every()`, `Object.keys()`, `this.#getWindowStateData()`
 - 参照: `Object.keys(existingArgs).length`, `Object.keys(previousArgs).length`, `aPreviousState.args`, `aPreviousState.isPopup`, `aPreviousState.isPrivate`, `aPreviousState.isTaskbarTab`, `existingState.args`, `existingState.isPopup`, `existingState.isPrivate`, `existingState.isTaskbarTab`
 
 ## _SessionStore.#getImmutableWindowFeatures()
 - 位置: L5684-5707
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウ状態から、作成時にしか決められない特性(private、popup、taskbartab、chromeless、拡張ポップアップ)の名前を集めた Set を返す。
+- 触るとき: ウィンドウ復元時に新しい特性を作成時オプションとして渡す判定を追加するとき。
 - 条件付き依存: `if (winState.isPrivate)` → `features.add()`
 - 条件付き依存: `if (winState.isPopup)` → `features.add()`
 - 条件付き依存: `if (winState.isTaskbarTab)` → `features.add()`
@@ -1457,8 +1457,8 @@ lines: 9611
 
 ## _SessionStore.#getRemovableHomePages()
 - 位置: L5720-5754
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 既存ウィンドウの非固定タブのうち about:blank やホームページ(startup.page が 1 のとき)、AI ウィンドウの初期 URL に一致するものを集める。全可視タブが対象なら 1 つ残す。
+- 触るとき: 状態を既存ウィンドウに流し込む前に、どのホームページタブを閉じるか判定を変えるとき。
 - 呼び出し先: `homePages.includes()`, `lazy.AIWindow.isAIWindowActiveAndEnabled()`, `this.#prefBranch.getIntPref()`
 - 条件付き依存: `if (startupPref == 1)` → `homePages.concat()`
 - 条件付き依存: `if (startupPref == 1)` → `lazy.HomePage.get(aWindow).split()`
@@ -1470,16 +1470,16 @@ lines: 9611
 
 ## _SessionStore.#updateWindowFeatures()
 - 位置: L5764-5786
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウの寸法・表示状態、最小化前の表示モード、サイドバーの UI 状態、ワークスペース ID、AI ウィンドウ判定を状態に書き込む。
+- 触るとき: 保存されるウィンドウの見た目の情報(位置、サイズ、サイドバー、ワークスペース)を増やすとき。
 - 呼び出し先: `aWindow.SidebarController.getUIState()`, `aWindow.getWorkspaceID()`, `lazy.AIWindow.isAIWindowActive()`, `this.#getWindowDimension()`, `this.#windowIds.get()`
 - 条件付き依存: `if (sidebarUIState)` → `structuredClone()`
 - 参照: `this.#windows`, `winData.isAIWindow`, `winData.sidebar`, `winData.sizemode`, `winData.sizemodeBeforeMinimized`, `winData.workspaceID`
 
 ## _SessionStore.getCurrentState()
 - 位置: L5796-5922
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 実行中なら必要なウィンドウだけタブ状態を収集し、それ以外は見た目の情報だけ更新してから、全ウィンドウ・復元待ちのウィンドウ・閉じたウィンドウ・Cookie・グローバル状態などを含むセッション全体の状態を組み立てて返す。macOS 以外で最後の通常ウィンドウが無くなり終了中なら、閉じたウィンドウを先頭に加える。
+- 触るとき: セッションファイルに書かれる内容や、終了時にどの閉じたウィンドウが含まれるかを変えるとき。
 - 呼び出し先: `Date.now()`, `Glean.sessionRestore.collectAllWindowsData.start()`, `Glean.sessionRestore.collectAllWindowsData.stopAndAccumulate()`, `ids.indexOf()`, `ids.push()`, `lazy.DevToolsShim.saveDevToolsSession()`, `lazy.SessionCookies.collect()`, `this.#closedWindows.slice()`, `this.#getTopWindow()`, `this.#globalState.getState()`, `this.#handleClosedWindows()`, `this.#handleClosedWindows().then()`, `this.#notifyOfClosedObjectsChange()`, `total.push()`
 - 条件付き依存: `if (lazy.RunState.isRunning)` → `this.#isWindowLoaded()`
 - 条件付き依存: `if (lazy.RunState.isRunning)` → `DirtyWindows.has()`
@@ -1495,8 +1495,8 @@ lines: 9611
 
 ## _SessionStore.#getWindowState()
 - 位置: L5931-5941
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 読み込み済みのウィンドウならそのタブ状態を収集して返し、未読み込みなら復元待ちの状態を返す。
+- 触るとき: getWindowState の内部で、読み込み途中のウィンドウをどう扱うかを確認するとき。
 - 呼び出し先: `this.#isWindowLoaded()`, `this.#windowIds.get()`
 - 条件付き依存: `if (!this.#isWindowLoaded(aWindow))` → `WINDOW_RESTORE_IDS.get()`
 - 条件付き依存: `if (lazy.RunState.isRunning)` → `this.#collectWindowData()`
@@ -1504,16 +1504,16 @@ lines: 9611
 
 ## _SessionStore.#getWindowStateData()
 - 位置: L5950-5962
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 追跡中のウィンドウの内部状態オブジェクトを返す。未追跡なら例外。
+- 触るとき: ウィンドウ内部データを直接読む箇所を追加・変更するとき。
 - 呼び出し先: `this.#windowIds.get()`
 - 条件付き依存: `if ( !this.#windowIds.get(aWindow) || !(this.#windowIds.get(aWindow) in this.#windows) )` → `Components.Exception()`
 - 参照: `Cr.NS_ERROR_INVALID_ARG`, `this.#windows`
 
 ## _SessionStore.#collectWindowData()
 - 位置: L5974-6029
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 読み込み済みのウィンドウについて、タブごとの状態(Firefox View タブは除く)、タブグループ、分割表示を集めて内部状態を更新し、タブ状態のマップを返す。未読み込みなら何もしない。
+- 触るとき: 保存されるタブ・タブグループ・分割表示のデータを増やす、または収集対象を絞るとき。
 - 呼び出し先: `DirtyWindows.remove()`, `TAB_CUSTOM_VALUES.get()`, `lazy.TabGroupState.collect()`, `lazy.TabState.collect()`, `tabMap.set()`, `tabsData.push()`, `this.#isWindowLoaded()`, `this.#lastSessionWindowIds.get()`, `this.#updateWindowFeatures()`, `this.#windowIds.get()`, `winData.groups.push()`, `winData.splitViews.push()`
 - 条件付き依存: `if (this.#lastSessionWindowIds.get(aWindow))` → `this.#windowIds.get()`
 - 条件付き依存: `if (this.#lastSessionWindowIds.get(aWindow))` → `this.#lastSessionWindowIds.get()`
@@ -1521,30 +1521,30 @@ lines: 9611
 
 ## _SessionStore.#openWindows()
 - 位置: L6041-6057
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 状態を持つウィンドウを 1 つずつ #openWindowWithState で開き、全部が表示されるまで待つ。タブが無いウィンドウは飛ばして復元数を減らす。
+- 触るとき: 復元時に新規ウィンドウを開く数や、タブの無いウィンドウを扱う判定を変えるとき。
 - 呼び出し先: `Promise.all()`, `WINDOW_SHOWING_PROMISES.get()`, `this.#openWindowWithState()`, `windowOpenedPromises.push()`, `windowsOpened.push()`
 - 条件付き依存: `if (!winData || !winData.tabs || !winData.tabs[0])` → `this.#log.debug()`
 - 参照: `deferred.promise`, `root.windows`, `this.#restoreCount`, `winData.tabs`
 
 ## _SessionStore.#resetClosedTabIds()
 - 位置: L6069-6075
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 渡された閉じたタブごとに新しい closedId を振り、sourceWindowId を指定のウィンドウ ID にする。
+- 触るとき: 前回セッションの閉じたタブの ID が現在のセッションと重ならないようにする処理を変えるとき。
 - 参照: `entry.closedId`, `entry.sourceWindowId`, `this.#nextClosedId`
 
 ## _SessionStore.#initSplitViewIds()
 - 位置: L6077-6099
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 分割表示 ID の採番カウンタを、遅延状態・前回セッション状態・現在の状態の順に読み、必要なら各状態を移行したうえで最大値に揃える。カウンタが既に 0 より大きい場合はエラーログを出す。
+- 触るとき: 分割表示 ID の移行や、セッション起動時の採番カウンタの初期化を変えるとき。
 - 呼び出し先: `Math.max()`, `this.#migrateSplitViewIds()`
 - 条件付き依存: `if (this.#maxSplitViewId > 0)` → `this.#log.error()`
 - 参照: `session.maxSplitViewId`, `state.deferredInitialState`, `state.lastSessionState`, `this.#maxSplitViewId`
 
 ## _SessionStore.#migrateSplitViewIds()
 - 位置: L6108-6161
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: maxSplitViewId が数値なら何もしない。それ以外は、文字列の分割表示 ID を新しい整数 ID に振り直し(同じ分割表示のタブは同じ新 ID になる)、グループの分割表示データの ID も合わせる。
+- 触るとき: 古い形式の分割表示 ID を持つセッションファイルを読み込む際の変換規則を変えるとき。
 - 呼び出し先: `oldToNewMap.get()`, `oldToNewMap.has()`
 - 条件付き依存: `if (state._closedWindows?.length)` → `windowsData.push.apply()`
 - 条件付き依存: `if (idType === "number")` → `Math.max()`
@@ -1558,8 +1558,8 @@ lines: 9611
 
 ## _SessionStore.#restoreWindow()
 - 位置: L6173-6376
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウに保存されたサイドバー、ワークスペース、閉じたタブ一覧、閉じたタブグループ、拡張データを適用し、タブを作って復元する。上書き指定なら既存タブを閉じ、最初のウィンドウでは元からあったタブを末尾へ移す。
+- 触るとき: ウィンドウ単位の復元で何がどの順で適用されるか、または既存タブと復元タブの並びを変えるとき。
 - 呼び出し先: `Glean.sessionRestore.restoreWindow.start()`, `Glean.sessionRestore.restoreWindow.stopAndAccumulate()`, `lazy.SessionCookies.restore()`, `newClosedTabGroupsData.forEach()`, `this.#isWindowLoaded()`, `this.#lastSessionWindowIds.delete()`, `this.#log.debug()`, `this.#prefBranch.getBoolPref()`, `this.#resetClosedTabIds()`, `this.#restoreSidebar()`, `this.#sendWindowRestoringNotification()`, `this.#setWindowStateBusy()`, `this.#windowIds.get()`
 - 条件付き依存: `if ( aWindow && (!this.#windowIds.get(aWindow) || !this.#windows[this.#windowIds.get(aWindow)]) )` → `this.#onLoad()`
 - 条件付き依存: `if (winData.workspaceID && lazy.gRestoreWindowsToVirtualDesktop)` → `this.#log.debug()`
@@ -1596,8 +1596,8 @@ lines: 9611
 
 ## _SessionStore.#prepareConnectionToHost()
 - 位置: L6388-6414
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: about: 以外の URL について null プリンシパルで投機的接続を開く。成功なら true、例外や about: の URL なら false を返す。
+- 触るとき: タブの復元前に接続先へ先行接続する挙動を変えるとき、またはその接続先の条件を調べるとき。
 - 呼び出し先: `url.startsWith()`
 - 条件付き依存: `if (url && !url.startsWith("about:"))` → `Services.scriptSecurityManager.createNullPrincipal()`
 - 条件付き依存: `if (url && !url.startsWith("about:"))` → `ChromeUtils.generateQI()`
@@ -1608,16 +1608,16 @@ lines: 9611
 
 ## _SessionStore.getInterface()
 - 位置: L6396-6402
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: nsILoadContext を要求されたときだけ対象タブの browsingContext を返し、それ以外は NS_ERROR_NO_INTERFACE を投げる。
+- 触るとき: 投機的接続で渡すコールバックが要求するインターフェースを増やすとき。
 - 呼び出し先: `Components.Exception()`, `iid.equals()`
 - 参照: `Ci.nsILoadContext`, `Cr.NS_ERROR_NO_INTERFACE`
 - XPCOM: [`nsILoadContext`](../../../docshell/base/nsILoadContext.idl.md)
 
 ## _SessionStore.speculativeConnectOnTabHover()
 - 位置: L6424-6440
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: まだ接続していない遅延タブについて、マウスオーバー時に保存済みの URL へ先行接続し、一度試したことを記録して二重に接続しないようにする。
+- 触るとき: タブにマウスを乗せたときの先行接続の条件や、テスト用の接続フラグを変えるとき。
 - 呼び出し先: `TAB_LAZY_STATES.get()`
 - 条件付き依存: `if (tabState && !tabState.connectionPrepared)` → `this.getLazyTabValue()`
 - 条件付き依存: `if (tabState && !tabState.connectionPrepared)` → `this.#prepareConnectionToHost()`
@@ -1626,23 +1626,23 @@ lines: 9611
 
 ## _SessionStore.#restoreWindowsFeaturesAndTabs()
 - 位置: L6448-6484
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: まず全ウィンドウの見た目(サイズや位置)を復元してからタブ内容を復元し、サイズ変更の完了後に SSWindowStateReady、復元完了の通知を出す。
+- 触るとき: 複数ウィンドウ復元で、見た目とタブ内容のどちらを先に適用し、どの通知をいつ出すかを変えるとき。
 - 呼び出し先: `Services.obs.notifyObservers()`, `WINDOW_RESTORE_IDS.get()`, `WINDOW_RESTORE_ZINDICES.delete()`, `resizePromise.then()`, `resizePromises.push()`, `this.#restoreWindow()`, `this.#restoreWindowFeatures()`, `this.#sendRestoreCompletedNotifications()`, `this.#sendWindowRestoredNotification()`, `this.#setWindowStateReady()`
 - 参照: `state.options`, `state.windows`, `this.#statesToRestore`
 - XPCOM: `Services.obs`
 
 ## _SessionStore.#restoreWindowsInReversedZOrder()
 - 位置: L6493-6502
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 保存されている z 順の逆に並べ替え、先頭のウィンドウを復元後のフォーカス対象にして、全ウィンドウの features と tabs を復元する。
+- 触るとき: 最後に使ったウィンドウを最初に表示させる順序や、復元後にフォーカスされるウィンドウを変えるとき。
 - 呼び出し先: `WINDOW_RESTORE_ZINDICES.get()`, `this.#restoreWindowsFeaturesAndTabs()`, `windows.sort()`
 - 参照: `this.#windowToFocus`
 
 ## _SessionStore.#restoreWindows()
 - 位置: L6515-6608
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 状態を JSON から読み、閉じたウィンドウを再採番して一覧に置き、先頭のウィンドウを既存のウィンドウに入れられるか判定する(不一致なら記録)。残りのウィンドウは開いてから逆 z 順で復元する。ウィンドウが無ければ完了通知だけ送る。
+- 触るとき: setBrowserState や setWindowState など、複数ウィンドウの状態をまとめて流し込む経路の順序を変えるとき。
 - 呼び出し先: `JSON.parse()`, `lazy.DevToolsShim.restoreDevToolsSession()`, `root.windows.splice()`, `this.#canRestoreIntoExistingWindow()`, `this.#log.debug()`, `this.#log.error()`, `this.#openWindows()`, `this.#openWindows(root).then()`, `this.#restoreWindowsInReversedZOrder()`, `this.#sendRestoreCompletedNotifications()`, `this.#updateWindowRestoreState()`, `this.#windowIds.get()`, `windows.unshift()`
 - 条件付き依存: `if ( aWindow && (!this.#windowIds.get(aWindow) || !this.#windows[this.#windowIds.get(aWindow)]) )` → `this.#onLoad()`
 - 条件付き依存: `if (closedWindow._closedTabs?.length)` → `this.#resetClosedTabIds()`
@@ -1659,8 +1659,8 @@ lines: 9611
 
 ## _SessionStore.#restoreTabs()
 - 位置: L6624-6670
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 既存のタブデータを、タブ数の差に応じて削り、タブ要素と同じ数に揃えてから選択タブを先頭にして全タブを復元する。選択位置が有効なら、ウィンドウの selected を更新する。
+- 触るとき: タブごとのデータを既存のタブ要素と突き合わせる際のずれや、選択タブを先に復元する順序を変えるとき。
 - 呼び出し先: `aTabs.indexOf()`, `this.#ensureNoNullsInTabDataList()`, `this.#windowIds.get()`
 - 条件付き依存: `if (!(numTabsInWindow == numTabsToRestore))` → `tabsDataArray.splice()`
 - 条件付き依存: `if (aSelectTab > 0 && aSelectTab <= aTabs.length)` → `this.#windowIds.get()`
@@ -1670,15 +1670,15 @@ lines: 9611
 
 ## _SessionStore.#ensureNoNullsInTabDataList()
 - 位置: L6675-6698
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブデータ配列を、既存タブ要素の数と changedTabPos までの長さに揃え、空の entries と lastAccessed を入れて null の穴を埋める。
+- 触るとき: タブデータが未収集のタブでずれたり null になる不具合を調べるとき、またはタブ要素とデータの対応を変えるとき。
 - 呼び出し先: `tabDataList.push()`
 - 参照: `existingTabEl.lastAccessed`, `tabDataList.length`
 
 ## _SessionStore.#restoreTab()
 - 位置: L6701-6906
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブの状態をウィンドウのタブデータに反映し、アクティブな履歴位置を範囲内に丸め、キャッシュを更新する。接続済みのブラウザなら新しいエポックで履歴を送り、選択中か即時指定なら内容も読み込み、それ以外は復元キューへ入れる。未接続(遅延)なら TAB_LAZY_STATES に URL とタイトルだけを持たせる。最後にピン・非表示・ミュート・ラベルとアイコンを反映する。
+- 触るとき: タブ復元の順序(即時、キュー、遅延)や、復元時に保存される項目を変えるとき。
 - 呼び出し先: `DirtyWindows.add()`, `Math.max()`, `Math.min()`, `TAB_STATE_FOR_BROWSER.has()`, `lazy.TabStateCache.update()`, `tab.hasAttribute()`, `tab.setAttribute()`, `this.#crashedBrowsers.delete()`, `this.#setWindowStateBusy()`, `this.#setWindowStateReady()`, `this.#updateTabLabelAndIcon()`, `this.#windowIds.get()`, `this.historyIndex()`
 - 条件付き依存: `if (TAB_STATE_FOR_BROWSER.has(browser))` → `this.#log.warn()`
 - 条件付き依存: `if (tabData.lastAccessed)` → `tab.updateLastAccessed()`
@@ -1706,31 +1706,31 @@ lines: 9611
 
 ## _SessionStore.#restoreTabContent()
 - 位置: L6916-6941
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: カスタマイズモード中は読み込みせず、現在の履歴エントリの URL を取り、復元中の印を付けてから復元要求を送る。選択中で空白ページでなければフォーカスを内容領域へ移す。
+- 触るとき: タブの内容読み込みの要求が出る条件や、読み込み後のフォーカス移動を変えるとき。
 - 呼び出し先: `TAB_CUSTOM_VALUES.get()`, `aTab.hasAttribute()`, `lazy.TabState.clone()`, `this.#markTabAsRestoring()`, `this.#sendRestoreTabContent()`, `window.isBlankPageURL()`
 - 条件付き依存: `if (aTab.selected && !window.isBlankPageURL(uri))` → `browser.focus()`
 - 参照: `RESTORE_TAB_CONTENT_REASON.SET_STATE`, `aOptions.loadArguments`, `aOptions.restoreContentReason`, `aTab.documentGlobal`, `aTab.linkedBrowser`, `aTab.selected`, `activePageData.url`, `tabData.entries`, `tabData.index`
 
 ## _SessionStore.#markTabAsRestoring()
 - 位置: L6949-6965
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: タブが NEEDS_RESTORE であることを確かめてから、復元キューから外し、復元中の件数を増やし、状態を RESTORING にして pending と discarded の属性を外す。違えば例外。
+- 触るとき: 復元中の件数や状態遷移を変えるとき、または復元が二重に始まる原因を調べるとき。
 - 呼び出し先: `TAB_STATE_FOR_BROWSER.get()`, `TAB_STATE_FOR_BROWSER.set()`, `TabRestoreQueue.remove()`, `aTab.removeAttribute()`
 - 参照: `aTab.linkedBrowser`, `this.#tabsRestoringCount`
 
 ## _SessionStore.#restoreNextTab()
 - 位置: L6975-6990
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 終了中でなく、同時復元中のタブ数が MAX_CONCURRENT_TAB_RESTORES 未満なら、復元キューの先頭タブの内容読み込みを始める。
+- 触るとき: 復元キューの処理順や同時に読み込むタブ数の上限を変えるとき。
 - 呼び出し先: `TabRestoreQueue.shift()`
 - 条件付き依存: `if (tab)` → `this.#restoreTabContent()`
 - 参照: `lazy.RunState.isQuitting`, `this.#tabsRestoringCount`
 
 ## _SessionStore.#restoreWindowFeatures()
 - 位置: L7002-7053
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 保存時の AI ウィンドウ種別を戻す(既定の新規起動ウィンドウだけ Smart にする)。次のタスクで寸法を反映するが、その前に最小化されていれば寸法は適用しない。
+- 触るとき: AI ウィンドウ種別の判定や、寸法を適用するタイミングを変えるとき。
 - 呼び出し先: `Promise.withResolvers()`, `aWindow.setTimeout()`, `lazy.AIWindow.isAIWindowActive()`, `lazy.AIWindow.isAIWindowEnabled()`, `lazy.AIWindow.shouldOpenAsSmartWindow()`, `lazy.SessionStartup.willRestore()`, `promiseParts.resolve()`, `this.#restoreDimensions()`
 - 条件付き依存: `if (lazy.AIWindow.isAIWindowActive(aWindow) !== shouldBeAIWindow)` → `lazy.AIWindow.toggleAIWindow()`
 - 条件付き依存: `if (shouldBeAIWindow)` → `lazy.AIWindow.recordOpenWindowTelemetry()`
@@ -1739,14 +1739,14 @@ lines: 9611
 
 ## _SessionStore.#restoreSidebar()
 - 位置: L7064-7070
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ポップアップでなくサイドバーの保存状態があれば、復元を受け取ったことを SidebarController に伝えてから UI 状態を更新する。
+- 触るとき: サイドバーの表示状態が起動時や復元時に戻らない問題を調べるとき。
 - 呼び出し先: `aWindow.SidebarController.markSessionRestoreStateReceived()`, `aWindow.SidebarController.updateUIState()`
 
 ## _SessionStore.#restoreDimensions()
 - 位置: L7090-7244
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 保存された位置とサイズを、現在の画面の利用可能領域に収まるように補正してから適用し、最大化・最小化・通常の状態も戻す。サイズを丸める fingerprinting 抵抗が有効ならサイズは変えない。
+- 触るとき: ウィンドウが画面外に出る不具合、マルチディスプレイでの位置補正、サイズモードの復元を変えるとき。
 - 呼び出し先: `ChromeUtils.shouldResistFingerprinting()`, `dwu.suppressAnimation()`, `isNaN()`, `lazy.gScreenManager.screenForRect()`, `this.#windowIds.get()`, `win_()`
 - 条件付き依存: `if (screen)` → `screen.GetAvailRectDisplayPix()`
 - 条件付き依存: `if (screen)` → `Math.max()`
@@ -1766,70 +1766,70 @@ lines: 9611
 
 ## win_()
 - 位置: L7100-7100
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 対象ウィンドウの現在の寸法や状態(screenX、width、sizemode など)を #getWindowDimension で取り出す補助関数。
+- 触るとき: #restoreDimensions で比較する値を増やすとき。
 - 呼び出し先: `this.#getWindowDimension()`
 
 ## _SessionStore.#saveStateDelayed()
 - 位置: L7255-7261
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 指定ウィンドウがあれば DirtyWindows に入れ、SessionSaver の遅延保存を予約する。
+- 触るとき: 状態変化から実際にディスクへ書かれるまでの遅延や、再収集の対象を変えるとき。
 - 呼び出し先: `lazy.SessionSaver.runDelayed()`
 - 条件付き依存: `if (aWindow)` → `DirtyWindows.add()`
 
 ## _SessionStore.#removeClosedWindow()
 - 位置: L7274-7287
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じたウィンドウ一覧の指定位置を外し、その中の閉じたタブと閉じたウィンドウの閉じた操作の履歴も消して、変更通知を立てる。取り除いた要素を返す。
+- 触るとき: 閉じたウィンドウを開き直す・忘れる・上限で切るときに、閉じた操作の履歴と一覧がずれないかを確認するとき。
 - 呼び出し先: `this.#closedWindows.splice()`, `this.#removeClosedAction()`
 - 参照: `closedTab.closedId`, `this.#closedObjectsChanged`, `this.#closedWindows`, `this.#closedWindows[index]._closedTabs`, `this.#closedWindows[index].closedId`, `this.LAST_ACTION_CLOSED_TAB`, `this.LAST_ACTION_CLOSED_WINDOW`
 
 ## _SessionStore.#notifyOfClosedObjectsChange()
 - 位置: L7293-7301
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じた項目の一覧が変わっていれば変更フラグを戻し、次のタスクで NOTIFY_CLOSED_OBJECTS_CHANGED を通知する。
+- 触るとき: 閉じた項目の変更通知が必要な操作を追加するとき、または通知が重複・欠落しないかを調べるとき。
 - 呼び出し先: `Services.obs.notifyObservers()`, `lazy.setTimeout()`
 - 参照: `this.#closedObjectsChanged`
 - XPCOM: `Services.obs`
 
 ## _SessionStore.#notifyOfSavedTabGroupsChange()
 - 位置: L7307-7311
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 次のタスクで NOTIFY_SAVED_TAB_GROUPS_CHANGED を通知する。フラグは見ずに毎回通知する。
+- 触るとき: 保存済みタブグループの変更通知を受ける側が更新されないとき。
 - 呼び出し先: `Services.obs.notifyObservers()`, `lazy.setTimeout()`
 - XPCOM: `Services.obs`
 
 ## _SessionStore.#updateSessionStartTime()
 - 位置: L7320-7325
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 状態に session.startTime があれば、セッション開始時刻として保持する。
+- 触るとき: セッション開始時刻の引き継ぎ方や、セッション日数の計算元を変えるとき。
 - 参照: `state.session`, `state.session.startTime`, `this.#sessionStartTime`
 
 ## _SessionStore.[Symbol.iterator]()
 - 位置: L7334-7340
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウ ID を持ち閉じていない browser ウィンドウを、BrowserWindowTracker の順(フォーカス順)で列挙する。
+- 触るとき: 全ウィンドウを対象にする処理の順序や、対象外になるウィンドウの条件を変えるとき。
 - 呼び出し先: `SessionStore.getWindowId()`
 - 参照: `Symbol.iterator`, `lazy.BrowserWindowTracker.orderedWindows`, `window.closed`
 
 ## _SessionStore.[Symbol.iterator]()
 - 位置: L7349-7371
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 同じく閉じていないウィンドウを列挙するが、最小化されたウィンドウを最後に回す。
+- 触るとき: 状態収集や保存時に、最小化ウィンドウをどの順で処理するかを変えるとき。
 - 呼び出し先: `SessionStore.getWindowId()`, `windows.sort()`
 - 参照: `Symbol.iterator`, `a.STATE_MINIMIZED`, `a.windowState`, `b.STATE_MINIMIZED`, `b.windowState`, `lazy.BrowserWindowTracker.orderedWindows`, `window.closed`
 
 ## _SessionStore.#getTopWindow()
 - 位置: L7382-7390
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: BrowserWindowTracker から最前面のウィンドウを取得する。isPrivate を指定すると、そのプライベート状態のものに限り、ポップアップも含める。
+- 触るとき: 「最前面のウィンドウ」を基準にする処理(閉じたタブの復元先など)の対象を変えるとき。
 - 呼び出し先: `lazy.BrowserWindowTracker.getTopWindow()`
 - 参照: `options.private`
 
 ## _SessionStore.#handleClosedWindows()
 - 位置: L7397-7405
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: まだ破棄されていないが閉じているウィンドウについて #onClose を呼び、その完了を待つ Promise を返す。
+- 触るとき: getBrowserState や setBrowserState の前に、閉じかけのウィンドウを開いたウィンドウとして扱わないようにしたいとき。
 - 呼び出し先: `Promise.all()`, `Services.wm.getEnumerator()`
 - 条件付き依存: `if (window.closed)` → `promises.push()`
 - 条件付き依存: `if (window.closed)` → `this.#onClose()`
@@ -1838,16 +1838,16 @@ lines: 9611
 
 ## _SessionStore.#updateWindowRestoreState()
 - 位置: L7417-7427
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ウィンドウの z 順(あれば)を記録し、ランダムな ID を振って、そのウィンドウの復元状態を #statesToRestore に保存する。
+- 触るとき: 複数ウィンドウの復元を後から z 順で実行する仕組みや、復元待ちの状態の保存先を変えるとき。
 - 呼び出し先: `Math.random()`, `WINDOW_RESTORE_IDS.set()`
 - 条件付き依存: `if ("zIndex" in state.windows[0])` → `WINDOW_RESTORE_ZINDICES.set()`
 - 参照: `state.windows`, `state.windows[0].zIndex`, `this.#statesToRestore`
 
 ## _SessionStore.#openWindowWithState()
 - 位置: L7437-7538
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 保存された chromeFlags(無ければ既定の features)、位置・サイズ、private や AI ウィンドウの指定から features を組み立て、ブラウザウィンドウを開く。復元状態を #updateWindowRestoreState に登録し、表示完了を待つ Promise を作る。
+- 触るとき: 新しいウィンドウを状態から開くときの features の組み立て、またはプライベートや AI ウィンドウの開き方を変えるとき。
 - 呼び出し先: `Cc["@mozilla.org/array;1"].createInstance()`, `Cc["@mozilla.org/hash-property-bag;1"].createInstance()`, `JSON.stringify()`, `Promise.withResolvers()`, `Services.ww.openWindow()`, `WINDOW_ATTRIBUTES.forEach()`, `WINDOW_SHOWING_PROMISES.set()`, `args.appendElement()`, `args.queryElementAt()`, `features.join()`, `isNaN()`, `this.#log.debug()`, `this.#serializePropertyBag()`, `this.#updateWindowRestoreState()`
 - 条件付き依存: `if (hasAll)` → `features.push()`
 - 条件付き依存: `if (value)` → `features.push()`
@@ -1866,14 +1866,14 @@ lines: 9611
 
 ## _SessionStore.#serializePropertyBag()
 - 位置: L7547-7553
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: プロパティバッグの各名前と値を、プレーンなオブジェクトにまとめる。デバッグ出力用。
+- 触るとき: ウィンドウを開くときのデバッグログの内容を変えるとき。
 - 参照: `bag.enumerator`
 
 ## _SessionStore.#isCmdLineEmpty()
 - 位置: L7567-7587
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 状態のタブがすべてピン留めなら、コマンドライン引数の先頭が既定の引数でなければ「ある」と判定する。結果は、起動時にタブを上書きしてよいかの判断に使われる。
+- 触るとき: 起動引数によって保存済みのタブを上書きするかの判定条件を変えるとき。
 - 呼び出し先: `aState.windows.every()`, `win.tabs.every()`
 - 条件付き依存: `if (!pinnedOnly)` → `Cc["@mozilla.org/browser/clh;1"].getService()`
 - 参照: `Cc["@mozilla.org/browser/clh;1"].getService( Ci.nsIBrowserHandler ).defaultArgs`, `Ci.nsIBrowserHandler`, `aState.windows`, `aWindow.arguments`, `tab.pinned`

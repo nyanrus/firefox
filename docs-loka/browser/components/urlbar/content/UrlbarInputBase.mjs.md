@@ -5,67 +5,67 @@ source-hash: 9bf6ad33a0f777638ee5929526978cb801d245ef
 lines: 6715
 
 ## <module>
-- 役割: (未記入)
+- 役割: urlbar や searchbar など検索入力欄(search access point)の共通基盤となるカスタム要素 UrlbarInputBase を定義し、DOM の組み立て・初期化・イベント処理・検索と結果選択までを担う。
 - 呼び出し先: `Promise.resolve()`
 
 ## logger()
 - 位置: L123-123
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: "Input" 接頭辞付きの UrlbarShared ロガーを返す。
+- 触るとき: urlbar 入力欄まわりのログ出力を追加・調整し、どの経路が動いたかを確かめたいとき。
 - 呼び出し先: `UrlbarShared.getLogger()`
 
 ## parseMarkupToFragment()
 - 位置: L142-168
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 入力欄のマークアップ文字列を XHTML 名前空間の XML として解析し、空白だけのテキストノードを除いた DocumentFragment を返す。
+- 触るとき: #markup の HTML を変えて、要素間の空白テキストが a11y ツリーに混ざっていないか確かめるとき。
 - 呼び出し先: `blank.forEach()`, `doc.createTreeWalker()`, `node.data.trim()`, `node.remove()`, `parser.parseFromString()`, `walker.nextNode()`
 - 条件付き依存: `if (!node.data.trim())` → `blank.push()`
 - 参照: `(doc.documentElement) .content`, `NodeFilter.SHOW_TEXT`, `doc.documentElement`, `doc.documentElement.localName`, `walker.currentNode`
 
 ## UrlbarInputBase.#markup()
 - 位置: L175-241
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 入力欄の DOM 構造(検索モード切替ボタン、input 要素、Go ボタン、結果ビュー、one-off 用スロットなど)を文字列で定義する。browser.nova.enabled の値で hr の並びが変わる。
+- 触るとき: 入力欄に子要素や属性(role、data-l10n-id、スロット名など)を足す、または nova 切替時の表示崩れを調べるとき。
 - 呼び出し先: `UrlbarPrefs.get()`
 
 ## UrlbarInputBase.fragment()
 - 位置: L244-252
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 解析済みマークアップを初回だけ作ってキャッシュし、以後は importNode で複製した DocumentFragment を返す getter。
+- 触るとき: 入力欄の初期 DOM が生成されない、または複数の入力欄で要素が共有されてしまうように見えるとき。
 - 呼び出し先: `document.importNode()`
 - 条件付き依存: `if (!UrlbarInputBase.#fragment)` → `parseMarkupToFragment()`
 - 参照: `UrlbarInputBase.#fragment`, `UrlbarInputBase.#markup`
 
 ## UrlbarInputBase.observedAttributes()
 - 位置: L254-256
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 監視対象の属性として "open" だけを返す。
+- 触るとき: open 属性の変化でポップオーバーの表示を更新する仕組みを増やすか、ポップオーバーが開閉に追従しないとき。
 
 ## UrlbarInputBase.constructor()
 - 位置: L347-360
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: window と document の参照と isPrivate を設定し、プリファレンス監視を登録して unload 時に監視を外す。
+- 触るとき: プライベートウィンドウ判定に依存する処理を変えるとき、または閉じたウィンドウで pref 監視が残るのを調べるとき。
 - 呼び出し先: `UrlbarContentUtils.isWindowPrivate()`, `UrlbarPrefs.addObserver()`, `UrlbarPrefs.removeObserver()`, `super()`, `window.addEventListener()`
 - 参照: `this.document`, `this.isPrivate`, `this.window`, `this.window.document`
 
 ## UrlbarInputBase.#populateSlots()
 - 位置: L368-395
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: moz-urlbar-slot を名前で探し、対応する urlbar-slot 属性の子を slot の前へ移し、slot 要素を削除する。あわせて identity-box などの内部参照を取得する。
+- 触るとき: 入力欄の子要素をスロット経由で差し込む仕組みや、スロット名を追加・変更するとき。
 - 呼び出し先: `slot.getAttribute()`, `slot.parentNode.insertBefore()`, `slot.remove()`, `this._searchModeIndicator?.querySelector()`, `this.querySelector()`, `this.querySelectorAll()`
 - 参照: `this._identityBox`, `this._revertButton`, `this._searchModeIndicator`, `this._searchModeIndicatorClose`, `this._searchModeIndicatorTitle`
 
 ## UrlbarInputBase.#addStylesheet()
 - 位置: L401-413
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: chrome ウィンドウ以外では urlbar.css の link 要素を head に追加する。同じ href の link が既にあれば何もしない。
+- 触るとき: コンテンツ文書で入力欄のスタイルが当たらないとき。
 - 呼び出し先: `document.createElement()`, `document.head.appendChild()`, `document.querySelector()`
 - 参照: `link.href`, `link.rel`
 
 ## UrlbarInputBase.#init()
 - 位置: L418-537
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 初回接続時に sap-name と navigation 可否を読み、DOM 断片とスタイルを付け、結果リストと入力要素の属性を設定し、controller、view、searchModeSwitcher、eventBufferer を生成してプレースホルダーとエンジンストアを初期化する。
+- 触るとき: 初期化の順序を変えるとき、または接続後に入力欄が機能しない、プレースホルダーが更新されないと感じたとき。
 - 呼び出し先: `Object.defineProperty()`, `UrlbarPrefs.get()`, `UrlbarShared.navigationEnabled()`, `searchModeSwitcherDescription.setAttribute()`, `this.#addStylesheet()`, `this._setPlaceholder()`, `this.appendChild()`, `this.controller.addListener()`, `this.getAttribute()`, `this.inputField.setAttribute()`, `this.querySelector()`, `this.sapInit()`
 - 条件付き依存: `if (document.readyState === "loading")` → `document.addEventListener()`
 - 条件付き依存: `if (document.readyState === "loading")` → `this.#populateSlots()`
@@ -83,46 +83,46 @@ lines: 6715
 
 ## UrlbarInputBase.get()
 - 位置: L502-504
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: placeholder、selectionStart、selectionEnd の読み取りを内部の input 要素へ転送する。
+- 触るとき: 外から入力欄の値や選択範囲を読む経路を追うとき。
 - 参照: `this.inputField`
 
 ## UrlbarInputBase.set()
 - 位置: L505-507
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: placeholder、selectionStart、selectionEnd の書き込みを内部の input 要素へ転送する。
+- 触るとき: 外から入力欄のプレースホルダーや選択位置を書き換えても反映されないとき。
 - 参照: `this.inputField`
 
 ## UrlbarInputBase.attributeChangedCallback()
 - 位置: L539-545
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: open 属性が変わったときだけ updatePopover を呼ぶ。
+- 触るとき: ポップオーバーの開閉が属性変更と連動しないとき。
 - 呼び出し先: `this.updatePopover()`
 
 ## UrlbarInputBase.sapInit()
 - 位置: L551-551
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: サブクラス向けの空のフックで、#init の中から呼ばれる。
+- 触るとき: UrlbarInput や SearchbarInput など検索窓の種類ごとに初期化処理を足すとき。
 
 ## UrlbarInputBase.initSapContextMenuItems()
 - 位置: L556-556
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: サブクラス向けの空のフックで、コンテキストメニュー項目を追加する場として使われる。
+- 触るとき: 検索窓の種類ごとに右クリックメニューの項目を変えるとき。
 
 ## UrlbarInputBase.sapConnectedCallback()
 - 位置: L561-561
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: サブクラス向けの空のフックで、接続の最後に呼ばれる。
+- 触るとき: 検索窓の接続完了後に種類ごとの処理を足すとき。
 
 ## UrlbarInputBase.sapDisconnectedCallback()
 - 位置: L567-567
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: サブクラス向けの空のフックで、切断の最初に呼ばれる。
+- 触るとき: 検索窓が DOM から外れる時の後始末を種類ごとに足すとき。
 
 ## UrlbarInputBase.connectedCallback()
 - 位置: L569-646
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 接続時に未初期化なら #init を呼び、文脈メニュー・検索モード切替・キーとマウスのリスナーを登録して、プレースホルダーとポップオーバーの可否を整える。readOnly のときはリスナーを付けずポップオーバーを無効にして戻る。
+- 触るとき: 入力欄が DOM に付け直されたときにイベントが二重登録されないか、読み取り専用の切り替えで操作や表示が変わるかを調べるとき。
 - 呼び出し先: `UrlbarContentUtils.getPlatform()`, `document.documentElement.hasAttribute()`, `this.#initContextMenuItems()`, `this._addObservers()`, `this._initCopyCutController()`, `this._inputContainer.addEventListener()`, `this.addEventListener()`, `this.closest()`, `this.hasAttribute()`, `this.inputField.addEventListener()`, `this.sapConnectedCallback()`, `this.searchModeSwitcher.connect()`, `this.toggleAttribute()`, `this.updatePopover()`, `this.view.panel.addEventListener()`, `this.window.addEventListener()`
 - 条件付き依存: `if (!this.controller)` → `this.#init()`
 - 条件付き依存: `if (this.inOverflowPanel && this.view.isOpen)` → `this.view.close()`
@@ -137,8 +137,8 @@ lines: 6715
 
 ## UrlbarInputBase.disconnectedCallback()
 - 位置: L648-691
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: connectedCallback で登録したリスナー、コピー・カットのコントローラー、gBrowser のタブ監視、文脈メニュー項目、オブザーバーを外して後始末する。
+- 触るとき: 検索窓を閉じた後にイベントやメニュー項目が残り、別の入力欄に影響するのを調べるとき。
 - 呼び出し先: `UrlbarContentUtils.getPlatform()`, `this.#removeContextMenuItems()`, `this._inputContainer.removeEventListener()`, `this._removeObservers()`, `this.inputField.removeEventListener()`, `this.removeEventListener()`, `this.sapDisconnectedCallback()`, `this.searchModeSwitcher.disconnect()`, `this.view.panel.removeEventListener()`, `this.window.removeEventListener()`
 - 条件付き依存: `if (this._copyCutController)` → `this.inputField.controllers.removeController()`
 - 条件付き依存: `if (UrlbarContentUtils.getPlatform() == "win")` → `this.window.removeEventListener()`
@@ -148,8 +148,8 @@ lines: 6715
 
 ## UrlbarInputBase.#initContextMenuItems()
 - 位置: L704-721
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 文脈メニューに入力欄固有の項目を登録する。EditContextMenu がない窓では何もしない。アドレスバーでは macOS なら共有グループの項目、他の OS は strip-on-share 項目を登録し、さらに自動補完の削除項目と検索エンジン追加項目も登録する。
+- 触るとき: 右クリックメニューに項目を足すとき、または macOS と他の OS で項目の出し分けが違う理由を追うとき。
 - 呼び出し先: `UrlbarContentUtils.getPlatform()`, `this.#initAddSearchEngines()`, `this._initPasteAndGo()`, `this.initSapContextMenuItems()`
 - 条件付き依存: `if (this.#isAddressbar && UrlbarContentUtils.getPlatform() == "macosx")` → `this.#initShareURL()`
 - 条件付き依存: `if (!(this.#isAddressbar && UrlbarContentUtils.getPlatform() == "macosx"))` → `this._initStripOnShare()`
@@ -158,171 +158,171 @@ lines: 6715
 
 ## UrlbarInputBase.#initAddSearchEngines()
 - 位置: L727-741
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 検索エンジン追加用の項目セットを EditContextMenu に登録する。メニューを開くたびに AddSearchEngineHelper の最新項目で中身を差し替える。
+- 触るとき: 「検索エンジンを追加」メニューの項目が古いまま表示されるとき。
 - 呼び出し先: `this.addContextMenuItems()`
 
 ## createItems()
 - 位置: L729-735
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 検索エンジン追加メニュー用に、区切り線だけを含む DocumentFragment を作って返す。
+- 触るとき: 検索エンジン追加メニューの区切り線の位置や内容を変えるとき。
 - 呼び出し先: `fragment.appendChild()`, `this.addSearchEngineHelper.createContextSeparator()`, `this.document.createDocumentFragment()`
 
 ## onShowing()
 - 位置: L736-739
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: メニュー表示時に項目配列を空にし、AddSearchEngineHelper.refreshContextMenu の結果で入れ替える。
+- 触るとき: メニューを開くたびに検索エンジン項目が重複したり欠けたりするとき。
 - 呼び出し先: `items.push()`, `this.addSearchEngineHelper.refreshContextMenu()`
 - 参照: `items.length`
 
 ## UrlbarInputBase.addContextMenuItems()
 - 位置: L749-756
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 項目セットを EditContextMenu に登録し、返された登録情報を保持して切断時に外せるようにする。対象は matches で絞る。
+- 触るとき: 入力欄ごとに文脈メニューの項目を追加するとき。
 - 呼び出し先: `this.#contextMenuItemSets.push()`, `this.window.EditContextMenu.addItems()`
 
 ## matches()
 - 位置: L753-753
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 文脈メニューの項目を出す対象が、この入力欄の inputField かどうかを判定する。
+- 触るとき: 同じ窓の別の入力欄に項目が出てしまうとき。
 - 参照: `this.inputField`
 
 ## UrlbarInputBase.#removeContextMenuItems()
 - 位置: L762-767
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 保持している項目セットを EditContextMenu から外し、保持配列を空にする。
+- 触るとき: 切断後も文脈メニューの項目が残るのを調べるとき。
 - 呼び出し先: `this.window.EditContextMenu.removeItems()`
 - 参照: `this.#contextMenuItemSets`
 
 ## UrlbarInputBase.addGBrowserListeners()
 - 位置: L769-776
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: gBrowser があり、まだ未登録のときだけ TabSelect と TabClose のリスナーとタブ進捗リスナーを登録する。
+- 触るとき: タブを切り替えたときに入力欄の表示が更新されないとき。
 - 条件付き依存: `if (this.window.gBrowser && !this.#gBrowserListenersAdded)` → `this.window.gBrowser.tabContainer.addEventListener()`
 - 条件付き依存: `if (this.window.gBrowser && !this.#gBrowserListenersAdded)` → `this.window.gBrowser.addTabsProgressListener()`
 - 参照: `this.#gBrowserListenersAdded`, `this.window.gBrowser`
 
 ## UrlbarInputBase.addSearchEngineHelper()
 - 位置: L785-787
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: AddSearchEngineHelper を初回アクセス時に生成して保持する getter。
+- 触るとき: 検索エンジン追加メニューの状態を参照または更新する箇所を追うとき。
 - 参照: `this.#addSearchEngineHelper`
 
 ## UrlbarInputBase.#getValueFormatter()
 - 位置: L789-791
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: UrlbarValueFormatter を初回だけ生成して返す。
+- 触るとき: 入力欄の値の装飾(表示の整形)の仕組みを変えるとき。
 - 参照: `lazy.UrlbarValueFormatter`, `this.#valueFormatter`
 
 ## UrlbarInputBase.sapName()
 - 位置: L793-795
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 初期化時に読んだ検索窓の名前(urlbar、searchbar など)を返す getter。
+- 触るとき: テレメトリやログで検索窓の種類を区別するとき。
 - 参照: `this.#sapName`
 
 ## UrlbarInputBase.isSidebarMode()
 - 位置: L797-799
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 常に false を返す。サイドバー表示の判定用で、派生クラスが上書きする想定。
+- 触るとき: サイドバーでの検索窓の挙動を区別する処理を足すとき。
 
 ## UrlbarInputBase.isSearchbarSAP()
 - 位置: L808-810
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: sapName を UrlbarShared.isSearchbarSAP に渡し、検索専用の窓かどうかを返す。
+- 触るとき: 検索専用の窓だけ挙動を変えたいとき。
 - 呼び出し先: `UrlbarShared.isSearchbarSAP()`
 - 参照: `this.#sapName`
 
 ## UrlbarInputBase.variantA()
 - 位置: L818-820
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: variant-a 属性があるかを返す。New Tab 側が urlbar の newtabVariantA の Nimbus 変数から属性を設定する。
+- 触るとき: レイアウト variant A の表示切替を追うとき。
 - 呼び出し先: `this.hasAttribute()`
 
 ## UrlbarInputBase.variantB()
 - 位置: L829-831
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: variant-b 属性があるかを返す。検索エンジンボタンを入力欄の上段に置くレイアウトを示す。
+- 触るとき: レイアウト variant B の表示切替を追うとき。
 - 呼び出し先: `this.hasAttribute()`
 
 ## UrlbarInputBase.windowMode()
 - 位置: L838-845
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: テレメトリ用の窓種別を返す。プライベートなら private、AI ウィンドウが有効なら smartwindow、それ以外は classic。
+- 触るとき: テレメトリの窓種別の値を変えるとき、または AI ウィンドウの判定が合わないとき。
 - 呼び出し先: `lazy?.AIWindow.isAIWindowActive()`
 - 参照: `this.isPrivate`, `this.window`
 
 ## UrlbarInputBase.parentController()
 - 位置: L847-849
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: controller の parentController を返す。
+- 触るとき: 検索結果を親側へ渡す経路を追うとき。
 - 参照: `this.controller.parentController`
 
 ## UrlbarInputBase.blur()
 - 位置: L851-853
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 内部の input 要素からフォーカスを外す。
+- 触るとき: 入力欄からフォーカスを外す処理を変えるとき。
 - 呼び出し先: `this.inputField.blur()`
 
 ## UrlbarInputBase.readOnly()
 - 位置: L855-863
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 内部 input の readOnly を設定する。値が変わり接続中なら disconnectedCallback と connectedCallback をやり直して、読み取り専用に応じたリスナーとポップオーバーの状態を作り直す。
+- 触るとき: 読み取り専用に切り替えた後に文脈メニューやポップオーバーの状態が残るとき。
 - 条件付き依存: `if (this.isConnected)` → `this.disconnectedCallback()`
 - 条件付き依存: `if (this.isConnected)` → `this.connectedCallback()`
 - 参照: `this.inputField.readOnly`, `this.isConnected`
 
 ## UrlbarInputBase.readOnly()
 - 位置: L868-870
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 内部 input の readOnly を返す getter。
+- 触るとき: 読み取り専用かどうかで分岐する箇所を追うとき。
 - 参照: `this.inputField.readOnly`
 
 ## UrlbarInputBase.onPrefChanged()
 - 位置: L893-899
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: keyword.enabled が変わったときだけ updatePlaceholder を呼ぶ。
+- 触るとき: キーワード検索の設定変更がプレースホルダーに反映されないとき。
 - 呼び出し先: `this.updatePlaceholder()`
 
 ## UrlbarInputBase.formatValue()
 - 位置: L904-909
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: アドレスバーで editor があるときだけ UrlbarValueFormatter.update を呼び、値の装飾を更新する。
+- 触るとき: URL の色分けや装飾が古いままになるとき。
 - 条件付き依存: `if (this.#isAddressbar && this.editor)` → `this.#getValueFormatter().update()`
 - 条件付き依存: `if (this.#isAddressbar && this.editor)` → `this.#getValueFormatter()`
 - 参照: `this.#isAddressbar`, `this.editor`
 
 ## UrlbarInputBase.focus()
 - 位置: L911-922
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: beforefocus イベントを内部 input に発行し、キャンセルされなければ内部 input にフォーカスする。
+- 触るとき: 外部からのフォーカス要求を横取りしたいとき、またはフォーカスが来ない原因を調べるとき。
 - 呼び出し先: `this.inputField.dispatchEvent()`, `this.inputField.focus()`
 - 参照: `beforeFocus.defaultPrevented`
 
 ## UrlbarInputBase.select()
 - 位置: L924-939
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: beforeselect を発行し、キャンセルされなければ主選択の書き換えを抑えたまま内部 input を全選択する。
+- 触るとき: 全選択で主選択が書き換わるなどの問題を調べるとき。
 - 呼び出し先: `this.inputField.dispatchEvent()`, `this.inputField.select()`
 - 参照: `beforeSelect.defaultPrevented`, `this._suppressPrimaryAdjustment`
 
 ## UrlbarInputBase.setSelectionRange()
 - 位置: L941-956
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: beforeselect を発行し、キャンセルされなければ主選択の書き換えを抑えたまま指定範囲を選択する。
+- 触るとき: 任意範囲の選択処理を変えるとき。
 - 呼び出し先: `this.inputField.dispatchEvent()`, `this.inputField.setSelectionRange()`
 - 参照: `beforeSelect.defaultPrevented`, `this._suppressPrimaryAdjustment`
 
 ## UrlbarInputBase.saveSelectionStateForBrowser()
 - 位置: L958-970
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ブラウザごとの状態に選択範囲と、URL を再整形(untrim)するかどうかを保存する。値が空なら先頭から末尾までを全選択として扱う。
+- 触るとき: タブを切り替えて戻ったときに選択位置が復元されないとき。
 - 呼び出し先: `this.getBrowserState()`
 - 参照: `Number.MAX_SAFE_INTEGER`, `state.selection`, `this._protocolIsTrimmed`, `this._wwwIsTrimmed`, `this.selectionEnd`, `this.selectionStart`, `this.value`
 
 ## UrlbarInputBase.restoreSelectionStateForBrowser()
 - 位置: L972-986
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: まずフォーカスし、保存された状態があれば必要なら URL を untrim してから、終端を値の長さで丸めて選択範囲を戻す。
+- 触るとき: タブに戻ったときに選択やテキストの復元がずれるとき。
 - 呼び出し先: `this.focus()`, `this.getBrowserState()`
 - 条件付き依存: `if (state.selection.shouldUntrim)` → `this.#maybeUntrimUrl()`
 - 条件付き依存: `if (state.selection)` → `this.setSelectionRange()`
@@ -331,8 +331,8 @@ lines: 6715
 
 ## UrlbarInputBase.setURI()
 - 位置: L1005-1202
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: アドレスバーに表示する URL を設定する。ユーザーが結果を選択中ならそのままにし、値が空やタブ切り替えの場合は認証プロンプトの URL か現在の URI を資格情報を除いて表示し、初期ページなら空にする。最後に選択範囲、proxy state、検索モードを整えて SetURI を発行する。
+- 触るとき: タブ切り替えや読み込み完了で入力欄の値が差し替わらない、または選択位置や検索モードが戻らないとき。
 - 呼び出し先: `UrlbarPrefs.getScotchBonnetPref()`, `lazy.UrlbarSearchTermsPersistence.searchModeMatchesState()`, `this.#handlePersistedSearchTerms()`, `this.getBrowserState()`, `this.inputField.dispatchEvent()`, `this.setPageProxyState()`, `this.setValue()`, `this.toggleAttribute()`, `uri.spec.startsWith()`
 - 条件付き依存: `if ( dueToTabSwitch && UrlbarPrefs.getScotchBonnetPref("scotchBonnet.persistSearchMode") )` → `this._updateSearchModeUI()`
 - 条件付き依存: `if (value === null || (!value && dueToTabSwitch))` → `Services.io.createExposableURI()`
@@ -354,16 +354,16 @@ lines: 6715
 
 ## UrlbarInputBase.makeURIReadable()
 - 位置: L1213-1228
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: リーダーモードの原 URL を取り出し、取れなければ createExposableURI で資格情報を除いた URI を返す。どちらも失敗すれば元の URI を返す。
+- 触るとき: 表示用に URL を整えて、ユーザー名やパスワードが入力欄に出ないようにしたいとき。
 - 呼び出し先: `Services.io.createExposableURI()`, `lazy.ReaderMode.getOriginalUrlObjectForDisplay()`
 - 参照: `uri.displaySpec`
 - XPCOM: `Services.io`
 
 ## UrlbarInputBase.onLocationChange()
 - 位置: L1241-1260
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: トップレベルの場所変更を受け、選択中でないタブの読み込みなら統合検索ボタンを使用不可にし、履歴ボタンによる移動ならバウンスのテレメトリを記録する。
+- 触るとき: タブを戻ったときに統合検索ボタンが出ない、または履歴移動の計測が合わないとき。
 - 呼び出し先: `this.#canHandleAsBlankPage()`
 - 条件付き依存: `if ( browser != this.window.gBrowser.selectedBrowser && !this.#canHandleAsBlankPage(locationURI.spec) )` → `this.getBrowserState()`
 - 条件付き依存: `if (webProgress.loadType & Ci.nsIDocShell.LOAD_CMD_HISTORY)` → `lazy.handleBounceEventTrigger()`
@@ -372,16 +372,16 @@ lines: 6715
 
 ## UrlbarInputBase.handleEvent()
 - 位置: L1267-1278
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: DOM イベントの type から _on_<type> のメソッドを呼び分ける。例外は console.error に出し、対応がなければ例外を投げる。
+- 触るとき: 新しい DOM イベントを入力欄で扱いたいとき、または「Unrecognized UrlbarInput event」が出るとき。
 - 条件付き依存: `if (methodName in this)` → `this[methodName]()`
 - 条件付き依存: `if (methodName in this)` → `console.error()`
 - 参照: `event.type`
 
 ## UrlbarInputBase.handleCommand()
 - 位置: L1286-1315
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 右クリック以外のコマンドで、開いている結果ビューに選択中の one-off ボタンがあればその検索を実行する。なければ統合検索ボタンのアイコンを更新してから handleNavigation を呼ぶ。
+- 触るとき: Enter やクリックで検索や移動を始める入口の振る舞いを変えるとき。
 - 呼び出し先: `UrlbarPrefs.get()`, `UrlbarShared.isInstance()`, `this.handleNavigation()`
 - 条件付き依存: `if (selectedOneOff && (!isMouseEvent || event.target == selectedOneOff))` → `this.view.oneOffSearchButtons.handleSearchCommand()`
 - 条件付き依存: `if (UrlbarPrefs.get("unifiedSearchButton.always"))` → `this.searchModeSwitcher?.updateSearchIcon()`
@@ -389,34 +389,34 @@ lines: 6715
 
 ## UrlbarInputBase.#searchModeEngineForEnterKey()
 - 位置: L1340-1365
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 検索モードのエンジンで Enter の検索を行うべきときだけそのエンジンを返し、それ以外は null を返す。アドレスバー以外、IME 変換中、one-off 指定、検索モードでない場合は null。選択結果が検索の heuristic でない場合や、結果がなく URL 結果が出ている場合も null になる。
+- 触るとき: 検索モード中に Enter を押したとき古いエンジンで検索される現象や、URL 結果を開く分岐を調べるとき。
 - 呼び出し先: `UrlbarShared.navigationInSearchModeEnabled()`, `this.controller.engineStore.getEngineByName()`
 - 参照: `UrlbarShared.RESULT_TYPE.SEARCH`, `UrlbarShared.RESULT_TYPE.URL`, `oneOffParams?.engine`, `result.heuristic`, `result.type`, `this.#isAddressbar`, `this.#sapName`, `this._resultForCurrentValue?.type`, `this.searchMode.engineName`, `this.searchMode?.engineName`
 
 ## UrlbarInputBase.#engineSearchStringForResult()
 - 位置: L1374-1379
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 結果の suggestion か query を検索文字列とし、無ければ直前の検索文字列を返す。
+- 触るとき: 結果からエンジン検索の文字列がどう決まるかを確かめるとき。
 - 参照: `result.payload.query`, `result.payload.suggestion`, `this._lastSearchString`
 
 ## UrlbarInputBase.#selectedBrowserId()
 - 位置: L1386-1388
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択中のブラウザの browserId を返す。gBrowser がなければ null。
+- 触るとき: 検索結果を開く先のブラウザを読み込み処理に渡す経路を追うとき。
 - 参照: `this.window.gBrowser?.selectedBrowser?.browserId`
 
 ## UrlbarInputBase.#openEngineSearch()
 - 位置: L1409-1440
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: エンゲージメントを記録し、検索をテレメトリに記録したうえで、親コントローラーの openSERP で選んだエンジンの検索結果ページを開く。
+- 触るとき: one-off や検索モードの Enter で検索結果ページを開く処理や、その計測を変えるとき。
 - 呼び出し先: `this._recordSearch()`, `this.controller.engagementEvent.record()`, `this.getSearchSource()`, `this.parentController.openSERP()`
 - 参照: `engine.id`, `this.#selectedBrowserId`, `this._resultForCurrentValue`, `this.view.selectedResult`, `this.windowMode`
 
 ## UrlbarInputBase.handleNavigation()
 - 位置: L1457-1672
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 選択中の要素と結果から開く先を順に決める。要素があり安全なら pickElement に回し、検索モードや one-off のエンジンなら検索結果ページを開き、URL なら #loadURL で読み込み、結果が無ければ親の resolveFallbackNavigation で heuristic か補正 URL を得て読み込む。
+- 触るとき: Enter で検索になるかURLを開くかの分岐を変えるとき、または想定と違う読み込み経路を調べるとき。
 - 呼び出し先: `URL.canParse()`, `UrlbarPrefs.get()`, `this.#getValueFromResult()`, `this.#searchModeEngineForEnterKey()`, `this._maybeCanonizeURL()`, `this.controller .resolveFallbackNavigation()`, `this.controller .resolveFallbackNavigation({ searchString: url, where, searchMode: this.searchMode, browserId, }) .then()`, `this.controller.engagementEvent.record()`, `this.controller.whereToOpen()`, `this.getSearchSource()`, `this.value.startsWith()`, `this.view.getResultFromElement()`, `this.view.telemetryTypeFromElement()`, `url.trim()`
 - 条件付き依存: `if ( !isComposing && element && !searchModeEngine && (!oneOffParams?.engine || selectedPrivateEngineResult) && safeToPickResult )` → `this.pickElement()`
 - 条件付き依存: `if ( UrlbarPrefs.get("experimental.hideHeuristic") && !element && !isComposing && !oneOffParams?.engine && !searchModeEngine && this._resultForCurrentValue?.heur...)` → `this.pickResult()`
@@ -437,13 +437,13 @@ lines: 6715
 
 ## UrlbarInputBase.handleEmptyValueNavigation()
 - 位置: L1682-1682
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 空の基底実装で何もしない。サブクラス(searchbar など)が値が空のときに検索エンジンのページを開くように上書きする。
+- 触るとき: 空の入力で Enter を押したときの動作を検索窓ごとに変えたいとき。
 
 ## UrlbarInputBase.handleRevert()
 - 位置: L1684-1702
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 検索モードと入力値を取り消す。アドレスバーでは setURI で現在の URL に戻して、フォーカスがあれば全選択する。それ以外の入力では値を空にする。
+- 触るとき: Escape などで入力を取り消した後に表示が現在のページと合わないとき。
 - 呼び出し先: `this.setURI()`
 - 条件付き依存: `if (!this.#isAddressbar)` → `this.toggleAttribute()`
 - 条件付き依存: `if (this.value && this.focused)` → `this.select()`
@@ -451,8 +451,8 @@ lines: 6715
 
 ## UrlbarInputBase.maybeHandleRevertFromPopup()
 - 位置: L1704-1710
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: アンカーが #urlbar 内にあり、永続検索語が有効なら handleRevert を呼び、ポップアップ経由の取り消し回数を Glean に記録する。
+- 触るとき: 永続検索語をポップアップから戻すときの条件や計測を変えるとき。
 - 呼び出し先: `anchorElement?.closest()`, `this.getBrowserState()`
 - 条件付き依存: `if (anchorElement?.closest("#urlbar") && state.persist?.shouldPersist)` → `this.handleRevert()`
 - 条件付き依存: `if (anchorElement?.closest("#urlbar") && state.persist?.shouldPersist)` → `Glean.urlbarPersistedsearchterms.revertByPopupCount.add()`
@@ -460,8 +460,8 @@ lines: 6715
 
 ## UrlbarInputBase.handoff()
 - 位置: L1725-1736
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 新しいタブページなど擬似的な検索窓からの入力を受け取り、ハンドオフのフラグを立てて search を呼ぶ。対象エンジンと設定があれば検索モードに入れる。
+- 触るとき: 新しいタブや about:privatebrowsing からの検索引き渡しの挙動を変えるとき。
 - 呼び出し先: `UrlbarPrefs.get()`
 - 条件付き依存: `if (UrlbarPrefs.get("shouldHandOffToSearchMode") && searchEngine)` → `this.search()`
 - 条件付き依存: `if (!(UrlbarPrefs.get("shouldHandOffToSearchMode") && searchEngine))` → `this.search()`
@@ -469,15 +469,15 @@ lines: 6715
 
 ## UrlbarInputBase.pickElement()
 - 位置: L1744-1753
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 要素から結果を引き、見つかれば pickResult に渡す。
+- 触るとき: 結果ビューの要素を選んだときの経路を追うとき。
 - 呼び出し先: `logger()`, `logger().debug()`, `this.pickResult()`, `this.view.getResultFromElement()`
 - 参照: `event?.type`
 
 ## UrlbarInputBase.handlesOpenInCommands()
 - 位置: L1761-1763
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 常に true を返し、pickResult が結果メニューの新しいタブや窓で開く命令を扱うことを示す。
+- 触るとき: サブクラスで結果メニューの開く命令の扱いを変えるとき。
 
 ## UrlbarInputBase.pickResult()
 - 位置: L1778-2309
