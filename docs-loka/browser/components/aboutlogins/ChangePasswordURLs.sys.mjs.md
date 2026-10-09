@@ -5,21 +5,21 @@ source-hash: 6ffb0df1c543e844f0913a434aeeeb596991c09b
 lines: 115
 
 ## <module>
-- 役割: (未記入)
+- 役割: RemoteSettings の change-password-urls を使い、保存済みログインごとの変更ページ URL を求めるモジュール。
 - 呼び出し先: `ChromeUtils.defineESModuleGetters()`, `ChromeUtils.defineLazyGetter()`, `lazy.LoginHelper.createLogger()`
 
 ## _getDomainToChangePasswordURLMap()
 - 位置: async L40-73
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: RemoteSettings から記録を取得し、host と https の url を持つものだけを Map(domain から URL)にする。collection が未知なら空の Map を返し、それ以外の例外は再送出する。
+- 触るとき: 変更ページの候補の読み込みや、無効な記録を除く条件を変えるとき。
 - 呼び出し先: `domainMap.set()`, `lazy .RemoteSettings()`, `lazy .RemoteSettings(this.REMOTE_SETTINGS_COLLECTION) .get()`, `this._isValidHTTPSURL()`
 - 条件付き依存: `if (ex instanceof lazy.RemoteSettingsClient.UnknownCollectionError)` → `lazy.log.warn()`
 - 参照: `lazy.RemoteSettingsClient.UnknownCollectionError`, `record.host`, `record.url`, `this.REMOTE_SETTINGS_COLLECTION`
 
 ## getChangePasswordURLsByLoginGUID()
 - 位置: async L82-104
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 各ログインの origin から host を取り、候補 domain の root domain に含まれるものを最初に見つけて、login GUID から URL への Map を作る。origin が解析できないログインは飛ばす。
+- 触るとき: ログインと変更ページの対応付けを変えるとき。eTLD+1 で照合するため、サブドメイン固有の URL は保証されない点に注意が要る。
 - 呼び出し先: `Services.eTLD.hasRootDomain()`, `Services.io.newURI()`, `this._getDomainToChangePasswordURLMap()`
 - 条件付き依存: `if (Services.eTLD.hasRootDomain(loginHost, domain))` → `changePasswordURLsByLoginGUID.set()`
 - 参照: `Services.io.newURI(login.origin).host`, `login.guid`, `login.origin`
@@ -27,8 +27,8 @@ lines: 115
 
 ## _isValidHTTPSURL()
 - 位置: L106-113
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: URL を解析して scheme が https なら true、解析できなければ false を返す。
+- 触るとき: 変更ページに http の URL を許すかどうかを変えるとき。
 - 呼び出し先: `Services.io.newURI()`
 - 参照: `uri.scheme`
 - XPCOM: `Services.io`

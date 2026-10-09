@@ -5,26 +5,26 @@ source-hash: f4a0e1e566c363d5eb1d77e0c021df250d96b3f3
 lines: 1793
 
 ## <module>
-- 役割: (未記入)
+- 役割: コマンドラインや外部からの URL を受けて、ブラウザウィンドウを開く・既存ウィンドウに渡す処理を行う。初回起動時のホームページ上書き(WNP)もここで決める。
 - 呼び出し先: `Cc["@mozilla.org/system-alerts-service;1"] ?.getService()`, `Cc["@mozilla.org/system-alerts-service;1"] ?.getService(Ci.nsIAlertsService) ?.QueryInterface()`, `ChromeUtils.defineESModuleGetters()`, `ChromeUtils.defineLazyGetter()`, `ChromeUtils.generateQI()`, `Services.scriptSecurityManager.getSystemPrincipal()`, `XPCOMUtils.defineLazyServiceGetters()`
 
 ## canOpenAsSmartWindow()
 - 位置: L47-53
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: forcePrivate でなく、スマートウィンドウが既定で開く設定で、かつ利用規約への同意がある場合に true を返す。
+- 触るとき: 新規ウィンドウがスマートウィンドウで開くかどうかの条件を変えるとき、またはサインイン済みなのに通常ウィンドウで開くと報告されたときに見る。
 - 呼び出し先: `lazy.AIWindow.shouldOpenAsSmartWindow()`
 - 参照: `lazy.AIWindowAccountAuth.hasToSConsent`
 
 ## shouldLoadURI()
 - 位置: L83-91
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: chrome: スキームの URI は外部からのロードを拒否し、それ以外は true を返す。
+- 触るとき: 外部から chrome URL を開こうとして拒否される、または逆に通ってしまう問題を調べるときに見る。
 - 呼び出し先: `aURI.schemeIs()`, `dump()`
 
 ## resolveURIInternal()
 - 位置: L93-124
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 引数をファイル URI として解決し、存在すればそのまま返す。存在しなければ URI の修正(fixup)ヒューリスティックで URI を作り直す。
+- 触るとき: コマンドライン引数の解釈が想定と違う、ファイル名が検索語として扱われるときに見る。
 - 呼び出し先: `Services.uriFixup.getFixupURIInfo()`, `aCmdLine.resolveURI()`, `console.error()`, `uri.file.exists()`
 - 条件付き依存: `if (!(uri instanceof Ci.nsIFileURL))` → `Services.uriFixup.getFixupURIInfo()`
 - 参照: `Ci.nsIFileURL`, `Services.uriFixup`, `Services.uriFixup.getFixupURIInfo( aArgument, uriFixup.FIXUP_FLAG_FIX_SCHEME_TYPOS ).preferredURI`, `Services.uriFixup.getFixupURIInfo(aArgument).preferredURI`, `lazy.gSystemPrincipal`, `uriFixup.FIXUP_FLAG_FIX_SCHEME_TYPOS`
@@ -32,8 +32,8 @@ lines: 1793
 
 ## needHomepageOverride()
 - 位置: L157-212
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 保存された mstone と buildID を現在の値と比べ、新規プロファイル、メジャー更新、同一メジャーのビルド更新のどれかを返す。updateMilestones が真なら記録も更新する。
+- 触るとき: 初回起動や更新後にホームページの上書きが出る・出ないを調べるとき、または判定の条件を変えるときに見る。
 - 呼び出し先: `Services.prefs.getCharPref()`
 - 条件付き依存: `if (savedmstone)` → `Services.prefs.setBoolPref()`
 - 条件付き依存: `if (updateMilestones)` → `Services.prefs.setCharPref()`
@@ -42,16 +42,16 @@ lines: 1793
 
 ## getPostUpdateOverridePage()
 - 位置: L228-263
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 更新情報の actions に応じて、更新後に開くページを決める。silent や showURL の欠如、ポリシー、Nimbus の URL、update の openURL の順に判定する。
+- 触るとき: 更新後の What's New ページが出ない、または想定外の URL が出るときに見る。
 - 呼び出し先: `Services.policies.isAllowed()`, `actions.includes()`, `update.QueryInterface()`, `update.getProperty()`
 - 参照: `Ci.nsIWritablePropertyBag`
 - XPCOM: [`nsIWritablePropertyBag`](../../xpcom/ds/nsIWritablePropertyBag.idl.md) / `Services.policies`
 
 ## openBrowserWindow()
 - 位置: L294-410
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 初回起動なら起動用の空ウィンドウを置き換え、そうでなければ新規ウィンドウを作る。URL の指定形式に応じて引数を組み、BrowserWindowTracker.openWindow に渡す。
+- 触るとき: 新しいウィンドウを開く経路(ホームページ、URL、スマートウィンドウ、プライベート)の引数を変えるときに見る。
 - 呼び出し先: `canOpenAsSmartWindow()`, `gBrowserContentHandler.getFeatures()`, `lazy.BrowserWindowTracker.openWindow()`
 - 条件付き依存: `if (isStartup)` → `gBrowserContentHandler.getFirstWindowArgs()`
 - 条件付き依存: `if (!(isStartup))` → `gBrowserContentHandler.getNewWindowArgs()`
@@ -77,46 +77,46 @@ lines: 1793
 
 ## openPreferences()
 - 位置: L412-414
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: about:preferences を開くウィンドウを openBrowserWindow で作る。
+- 触るとき: --preferences や旧 chrome 引数で設定画面が開かないときに見る。
 - 呼び出し先: `openBrowserWindow()`
 - 参照: `lazy.gSystemPrincipal`
 
 ## doSearch()
 - 位置: async L416-438
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 空のウィンドウを開き、起動完了を待ってから SearchUIUtils.loadSearch で検索を実行する。
+- 触るとき: --search の検索結果が開かない、またはプライベートで検索されてしまうときに見る。
 - 呼び出し先: `lazy.BrowserUtils.promiseObserved()`, `lazy.PrivateBrowsingUtils.isWindowPrivate()`, `lazy.SearchUIUtils.loadSearch()`, `openBrowserWindow()`
 - 参照: `console.error`, `lazy.PrivateBrowsingUtils.isInTemporaryAutoStartMode`, `lazy.gSystemPrincipal`, `win.gBrowser.selectedBrowser.policyContainer`
 
 ## spinForLastUpdateInstalled()
 - 位置: L440-442
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: UpdateManager.lastUpdateInstalled() の結果をイベントループを回して同期的に取り出す。
+- 触るとき: 更新情報の取得が同期で必要な箇所で値が取れないときに見る。
 - 呼び出し先: `lazy.UpdateManager.lastUpdateInstalled()`, `spinResolve()`
 
 ## spinForUpdateInstalledAtStartup()
 - 位置: L444-446
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: UpdateManager.updateInstalledAtStartup() の結果を spinResolve で同期的に取り出す。
+- 触るとき: 起動時に更新が適用されたかの判定を変えるとき、または結果が遅れて得られないときに見る。
 - 呼び出し先: `lazy.UpdateManager.updateInstalledAtStartup()`, `spinResolve()`
 
 ## spinResolve()
 - 位置: L448-475
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: Promise でなければ値をそのまま返し、Promise なら完了まで spinEventLoopUntil で待って結果か例外を返す。
+- 触るとき: 同期呼び出しが固まる、または Forcefully exited の例外が出るときに見る。
 - 呼び出し先: `Services.tm.spinEventLoopUntil()`, `promise .catch()`, `promise .catch(e => { error = e; }) .then()`
 - XPCOM: `Services.tm`
 
 ## nsBrowserContentHandler()
 - 位置: L477-482
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: グローバルの BrowserContentHandler を一つだけ作る。最初に作られた this を返すコンストラクター。
+- 触るとき: ハンドラーが二重に作られる、またはシングルトンの前提を崩すときに見る。
 
 ## bch_handle()
 - 位置: L494-736
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: コマンドラインのフラグ(kiosk、browser、new-window、new-tab、data、chrome、preferences、private-window、search、private、setDefaultBrowser、first-startup、file など)を順に処理し、対応するウィンドウを開く。
+- 触るとき: 起動オプションを追加・変更するとき、または特定のフラグが効かないと報告されたときに見る。
 - 呼び出し先: `cmdLine.handleFlag()`, `cmdLine.handleFlagWithParam()`, `console.error()`, `handURIToExistingBrowser()`, `openBrowserWindow()`, `resolveURIInternal()`, `shouldLoadURI()`, `uri.schemeIs()`
 - 条件付き依存: `if ( cmdLine.handleFlag("kiosk", false) || cmdLine.handleFlagWithParam("kiosk-monitor", false) )` → `Glean.browserStartup.kioskMode.set()`
 - 条件付き依存: `if (cmdLine.handleFlag("disable-pinch", false))` → `Services.prefs.getDefaultBranch()`
@@ -163,8 +163,8 @@ lines: 1793
 
 ## isLocal()
 - 位置: L587-593
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: --chrome で渡された URI の最内 URI のスキームが chrome、file、resource のいずれかなら true を返す。
+- 触るとき: --chrome で開けるローカル URL の範囲を変えるときに見る。
 - 呼び出し先: `localSchemes.has()`
 - 条件付き依存: `if (uri instanceof Ci.nsINestedURI)` → `uri.QueryInterface()`
 - 参照: `Ci.nsINestedURI`, `uri.QueryInterface(Ci.nsINestedURI).innerMostURI`, `uri.scheme`
@@ -172,20 +172,20 @@ lines: 1793
 
 ## helpInfo()
 - 位置: L738-765
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: コマンドライン用のヘルプ文字列を、プラットフォームに応じた設定画面のフラグ名を含めて返す。
+- 触るとき: 新しいフラグを追加したとき、ヘルプの表示を揃えるときに見る。
 - 参照: `AppConstants.platform`
 
 ## defaultArgs()
 - 位置: L769-771
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: getNewWindowArgs() の結果を返す。nsIBrowserHandler の既定引数。
+- 触るとき: 既定の起動引数が browser-init 側の判定と食い違うときに見る。
 - 呼び出し先: `this.getNewWindowArgs()`
 
 ## getNewWindowArgs()
 - 位置: L778-820
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: LaterRun の URL、browser.startup.page で選んだホームページ、about:home の代わりのスマートウィンドウ URL を '|' で連結し、空なら about:blank を返す。
+- 触るとき: 新規ウィンドウで開く URL の組み立てを変えるとき、またはスマートウィンドウ時の URL 置換を調べるときに見る。
 - 呼び出し先: `canOpenAsSmartWindow()`, `console.error()`, `lazy.LaterRun.getURL()`, `prefb.getIntPref()`
 - 条件付き依存: `if (choice == 1 || choice == 3)` → `lazy.HomePage.get()`
 - 参照: `Services.prefs`, `lazy.AIWindow.initialStartupURL`
@@ -193,8 +193,8 @@ lines: 1793
 
 ## getFirstWindowArgs()
 - 位置: L826-1142
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 初回起動時の最初のウィンドウで開く URL を決める。一時的なプライベートモードならプライベートの空白ページ、更新後や新規プロファイルなら上書きページを、通常のページより前に並べる。
+- 触るとき: 起動時に最初に出るページ(WNP、ようこそ、ホーム)が想定と違うとき、または上書きの条件を変えるときに見る。
 - 呼び出し先: `Services.prefs.getCharPref()`, `needHomepageOverride()`, `prefb.getBoolPref()`, `prefb.prefHasUserValue()`, `this.getNewWindowArgs()`
 - 条件付き依存: `if (override != OVERRIDE_NONE)` → `Services.urlFormatter.formatURLPref()`
 - 条件付き依存: `if (override != OVERRIDE_NONE)` → `lazy.LaterRun.enable()`
@@ -243,13 +243,13 @@ lines: 1793
 
 ## fetchState()
 - 位置: L1034-1034
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: AsyncShutdown の blocker が終了時に状態として送る progress を返す。
+- 触るとき: 更新 ping の送信が終了時に止まったとき、どこまで進んだかを確かめるときに見る。
 
 ## bch_features()
 - 位置: L1146-1187
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: --width、--height、--left、--top と一時的なプライベートモードに応じたウィンドウの feature 文字列を作り、キャッシュする。最初のウィンドウでは suppressanimation を足す。
+- 触るとき: 新しいウィンドウの大きさや位置の指定が効かないとき、またはプライベートの feature を変えるときに見る。
 - 条件付き依存: `if (cmdLine)` → `cmdLine.handleFlagWithParam()`
 - 条件付き依存: `if (this.mFeatures === null)` → `Services.prefs.getBoolPref()`
 - 条件付き依存: `if (this.mFeatures === null)` → `Services.wm.getMostRecentWindow()`
@@ -258,41 +258,41 @@ lines: 1793
 
 ## kiosk()
 - 位置: L1189-1191
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: キオスクモードで起動したかを返す。
+- 触るとき: キオスク判定を参照する箇所の挙動を確かめるときに見る。
 
 ## majorUpgrade()
 - 位置: L1193-1195
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: メジャーバージョンの更新があったかを返す getter。
+- 触るとき: メジャー更新後の処理が呼ばれる条件を確かめるときに見る。
 
 ## majorUpgrade()
 - 位置: L1197-1199
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: メジャーバージョン更新のフラグを設定する setter。
+- 触るとき: メジャー更新の判定を外部から書き換える箇所を調べるときに見る。
 
 ## firstRunProfile()
 - 位置: L1201-1203
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 新規プロファイルの初回起動かを返す getter。
+- 触るとき: 新規プロファイル向けの処理が走るかを確かめるときに見る。
 
 ## firstRunProfile()
 - 位置: L1205-1207
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 新規プロファイルの初回起動フラグを設定する setter。
+- 触るとき: 新規プロファイルの判定を外部から書き換える箇所を調べるときに見る。
 
 ## bch_handleContent()
 - 位置: L1211-1232
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: Web ナビゲーションで扱えない種類の内容なら例外を投げ、扱える場合は既存のブラウザでその URI を開いてロードを取り消す。
+- 触るとき: 外部から開かれたコンテンツの種類ごとの扱いを変えるとき、または特定のファイルを開けないときに見る。
 - 呼び出し先: `Cc["@mozilla.org/webnavigation-info;1"].getService()`, `handURIToExistingBrowser()`, `request.QueryInterface()`, `request.cancel()`, `webNavInfo.isTypeSupported()`
 - 参照: `Ci.nsIBrowserDOMWindow.OPEN_DEFAULTWINDOW`, `Ci.nsIChannel`, `Ci.nsIWebNavigationInfo`, `Components.Exception`, `Cr.NS_BINDING_ABORTED`, `Cr.NS_ERROR_WONT_HANDLE_CONTENT`, `request.URI`, `request.loadInfo.triggeringPrincipal`
 - XPCOM: [`nsIBrowserDOMWindow`](../../dom/interfaces/base/nsIBrowserDOMWindow.idl.md) / [`nsIChannel`](../../docshell/base/nsIDocShell.idl.md) / [`nsIWebNavigationInfo`](../../docshell/base/nsIWebNavigationInfo.idl.md) / `@mozilla.org/webnavigation-info;1`
 
 ## replaceStartupWindow()
 - 位置: L1237-1278
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 起動時に BrowserGlue が作った空白ウィンドウを、プライベート設定と Windows のタスクバー情報を反映して本来のブラウザウィンドウに置き換える。
+- 触るとき: 起動時の空白ウィンドウが残る、またはプライベートの表示が違うときに見る。
 - 呼び出し先: `Services.wm.getMostRecentWindow()`
 - 条件付き依存: `if (win)` → `win.document.documentElement.removeAttribute()`
 - 条件付き依存: `if (forcePrivate)` → `win.docShell.QueryInterface()`
@@ -307,8 +307,8 @@ lines: 1793
 
 ## bch_validate()
 - 位置: L1281-1295
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: リモートからの --url 指定に余計な引数があるか、firefoxurl: スキームを含むときは中断させる。
+- 触るとき: リモート起動の URL 指定が拒否されるときに、その条件を確かめるときに見る。
 - 呼び出し先: `cmdLine.findFlag()`
 - 条件付き依存: `if ( urlFlagIdx > -1 && cmdLine.state == Ci.nsICommandLine.STATE_REMOTE_EXPLICIT )` → `cmdLine.getArgument()`
 - 条件付き依存: `if ( urlFlagIdx > -1 && cmdLine.state == Ci.nsICommandLine.STATE_REMOTE_EXPLICIT )` → `/firefoxurl(-[a-f0-9]+)?:/i.test()`
@@ -318,8 +318,8 @@ lines: 1793
 
 ## handURIToExistingBrowser()
 - 位置: L1299-1357
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 既存のブラウザウィンドウに URI を渡し、無ければ保留中のウィンドウを待つ、それも無ければ新規ウィンドウを開く。
+- 触るとき: 外部リンクがどのウィンドウで開くかを変えるとき、または既存ウィンドウに渡らないと報告されたときに見る。
 - 呼び出し先: `lazy.BrowserWindowTracker.getPendingWindow()`, `lazy.BrowserWindowTracker.getTopWindow()`, `openBrowserWindow()`, `shouldLoadURI()`
 - 条件付き依存: `if (navWin)` → `openInWindow()`
 - 条件付き依存: `if (pending)` → `pending.then()`
@@ -327,16 +327,16 @@ lines: 1793
 
 ## openInWindow()
 - 位置: L1311-1322
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 渡されたウィンドウの browserDOMWindow.openURI を外部からの読み込みとして呼び出す。
+- 触るとき: 既存ウィンドウへの URI 受け渡しの引数を変えるときに見る。
 - 呼び出し先: `browserDOMWindow.openURI()`
 - 参照: `Ci.nsIBrowserDOMWindow.OPEN_EXTERNAL`, `Ci.nsIBrowserDOMWindow.OPEN_FORCE_ALLOW_DATA_URI`
 - XPCOM: [`nsIBrowserDOMWindow`](../../dom/interfaces/base/nsIBrowserDOMWindow.idl.md)
 
 ## maybeRecordToHandleTelemetry()
 - 位置: L1370-1404
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 渡された URI が登録済みのファイル拡張子かスキームなら、その種類を、そうでなければ <other> として、起動または呼び出しの計測を増やす。
+- 触るとき: ファイルやプロトコルの telemetry 分類を変えるとき、または計測値が想定と違うときに見る。
 - 条件付き依存: `if (uri instanceof Ci.nsIFileURL)` → `uri.fileExtension.toLowerCase()`
 - 条件付き依存: `if (uri instanceof Ci.nsIFileURL)` → `registeredExtensions.has()`
 - 条件付き依存: `if (registeredExtensions.has(extension))` → `counter[extension].add()`
@@ -350,8 +350,8 @@ lines: 1793
 
 ## maybeRecordSearchActivationTelemetry()
 - 位置: L1416-1433
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: Windows で bing.com の /search を開いたとき、起動か新規タブかの別に検索の活性化を計測する。
+- 触るとき: Windows の検索活性化の計測条件を変えるとき、または値が増えないときに見る。
 - 呼び出し先: `Services.eTLD.getBaseDomain()`
 - 条件付き依存: `if ( Services.eTLD.getBaseDomain(uri) == "bing.com" && uri.filePath == "/search" )` → `Glean.browserEngagement.windowsStartSearchActivationCount[ isLaunch ? "startup" : "new_tab" ].add()`
 - 参照: `AppConstants.platform`, `Glean.browserEngagement.windowsStartSearchActivationCount`, `uri.filePath`
@@ -359,13 +359,13 @@ lines: 1793
 
 ## nsDefaultCommandLineHandler()
 - 位置: L1435-1435
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 既定のコマンドライン処理ハンドラー。通常の URL 引数、通知、既定ウィンドウを扱う。
+- 触るとき: 引数なし起動や URL 引数の処理がどのハンドラーで行われるかを確かめるときに見る。
 
 ## handleNotification()
 - 位置: L1447-1503
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: Windows のトーストから来た通知起動だけを扱う。通知の ID を取り、非同期の処理に渡して、扱ったかを返す。
+- 触るとき: Windows の通知クリックから起動したときの処理を変えるときに見る。
 - 呼び出し先: `cmdLine.handleFlagWithParam()`, `console.error()`, `this.handleNotificationImpl()`, `this.handleNotificationImpl(cmdLine, tag, notificationData, alertService) .catch()`
 - 条件付き依存: `if (!alertService)` → `console.error()`
 - 条件付き依存: `if (cmdLine.state == Ci.nsICommandLine.STATE_INITIAL_LAUNCH)` → `Services.startup.enterLastWindowClosingSurvivalArea()`
@@ -375,8 +375,8 @@ lines: 1793
 
 ## handleNotificationImpl()
 - 位置: async L1515-1618
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 通知を Windows のアラートサービスで処理し、Web 通知なら origin のハンドラーに返す。Messaging System の通知なら SpecialMessageActions でアクションを実行する。
+- 触るとき: 通知のクリックで正しいページやアクションが開かないときに見る。
 - 呼び出し先: `JSON.parse()`, `alertService.handleWindowsTag()`, `console.error()`, `lazy.BrowserWindowTracker.getTopWindow()`
 - 条件付き依存: `if (notificationData?.opaqueRelaunchData)` → `JSON.parse()`
 - 条件付き依存: `if (notificationData?.opaqueRelaunchData)` → `console.error()`
@@ -393,8 +393,8 @@ lines: 1793
 
 ## dch_handle()
 - 位置: L1621-1789
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 既定のハンドラー。Windows と macOS のプロファイル未選択の扱い、--url、--screenshot、URI の引数、ウィンドウが無いときの新規ウィンドウや Windows のタブレットモードを処理する。
+- 触るとき: ファイルや URL を渡したときに開く先が違う、または何も開かないときに見る。
 - 呼び出し先: `cmdLine.findFlag()`, `cmdLine.getArgument()`, `cmdLine.handleFlagWithParam()`, `console.error()`, `curarg.match()`, `principalList.push()`, `resolveURIInternal()`, `this.handleNotification()`, `urilist.push()`
 - 条件付き依存: `if ( cmdLine.state == Ci.nsICommandLine.STATE_INITIAL_LAUNCH && Services.startup.wasSilentlyStarted )` → `Services.startup.enterLastWindowClosingSurvivalArea()`
 - 条件付き依存: `if ( cmdLine.state == Ci.nsICommandLine.STATE_INITIAL_LAUNCH && Services.startup.wasSilentlyStarted )` → `Services.obs.addObserver()`
@@ -425,7 +425,7 @@ lines: 1793
 
 ## windowOpenObserver()
 - 位置: L1646-1649
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: silent 起動で最初のウィンドウが開いたら、生存領域を抜ける1回限りのオブザーバー。
+- 触るとき: サイレント起動で終了してしまう、またはウィンドウが開いても残り続けるときに見る。
 - 呼び出し先: `Services.obs.removeObserver()`, `Services.startup.exitLastWindowClosingSurvivalArea()`
 - XPCOM: `Services.obs` / `Services.startup`

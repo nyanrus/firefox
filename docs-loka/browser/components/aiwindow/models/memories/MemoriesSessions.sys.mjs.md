@@ -5,12 +5,12 @@ source-hash: 922327c1818e8795efa6b564685d5030894fad6d
 lines: 201
 
 ## <module>
-- 役割: (未記入)
+- 役割: 閲覧・検索・チャットを一本の時系列に並べ、時間の間隔と最大長でセッションに区切る。セッション単位で後段のLLMに渡す束を作る。
 
 ## buildSessions()
 - 位置: L85-194
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 履歴と検索とチャットのイベントを時刻順に並べ、ギャップか最大長を超えたら新しいセッションを開始して、件数・ソースID・ドメイン・タイトル・検索語を集計する。
+- 触るとき: セッションの件数や中身が想定と違うとき、gapSecやmaxSessionSecの既定値を変えるとき。履歴の行とチャットの形を変えたときも確認する。
 - 呼び出し先: `Math.floor()`, `Number.isFinite()`, `events.push()`, `events.sort()`, `getMessageTimestampMs()`, `sessions.map()`
 - 条件付き依存: `if (needNew)` → `sessions.push()`
 - 条件付き依存: `if (row.title)` → `cur._titles.add()`
@@ -23,7 +23,7 @@ lines: 201
 
 ## getMessageTimestampMs()
 - 位置: L196-200
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: チャットメッセージの作成日時をミリ秒に統一する。数値とDateのどちらも扱い、取れなければNaNを返す。
+- 触るとき: チャットの時刻がセッション化で欠ける、またはNaNになると調べるとき。
 - 呼び出し先: `msg.createdDate?.getTime()`
 - 参照: `msg.createdDate`
