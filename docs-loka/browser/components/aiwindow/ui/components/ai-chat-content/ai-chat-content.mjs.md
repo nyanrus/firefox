@@ -303,7 +303,7 @@ lines: 2031
 ## AIChatContent.saveScrollPosition()
 - 位置: L904-930
 - 役割: 末尾付近にいたか、応答待ちかを判定し、会話 ID ごとにスクロール位置を保存する。
-- 触るとき: 会話を切り替えて戻ったときの位置がずれるときに見る。末尾判定の 50px を変えるとき、もここを見る。
+- 触るとき: 会話を切り替えて戻ったときの位置がずれるとき、または末尾判定の 50px を変えるときに見る。
 - 呼び出し先: `innerWrapper?.style.getPropertyValue()`, `this.#scrollPositions.set()`, `this.shadowRoot.querySelector()`
 - 条件付き依存: `if (lastChild)` → `lastChild.getBoundingClientRect()`
 - 条件付き依存: `if (lastChild)` → `wrapper.getBoundingClientRect()`
@@ -485,7 +485,7 @@ lines: 2031
 ## AIChatContent.#renderAITab()
 - 位置: L1450-1462
 - 役割: aitab-tool-ui を描画し、タブを開く要求を親へ updateType 付きで送る。
-- 触るとき: AI タブのカードの状態や開く要求の内容を変えるとき、に見る。
+- 触るとき: AI タブのカードの状態や開く要求の内容を変えるとき、または開く操作が親に届かないときに見る。
 - 呼び出し先: `html()`, `this.#dispatchToolUIUpdate()`
 - 参照: `UI_UPDATE_TYPES.OPEN_AITAB`, `event.detail.openTarget`, `msg.messageId`, `msg.toolUIData.properties?.state`, `msg.toolUIData.properties?.title`, `msg.toolUIData.toolCallId`
 
@@ -554,76 +554,76 @@ lines: 2031
 
 ## AIChatContent.#renderActionResult()
 - 位置: L1623-1680
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 確認済みアクションの結果を ai-action-confirmation で描画し、取り消しの可否と展開状態を決める。
+- 触るとき: 取り消しボタンの出る条件や結果カードの表示を変えるとき、または取り消しが出ないときに見る。
 - 呼び出し先: `html()`, `this.#actionResultExpandState.get()`, `this.#actionResultExpandState.set()`, `this.#dispatchToolUIUpdate()`, `this.#getActionResultData()`, `this.#getConfirmationTabs()`
 - 参照: `actionResultData.labelL10nArgs`, `actionResultData.labelL10nId`, `confirmedData.actionTimestamp`, `confirmedData.actionType`, `confirmedData.operationIds`, `confirmedData.selectedTabs`, `confirmedData.wasRestored`, `e.detail.isExpanded`, `toolUIData.properties?.confirmedData`, `toolUIData.properties?.undoDismissed`, `toolUIData.toolCallId`, `undoOperationIds.length`
 
 ## AIChatContent.#getConfirmationTabs()
 - 位置: L1689-1702
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 復元の有無と操作種別から対象タブを選び、URL・タイトル・アイコンの配列にする。
+- 触るとき: 確認カードや結果カードに出すタブの選び方を変えるとき、または復元後にタブ一覧が違うときに見る。
 - 呼び出し先: `(sourceTabs ?? []).map()`
 - 参照: `confirmedData.actionType`, `confirmedData.originalClosedTabs`, `confirmedData.originalGroupedTabs`, `confirmedData.selectedTabs`, `tab.iconSrc`, `tab.title`, `tab.url`
 
 ## AIChatContent.#renderCancelledComponent()
 - 位置: L1704-1706
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: キャンセル済みを示す翻訳付きの一行を描画する。
+- 触るとき: キャンセル後の表示文言を変えるときに見る。
 - 呼び出し先: `html()`
 
 ## AIChatContent.#renderRetryComponent()
 - 位置: L1708-1730
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: キャンセル元の種別に合う再試行文言と再試行ボタンを描画する。
+- 触るとき: 再試行の文言を種別ごとに変えるとき、またはボタンの押下で元の依頼が送られないときに見る。
 - 呼び出し先: `html()`, `this.#handleRetryClick()`
 - 参照: `msg.messageId`, `msg.toolUIData`, `msg.toolUIData?.properties?.cancelledUiType`, `toolUIData.properties?.originalUserPrompt`, `toolUIData.toolCallId`
 
 ## AIChatContent.#handleRetryClick()
 - 位置: L1732-1739
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 元の依頼文を RETRY_PROMPT の更新として親へ送る。
+- 触るとき: 再試行で送る内容を変えるとき、または再試行が効かないときに見る。
 - 呼び出し先: `this.#dispatchToolUIUpdate()`
 - 参照: `UI_UPDATE_TYPES.RETRY_PROMPT`
 
 ## AIChatContent.#dispatchToolUIUpdate()
 - 位置: L1741-1749
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: AIChatContent:ToolUIUpdate を渡された data 付きで発火し、ツール UI の操作を親へ送る。
+- 触るとき: ツール UI から親への通知の形式を変えるとき、またはどの操作も親に届かないときに見る。
 - 呼び出し先: `this.dispatchEvent()`
 
 ## AIChatContent.#renderMessage()
 - 位置: L1751-1804
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 1 件の発言を、文脈チップ、ツール UI、本文、引用、フッターの順に組み立てる。
+- 触るとき: 発言の並びや表示の出し分け（再試行表示、フッター、引用）を変えるとき、または発言の一部が出ないときに見る。
 - 呼び出し先: `html()`, `this.#renderToolUI()`
 - 参照: `UI_TYPES.RETRY_COMPONENT`, `chips?.length`, `msg.appliedMemories`, `msg.body`, `msg.citations`, `msg.citations?.length`, `msg.historyResultsMap`, `msg.isLastChunk`, `msg.messageId`, `msg.messageL10n`, `msg.role`, `msg.showCallout`, `msg.toolUIData`, `msg.toolUIData?.isResumeActivity`, `msg.toolUIData?.uiType`, `this.conversationId`, `this.seenUrls`
 
 ## AIChatContent.#renderFollowUpSuggestions()
 - 位置: L1806-1817
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: フォローアップ提案があれば smartwindow-prompts で描画する。
+- 触るとき: 提案の表示形式や件数を変えるとき、または提案が出ないときに見る。
 - 呼び出し先: `html()`, `this.followUpSuggestions.map()`
 - 参照: `this.followUpSuggestions?.length`
 
 ## AIChatContent.#renderLoader()
 - 位置: L1819-1830
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 応答待ちの間だけ読み込み表示を出し、検索中なら検索用の表示に切り替える。
+- 触るとき: 読み込み表示を出す条件や検索中の表示を変えるとき、または読み込みが出っぱなしのときに見る。
 - 呼び出し先: `html()`
 - 参照: `this.assistantIsLoading`, `this.isSearching`
 
 ## AIChatContent.#renderError()
 - 位置: L1832-1839
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: エラーがあれば chat-assistant-error を描画する。
+- 触るとき: エラー表示の出し方を変えるとき、またはエラーが出ないときに見る。
 - 呼び出し先: `html()`
 - 参照: `this.errorObj`
 
 ## AIChatContent.#buildTurnRenderItems()
 - 位置: L1851-1939
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 会話の状態を 1 ターンずつ並べ直し、操作ログを応答の上に来るようにした描画項目の配列を作る。
+- 触るとき: ターン内の並び順や操作ログの位置を変えるとき、または表示の並びが崩れるときに見る。
 - 呼び出し先: `appendPendingAssistantTurn()`, `items.push()`
 - 条件付き依存: `if (msg.uiType === UI_TYPES.ACTION_LOG)` → `pendingActionLogs.push()`
 - 条件付き依存: `if (pendingAssistantMessage)` → `appendPendingAssistantTurn()`
@@ -631,35 +631,35 @@ lines: 2031
 
 ## appendPendingAssistantTurn()
 - 位置: L1862-1889
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 保留中の操作ログ群と応答を項目として追加し、保留を空に戻す。
+- 触るとき: ターンの区切り方や操作ログの完了判定を変えるとき、または操作ログが応答の後まで回り続けるときに見る。
 - 条件付き依存: `if (pendingActionLogs.length)` → `items.push()`
 - 条件付き依存: `if (pendingAssistantMessage)` → `items.push()`
 - 参照: `pendingActionLogs.length`
 
 ## AIChatContent.#buildGroupedActionLogRows()
 - 位置: L1947-1949
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: ツール結果の row を集め、空でないものだけを返す。
+- 触るとき: 操作ログの行に出すデータを増やすとき、または行が欠けるときに見る。
 - 呼び出し先: `toolMsgs.map()`, `toolMsgs.map(msg => msg.row).filter()`
 - 参照: `msg.row`
 
 ## AIChatContent.#renderMessages()
 - 位置: L1951-1965
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 描画項目を key 付きで repeat し、操作ログか発言に応じて描画する。
+- 触るとき: 描画項目の種類を増やすとき、または再描画で要素が作り直されすぎるときに見る。
 - 呼び出し先: `repeat()`, `this.#getVisibleChips()`, `this.#renderItemKey()`, `this.#renderMessage()`
 - 条件付き依存: `if (type === "action-log")` → `this.#renderActionLogGroup()`
 
 ## AIChatContent.#renderItemKey()
 - 位置: L1967-1974
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 操作ログはツール呼び出し ID、発言は会話 ID と順序から、描画キーの文字列を作る。
+- 触るとき: 要素の再利用を左右するキーを変えるとき、または発言の要素が使い回されずちらつくときに見る。
 - 参照: `first?.messageId`, `first?.toolCallId`, `item.msgs`, `item.type`, `msg?.convId`, `msg?.ordinal`
 
 ## AIChatContent.render()
 - 位置: L1976-2027
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 描画項目を作り、読み込み表示の要否を決めて、会話領域の DOM 全体を描画する。
+- 触るとき: 会話領域の DOM 構造、読み込み表示の条件、ジャンプボタンの位置を変えるときに見る。
 - 呼び出し先: `html()`, `renderItems.at()`, `renderItems.some()`, `this.#buildTurnRenderItems()`, `this.#renderError()`, `this.#renderFollowUpSuggestions()`, `this.#renderLoader()`, `this.#renderMessages()`
 - 参照: `UI_TYPES.AITAB`, `item.isComplete`, `item.type`, `lastItem.msg.toolUIData.properties?.state`, `lastItem.msg?.body`, `lastItem.msg?.role`, `lastItem.msg?.toolUIData?.uiType`, `lastItem?.type`, `this.assistantResponseAnnouncement`
