@@ -1,0 +1,464 @@
+# browser/components/extensions/parent/ext-browserAction.js
+
+source: browser/components/extensions/parent/ext-browserAction.js
+source-hash: 45ce82b3efb50bdf6252aae99a51b46723157ad6
+lines: 1133
+
+## <module>
+- 役割: (未記入)
+- 呼び出し先: `ChromeUtils.defineESModuleGetters()`, `ChromeUtils.defineLazyGetter()`, `ChromeUtils.importESModule()`
+
+## actionWidgetId()
+- 位置: L44-46
+- 役割: (未記入)
+- 触るとき: (未記入)
+
+## BrowserAction.constructor()
+- 位置: L49-58
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `ChromeUtils.getClassName()`, `super()`, `tabContext.get()`
+- 条件付き依存: `if (ChromeUtils.getClassName(target) == "Window")` → `this.getContextData()`
+- 参照: `target.documentGlobal`, `this.buttonDelegate`
+
+## BrowserAction.updateOnChange()
+- 位置: L60-72
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 条件付き依存: `if (target)` → `ChromeUtils.getClassName()`
+- 条件付き依存: `if (ChromeUtils.getClassName(target) == "Window")` → `this.buttonDelegate.updateWindow()`
+- 条件付き依存: `if (target.selected)` → `this.buttonDelegate.updateWindow()`
+- 条件付き依存: `if (!(target))` → `windowTracker.browserWindows()`
+- 条件付き依存: `if (!(target))` → `this.buttonDelegate.updateWindow()`
+- 参照: `target.documentGlobal`, `target.selected`
+
+## BrowserAction.getTab()
+- 位置: L74-79
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 条件付き依存: `if (tabId !== null)` → `tabTracker.getTab()`
+
+## BrowserAction.getWindow()
+- 位置: L81-86
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 条件付き依存: `if (windowId !== null)` → `windowTracker.getWindow()`
+
+## BrowserAction.dispatchClick()
+- 位置: L88-90
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `this.buttonDelegate.emit()`
+
+## BrowserAction.isPanelShownBlockingOpenPopup()
+- 位置: L92-108
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `isGloballyBlockingOpenPopup()`, `window.document.getElementById()`, `window.gUnifiedExtensions.isPanelOpen()`
+- 参照: `this.buttonDelegate.buttonViewId`, `this.buttonDelegate.widget`, `window.document.getElementById(this.buttonDelegate.buttonViewId) ?.open`
+
+## for()
+- 位置: L112-114
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `browserActionMap.get()`
+
+## onManifestEntry()
+- 位置: async L116-151
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `StartupCache.get()`, `actionWidgetId()`, `browserActionMap.set()`, `makeWidgetId()`, `this.action.getIcon()`, `this.action.loadIconData()`, `this.build()`, `this.getIconData()`, `this.iconData.set()`
+- 参照: `extension.id`, `extension.manifest.action`, `extension.manifest.browser_action`, `extension.tabManager`, `options.browser_style`, `this.action`, `this.browserStyle`, `this.buttonViewId`, `this.eventQueue`, `this.iconData`, `this.id`, `this.pendingPopup`, `this.pendingPopupTimeout`, `this.tabManager`, `this.viewId`, `this.widget`
+
+## onUpdate()
+- 位置: L153-164
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 条件付き依存: `if (!("browser_action" in manifest || "action" in manifest))` → `BrowserUsageTelemetry.recordWidgetChange()`
+- 条件付き依存: `if (!("browser_action" in manifest || "action" in manifest))` → `actionWidgetId()`
+- 条件付き依存: `if (!("browser_action" in manifest || "action" in manifest))` → `makeWidgetId()`
+
+## onDisable()
+- 位置: L166-172
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `BrowserUsageTelemetry.recordWidgetChange()`, `actionWidgetId()`, `makeWidgetId()`
+
+## onUninstall()
+- 位置: L174-182
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `BrowserUsageTelemetry.recordWidgetChange()`, `actionWidgetId()`, `makeWidgetId()`
+
+## onShutdown()
+- 位置: L184-191
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `CustomizableUI.destroyWidget()`, `browserActionMap.delete()`, `this.action.onShutdown()`, `this.clearPopup()`
+- 参照: `this.extension`, `this.id`
+
+## build()
+- 位置: L193-487
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `CustomizableUI.createWidget()`, `this.action.getDefaultArea()`, `this.action.getProperty()`
+- 条件付き依存: `if (this.extension.startupReason != "APP_STARTUP")` → `ExtensionParent.browserStartupPromise.then()`
+- 条件付き依存: `if (this.extension.startupReason != "APP_STARTUP")` → `CustomizableUI.getPlacementOfWidget()`
+- 条件付き依存: `if (this.extension.startupReason != "APP_STARTUP")` → `BrowserUsageTelemetry.recordWidgetChange()`
+- 参照: `extension.privateBrowsingAllowed`, `placement?.area`, `this.extension.startupReason`, `this.id`, `this.viewId`, `this.widget`, `widget.id`
+
+## onBuild()
+- 位置: L213-301
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `button.appendChild()`, `button.classList.add()`, `button.setAttribute()`, `contents.appendChild()`, `contents.classList.add()`, `contents.setAttribute()`, `deck.appendChild()`, `deck.classList.add()`, `document.createElement()`, `document.createXULElement()`, `document.l10n.setAttributes()`, `menuButton.classList.add()`, `menuButton.setAttribute()`, `messageDefault.classList.add()`, `messageHover.classList.add()`, `messageHoverForMenuButton.classList.add()`, `name.classList.add()`, `node.append()`, `node.classList.add()`, `node.setAttribute()`, `rowWrapper.append()`, `rowWrapper.classList.add()`
+- 参照: `extension.id`, `messagebarWrapper.extensionId`, `node.viewButton`, `this.buttonViewId`
+
+## onBeforeCreated()
+- 位置: L303-319
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `document.createXULElement()`, `document.getElementById()`, `document.getElementById("appMenu-viewCache").appendChild()`, `this.extension.hasPermission()`, `view.setAttribute()`
+- 条件付き依存: `if ( this.extension.hasPermission("menus") || this.extension.hasPermission("contextMenus") )` → `document.addEventListener()`
+- 参照: `this.viewId`, `view.id`
+
+## onDestroyed()
+- 位置: L321-330
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `document.getElementById()`, `document.removeEventListener()`
+- 条件付き依存: `if (view)` → `this.clearPopup()`
+- 条件付き依存: `if (view)` → `CustomizableUI.hidePanelForNode()`
+- 条件付き依存: `if (view)` → `view.remove()`
+- 参照: `this.viewId`
+
+## onCreated()
+- 位置: L332-369
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `actionButton.classList.add()`, `actionButton.setAttribute()`, `node.ownerDocument.l10n.setAttributes()`, `node.querySelector()`, `this.action.getContextData()`, `this.updateButton()`
+- 参照: `actionButton.onauxclick`, `actionButton.onblur`, `actionButton.onfocus`, `actionButton.onmousedown`, `actionButton.onmouseout`, `actionButton.onmouseover`, `menuButton.onblur`, `menuButton.onfocus`, `menuButton.onmouseout`, `menuButton.onmouseover`, `this.extension.id`, `this.extension.name`
+
+## actionButton.onmousedown()
+- 位置: L342-342
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `this.handleEvent()`
+
+## actionButton.onmouseover()
+- 位置: L343-343
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `this.handleEvent()`
+
+## actionButton.onmouseout()
+- 位置: L344-344
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `this.handleEvent()`
+
+## actionButton.onauxclick()
+- 位置: L345-345
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `this.handleEvent()`
+
+## menuButton.onblur()
+- 位置: L356-356
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `this.handleMenuButtonEvent()`
+
+## menuButton.onfocus()
+- 位置: L357-357
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `this.handleMenuButtonEvent()`
+
+## menuButton.onmouseout()
+- 位置: L358-358
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `this.handleMenuButtonEvent()`
+
+## menuButton.onmouseover()
+- 位置: L359-359
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `this.handleMenuButtonEvent()`
+
+## actionButton.onblur()
+- 位置: L361-361
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `this.handleEvent()`
+
+## actionButton.onfocus()
+- 位置: L362-362
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `this.handleEvent()`
+
+## onBeforeCommand()
+- 位置: L371-392
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `clickModifiersFromEvent()`, `event.target.classList.contains()`
+- 条件付き依存: `if (!( event.target.classList.contains( "unified-extensions-item-action-button" ) ))` → `event.target.classList.contains()`
+- 参照: `event.button`, `event.detail?.openPopupWithoutUserInteraction`, `this.lastClickInfo`, `this.openPopupWithoutUserInteraction`
+
+## onCommand()
+- 位置: L394-416
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `popup.openPopup()`, `target.ownerDocument.getElementById()`
+- 参照: `event.button`, `target.firstElementChild`
+
+## onViewShowing()
+- 位置: async L418-470
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `ExtensionTelemetry.browserActionPopupOpen.stopwatchStart()`, `this.action.getPopupUrl()`, `this.action.triggerClickOrPopup()`
+- 条件付き依存: `if (popupURL)` → `this.getPopup()`
+- 条件付き依存: `if (popupURL)` → `popup.attach()`
+- 条件付き依存: `if (popupURL)` → `event.detail.addBlocker()`
+- 条件付き依存: `if (popupURL)` → `ExtensionTelemetry.browserActionPopupOpen.stopwatchFinish()`
+- 条件付き依存: `if (this.eventQueue.length)` → `ExtensionTelemetry.browserActionPreloadResult.histogramAdd()`
+- 条件付き依存: `if (popupURL)` → `ExtensionTelemetry.browserActionPopupOpen.stopwatchCancel()`
+- 条件付き依存: `if (popupURL)` → `Cu.reportError()`
+- 条件付き依存: `if (popupURL)` → `event.preventDefault()`
+- 条件付き依存: `if (!(popupURL))` → `ExtensionTelemetry.browserActionPopupOpen.stopwatchCancel()`
+- 条件付き依存: `if (!(popupURL))` → `event.preventDefault()`
+- 条件付き依存: `if (!(popupURL))` → `CustomizableUI.hidePanelForNode()`
+- 参照: `document.defaultView`, `document.defaultView.gBrowser`, `event.target`, `event.target.ownerDocument`, `tabbrowser.selectedTab`, `this.eventQueue`, `this.eventQueue.length`, `this.lastClickInfo`, `this.openPopupWithoutUserInteraction`
+
+## openPopup()
+- 位置: async L497-544
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `this.action.getPopupUrl()`, `this.widget.forWindow()`, `toolbarButton.dispatchEvent()`, `widgetForWindow.node.querySelector()`
+- 条件付き依存: `if (Services.focus.activeWindow !== window)` → `this.extension.logger.warn()`
+- 条件付き依存: `if (this.widget.areaType == CustomizableUI.TYPE_PANEL)` → `window.gUnifiedExtensions.openPanel()`
+- 参照: `CustomizableUI.TYPE_PANEL`, `Services.focus.activeWindow`, `this.widget.areaType`, `toolbarButton.open`, `widgetForWindow.node`, `window.CustomEvent`, `window.gBrowser.selectedTab`
+- XPCOM: `Services.focus`
+
+## triggerAction()
+- 位置: L555-571
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `ViewPopup.for()`, `this.action.triggerClickOrPopup()`
+- 条件付き依存: `if (!this.pendingPopup && popup)` → `popup.closePopup()`
+- 条件付き依存: `if (popupUrl)` → `this.openPopup()`
+- 参照: `this.extension`, `this.pendingPopup`, `window.gBrowser.selectedTab`
+
+## handleMenuButtonEvent()
+- 位置: L578-604
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `node?.querySelector()`, `this.widget.forWindow()`
+- 参照: `event.target.documentGlobal`, `event.type`, `messageDeck.selectedIndex`, `window.gBrowser`, `window.gUnifiedExtensions.MESSAGE_DECK_INDEX_DEFAULT`, `window.gUnifiedExtensions.MESSAGE_DECK_INDEX_MENU_HOVER`
+
+## handleEvent()
+- 位置: L606-744
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `ViewPopup.for()`, `contexts.includes()`, `node.contains()`, `this.action.getPopupUrl()`, `this.action.getProperty()`, `this.widget.forWindow()`, `window.document.getElementById()`
+- 条件付き依存: `if (event.button == 0)` → `this.action.getPopupUrl()`
+- 条件付き依存: `if (event.button == 0)` → `ViewPopup.for()`
+- 条件付き依存: `if ( popupURL && (this.pendingPopup || !ViewPopup.for(this.extension, window)) )` → `this.action.setActiveTabForPreload()`
+- 条件付き依存: `if ( popupURL && (this.pendingPopup || !ViewPopup.for(this.extension, window)) )` → `this.eventQueue.push()`
+- 条件付き依存: `if ( popupURL && (this.pendingPopup || !ViewPopup.for(this.extension, window)) )` → `this.getPopup()`
+- 条件付き依存: `if ( popupURL && (this.pendingPopup || !ViewPopup.for(this.extension, window)) )` → `window.addEventListener()`
+- 条件付き依存: `if (!( popupURL && (this.pendingPopup || !ViewPopup.for(this.extension, window)) ))` → `this.clearPopup()`
+- 条件付き依存: `if (event.button == 0)` → `this.clearPopupTimeout()`
+- 条件付き依存: `if (this.pendingPopup)` → `this.widget.forWindow()`
+- 条件付き依存: `if (this.pendingPopup)` → `node.contains()`
+- 条件付き依存: `if (node && node.contains(event.originalTarget))` → `setTimeout()`
+- 条件付き依存: `if (node && node.contains(event.originalTarget))` → `this.clearPopup()`
+- 条件付き依存: `if (!(node && node.contains(event.originalTarget)))` → `this.clearPopup()`
+- 条件付き依存: `if (node)` → `node.querySelector()`
+- 条件付き依存: `if (this.eventQueue.length)` → `ExtensionTelemetry.browserActionPreloadResult.histogramAdd()`
+- 条件付き依存: `if (this.eventQueue.length)` → `this.eventQueue.pop()`
+- 条件付き依存: `if (this.pendingPopup)` → `this.clearPopup()`
+- 条件付き依存: `if (contexts.includes(menu.id) && node && node.contains(trigger))` → `this.updateContextMenu()`
+- 条件付き依存: `if (this.action.getProperty(tab, "enabled"))` → `this.action.setActiveTabForPreload()`
+- 条件付き依存: `if (this.action.getProperty(tab, "enabled"))` → `this.tabManager.addActiveTabPermission()`
+- 条件付き依存: `if (this.action.getProperty(tab, "enabled"))` → `this.action.dispatchClick()`
+- 条件付き依存: `if (this.action.getProperty(tab, "enabled"))` → `clickModifiersFromEvent()`
+- 条件付き依存: `if (this.action.getProperty(tab, "enabled"))` → `CustomizableUI.hidePanelForNode()`
+- 参照: `button.documentGlobal`, `event.button`, `event.originalTarget`, `event.target`, `event.type`, `menu.id`, `menu.triggerNode`, `node.querySelector( ".unified-extensions-item-message-deck" ).selectedIndex`, `this.eventQueue`, `this.eventQueue.length`, `this.extension`, `this.id`, `this.pendingPopup`, `this.pendingPopupTimeout`, `this.widget.forWindow(window).node`, `window.gBrowser`, `window.gBrowser.selectedTab`, `window.gUnifiedExtensions.MESSAGE_DECK_INDEX_DEFAULT`, `window.gUnifiedExtensions.MESSAGE_DECK_INDEX_HOVER`
+
+## updateContextMenu()
+- 位置: L752-766
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `this.extension.hasPermission()`
+- 条件付き依存: `if ( this.extension.hasPermission("contextMenus") || this.extension.hasPermission("menus") )` → `global.actionContextMenu()`
+- 参照: `this.extension`, `this.extension.manifestVersion`
+
+## getPopup()
+- 位置: L784-811
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `this.clearPopupTimeout()`
+- 条件付き依存: `if (!blockParser)` → `pendingPopup.unblockParser()`
+- 条件付き依存: `if (pendingPopup)` → `pendingPopup.destroy()`
+- 参照: `pendingPopup.popupURL`, `pendingPopup.window`, `this.browserStyle`, `this.extension`, `this.pendingPopup`
+
+## clearPopup()
+- 位置: L816-823
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `this.action.setActiveTabForPreload()`, `this.clearPopupTimeout()`
+- 条件付き依存: `if (this.pendingPopup)` → `this.pendingPopup.destroy()`
+- 参照: `this.pendingPopup`
+
+## clearPopupTimeout()
+- 位置: L828-837
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 条件付き依存: `if (this.pendingPopup)` → `this.pendingPopup.window.removeEventListener()`
+- 条件付き依存: `if (this.pendingPopupTimeout)` → `clearTimeout()`
+- 参照: `this.pendingPopup`, `this.pendingPopupTimeout`
+
+## updateButton()
+- 位置: L841-934
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `OriginControls.getStateMessageIDs()`, `WebExtensionPolicy.getByID()`, `node.querySelector()`
+- 条件付き依存: `if (sync)` → `callback()`
+- 条件付き依存: `if (!(sync))` → `node.documentGlobal.requestAnimationFrame()`
+- 参照: `node.documentGlobal.gBrowser.selectedTab`, `tabData.popup`, `tabData.title`, `this.extension.id`, `this.extension.name`
+
+## callback()
+- 位置: L860-928
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `button.querySelector()`, `button.setAttribute()`, `messagebarWrapper.refresh()`, `node.ownerDocument.l10n.setAttributes()`, `node.querySelector()`, `node.toggleAttribute()`, `serializeColor()`, `this.action.getTextColor()`, `this.iconData.get()`
+- 条件付き依存: `if (messages)` → `button.querySelector()`
+- 条件付き依存: `if (messages)` → `node.ownerDocument.l10n.setAttributes()`
+- 条件付き依存: `if (tabData.badgeText)` → `button.setAttribute()`
+- 条件付き依存: `if (!(tabData.badgeText))` → `button.removeAttribute()`
+- 条件付き依存: `if (tabData.enabled)` → `button.removeAttribute()`
+- 条件付き依存: `if (!(tabData.enabled))` → `button.setAttribute()`
+- 参照: `button.querySelector(".unified-extensions-item-name").textContent`, `messages.default`, `messages.onHover`, `tabData.badgeBackgroundColor`, `tabData.badgeText`, `tabData.enabled`, `tabData.icon`, `this.extension?.name`
+
+## serializeColor()
+- 位置: L905-906
+- 役割: (未記入)
+- 触るとき: (未記入)
+
+## getIconData()
+- 位置: L936-973
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `IconDetails.getPreferredIcon()`, `getStyle()`
+- 参照: `IconDetails.getPreferredIcon(icons, this.extension, 16).icon`, `IconDetails.getPreferredIcon(icons, this.extension, 32).icon`, `IconDetails.getPreferredIcon(icons, this.extension, 64).icon`, `this.extension`
+
+## getIcon()
+- 位置: L937-942
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `IconDetails.escapeUrl()`
+- 条件付き依存: `if (typeof icon === "object")` → `IconDetails.escapeUrl()`
+
+## getBackgroundImage()
+- 位置: L944-952
+- 役割: (未記入)
+- 触るとき: (未記入)
+
+## getStyle()
+- 位置: L954-963
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `getBackgroundImage()`, `getIcon()`
+
+## updateWindow()
+- 位置: L981-998
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `this.widget.forWindow()`
+- 条件付き依存: `if (node)` → `OriginControls.getAttentionState()`
+- 条件付き依存: `if (node)` → `this.updateButton()`
+- 条件付き依存: `if (node)` → `this.action.getContextData()`
+- 参照: `this.extension.policy`, `this.widget.forWindow(window).node`, `window.gBrowser.selectedTab`
+
+## onClicked()
+- 位置: L1001-1024
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `this.on()`
+
+## listener()
+- 位置: async L1004-1013
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `context?.withPendingBrowser()`, `fire.sync()`, `tabManager.convert()`
+- 条件付き依存: `if (fire.wakeup)` → `fire.wakeup()`
+- 参照: `fire.wakeup`, `tab.linkedBrowser`
+
+## unregister()
+- 位置: L1016-1018
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `this.off()`
+
+## convert()
+- 位置: L1019-1022
+- 役割: (未記入)
+- 触るとき: (未記入)
+
+## onUserSettingsChanged()
+- 位置: L1025-1055
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `CustomizableUI.addListener()`
+
+## onWidgetRemoved()
+- 位置: L1027-1035
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 条件付き依存: `if (oldArea === CustomizableUI.AREA_ADDONS)` → `fire.async()`
+- 参照: `CustomizableUI.AREA_ADDONS`, `this.id`
+
+## onWidgetAdded()
+- 位置: L1036-1044
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 条件付き依存: `if (newArea === CustomizableUI.AREA_ADDONS)` → `fire.async()`
+- 参照: `CustomizableUI.AREA_ADDONS`, `this.id`
+
+## unregister()
+- 位置: L1048-1050
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `CustomizableUI.removeListener()`
+
+## convert()
+- 位置: L1051-1053
+- 役割: (未記入)
+- 触るとき: (未記入)
+
+## getAPI()
+- 位置: L1058-1129
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `action.api()`
+- 参照: `extension.manifestVersion`
+
+## getUserSettings()
+- 位置: L1086-1091
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `CustomizableUI.getPlacementOfWidget()`
+- 参照: `CustomizableUI.AREA_ADDONS`, `action.buttonDelegate.id`
+
+## openPopup()
+- 位置: async L1092-1126
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `Services.prefs.getBoolPref()`, `action.getPopupUrl()`, `windowTracker.getTopNormalWindow()`, `windowTracker.getWindow()`
+- 条件付き依存: `if (action.getPopupUrl(window.gBrowser.selectedTab, true))` → `action.throwIfOpenPopupIsBlockedByAnyAction()`
+- 条件付き依存: `if (action.getPopupUrl(window.gBrowser.selectedTab, true))` → `this.openPopup()`
+- 参照: `BrowserActionBase.ERROR_WIN_NOT_FOCUSED`, `Services.focus.activeWindow`, `context.callContextData?.isHandlingUserInput`, `options.windowId`, `options?.windowId`, `window.STATE_MINIMIZED`, `window.gBrowser.selectedTab`, `window.windowState`
+- XPCOM: `Services.focus` / `Services.prefs`

@@ -1,0 +1,250 @@
+# browser/components/ProfileDataUpgrader.sys.mjs
+
+source: browser/components/ProfileDataUpgrader.sys.mjs
+source-hash: 6cee3dcd7de0fd2c68ec5dfce139a87db11880e2
+lines: 1148
+
+## <module>
+- 役割: (未記入)
+- 呼び出し先: `ChromeUtils.defineESModuleGetters()`
+
+## _migrateXULStoreForDocument()
+- 位置: L20-29
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `Array.from()`, `Array.from(Services.xulStore.getAttributeEnumerator(fromURL, id)).forEach()`, `Array.from(Services.xulStore.getIDsEnumerator(fromURL)).forEach()`, `Services.xulStore.getAttributeEnumerator()`, `Services.xulStore.getIDsEnumerator()`, `Services.xulStore.getValue()`, `Services.xulStore.setValue()`
+- XPCOM: `Services.xulStore`
+
+## _migrateHashedKeysForXULStoreForDocument()
+- 位置: L31-39
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `Array.from()`, `Array.from(Services.xulStore.getIDsEnumerator(docUrl)) .filter()`, `Array.from(Services.xulStore.getIDsEnumerator(docUrl)) .filter(id => id.startsWith("place:")) .forEach()`, `Services.xulStore.getIDsEnumerator()`, `Services.xulStore.removeValue()`, `Services.xulStore.setValue()`, `id.startsWith()`, `lazy.PlacesUIUtils.obfuscateUrlForXulStore()`
+- XPCOM: `Services.xulStore`
+
+## upgrade()
+- 位置: L72-1146
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `Services.prefs.getBoolPref()`, `Services.prefs.getIntPref()`, `Services.prefs.getStringPref()`, `Services.prefs.prefHasUserValue()`, `Services.prefs.setIntPref()`
+- 条件付き依存: `if (existingDataVersion < 90)` → `this._migrateXULStoreForDocument()`
+- 条件付き依存: `if ( existingDataVersion < 91 && Services.prefs.getBoolPref("network.proxy.share_proxy_settings", false) && Services.prefs.getIntPref("network.proxy.type", 0) == 1 )` → `Services.prefs.getCharPref()`
+- 条件付き依存: `if ( existingDataVersion < 91 && Services.prefs.getBoolPref("network.proxy.share_proxy_settings", false) && Services.prefs.getIntPref("network.proxy.type", 0) == 1 )` → `Services.prefs.getIntPref()`
+- 条件付き依存: `if (httpProxy && httpProxy == socksProxy && httpPort == socksPort)` → `Services.prefs.setCharPref()`
+- 条件付き依存: `if (httpProxy && httpProxy == socksProxy && httpPort == socksPort)` → `Services.prefs.getCharPref()`
+- 条件付き依存: `if (httpProxy && httpProxy == socksProxy && httpPort == socksPort)` → `Services.prefs.setIntPref()`
+- 条件付き依存: `if (httpProxy && httpProxy == socksProxy && httpPort == socksPort)` → `Services.prefs.getIntPref()`
+- 条件付き依存: `if (existingDataVersion < 92)` → `Services.prefs.getIntPref()`
+- 条件付き依存: `if (longpress == 1)` → `Services.prefs.setBoolPref()`
+- 条件付き依存: `if (existingDataVersion < 93)` → `lazy.AddonManager.getAddonByID()`
+- 条件付き依存: `if (existingDataVersion < 93)` → `console.error()`
+- 条件付き依存: `if (existingDataVersion < 93)` → `Promise.resolve(addonPromise).then()`
+- 条件付き依存: `if (existingDataVersion < 93)` → `Promise.resolve()`
+- 条件付き依存: `if (existingDataVersion < 93)` → `addon .uninstall() .catch(console.error) .then(() => enableProfilerButton(wasAddonActive)) .catch()`
+- 条件付き依存: `if (existingDataVersion < 93)` → `addon .uninstall() .catch(console.error) .then()`
+- 条件付き依存: `if (existingDataVersion < 93)` → `addon .uninstall() .catch()`
+- 条件付き依存: `if (existingDataVersion < 93)` → `addon .uninstall()`
+- 条件付き依存: `if (existingDataVersion < 93)` → `enableProfilerButton()`
+- 条件付き依存: `if (existingDataVersion < 94)` → `Services.prefs.getCharPref()`
+- 条件付き依存: `if (existingDataVersion < 94)` → `Services.prefs.getIntPref()`
+- 条件付き依存: `if (backup == socksProxy)` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if (backupPort == socksPort)` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if (existingDataVersion < 95)` → `Services.prefs.getBoolPref()`
+- 条件付き依存: `if (existingDataVersion < 95)` → `Services.prefs.setIntPref()`
+- 条件付き依存: `if (existingDataVersion < 95)` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if (existingDataVersion < 96)` → `Services.prefs.getBoolPref()`
+- 条件付き依存: `if (existingDataVersion < 96)` → `Services.prefs.setBoolPref()`
+- 条件付き依存: `if (existingDataVersion < 96)` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if (existingDataVersion < 97)` → `Services.prefs.prefHasUserValue()`
+- 条件付き依存: `if (userCustomizedWheelMin && !userCustomizedWheelMax)` → `Services.prefs.setIntPref()`
+- 条件付き依存: `if (!userCustomizedWheelMin && userCustomizedWheelMax)` → `Services.prefs.setIntPref()`
+- 条件付き依存: `if (existingDataVersion < 98)` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if (existingDataVersion < 99)` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if (existingDataVersion < 102)` → `ChromeUtils.importESModule()`
+- 条件付き依存: `if (existingDataVersion < 102)` → `CustomizableUI.removeWidgetFromArea()`
+- 条件付き依存: `if (existingDataVersion < 103)` → `Services.xulStore.getValue()`
+- 条件付き依存: `if (bookmarksToolbarWasVisible)` → `Services.prefs.setCharPref()`
+- 条件付き依存: `if (existingDataVersion < 103)` → `Services.xulStore.removeValue()`
+- 条件付き依存: `if (existingDataVersion < 103)` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if (existingDataVersion < 104)` → `Services.prefs.setCharPref()`
+- 条件付き依存: `if (existingDataVersion < 105)` → `Services.prefs.getBoolPref()`
+- 条件付き依存: `if (existingDataVersion < 105)` → `Services.prefs.setBoolPref()`
+- 条件付き依存: `if (existingDataVersion < 105)` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if (existingDataVersion < 107)` → `Services.prefs .getCharPref(kPref, "") .split(",") .filter()`
+- 条件付き依存: `if (existingDataVersion < 107)` → `Services.prefs .getCharPref(kPref, "") .split()`
+- 条件付き依存: `if (existingDataVersion < 107)` → `Services.prefs .getCharPref()`
+- 条件付き依存: `if (existingDataVersion < 107)` → `migrations.push()`
+- 条件付き依存: `if (existingDataVersion < 107)` → `Services.prefs.setCharPref()`
+- 条件付き依存: `if (existingDataVersion < 107)` → `migrations.join()`
+- 条件付き依存: `if (existingDataVersion < 108)` → `Services.prefs.getBoolPref()`
+- 条件付き依存: `if (Services.prefs.getBoolPref("browser.engagement.ctrlTab.has-used"))` → `Services.prefs.getBoolPref()`
+- 条件付き依存: `if (Services.prefs.getBoolPref("browser.engagement.ctrlTab.has-used"))` → `Services.prefs.setBoolPref()`
+- 条件付き依存: `if (!(Services.prefs.getBoolPref("browser.engagement.ctrlTab.has-used")))` → `Services.prefs.setBoolPref()`
+- 条件付き依存: `if (existingDataVersion < 109)` → `Services.prefs.prefHasUserValue()`
+- 条件付き依存: `if ( Services.prefs.prefHasUserValue("signon.recipes.remoteRecipesEnabled") )` → `Services.prefs.setBoolPref()`
+- 条件付き依存: `if ( Services.prefs.prefHasUserValue("signon.recipes.remoteRecipesEnabled") )` → `Services.prefs.getBoolPref()`
+- 条件付き依存: `if ( Services.prefs.prefHasUserValue("signon.recipes.remoteRecipesEnabled") )` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if (existingDataVersion < 120)` → `Services.prefs.prefHasUserValue()`
+- 条件付き依存: `if (Services.prefs.prefHasUserValue(oldPref))` → `Services.prefs.getPrefType()`
+- 条件付き依存: `if (oldPrefType == Services.prefs.PREF_BOOL)` → `Services.prefs.setIntPref()`
+- 条件付き依存: `if (oldPrefType == Services.prefs.PREF_BOOL)` → `Services.prefs.getBoolPref()`
+- 条件付き依存: `if (!(oldPrefType == Services.prefs.PREF_BOOL))` → `Services.prefs.setIntPref()`
+- 条件付き依存: `if (!(oldPrefType == Services.prefs.PREF_BOOL))` → `Services.prefs.getIntPref()`
+- 条件付き依存: `if (Services.prefs.prefHasUserValue(oldPref))` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if (existingDataVersion < 121)` → `this._migrateHashedKeysForXULStoreForDocument()`
+- 条件付き依存: `if (existingDataVersion < 122)` → `Services.prefs.getBoolPref()`
+- 条件付き依存: `if (Services.prefs.getBoolPref(oldPref))` → `Services.prefs.setIntPref()`
+- 条件付き依存: `if (existingDataVersion < 122)` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if (existingDataVersion < 124)` → `Services.prefs.prefHasUserValue()`
+- 条件付き依存: `if (Services.prefs.prefHasUserValue(oldFormAutofillModule))` → `Services.prefs.getCharPref()`
+- 条件付き依存: `if (moduleAvailability == "on")` → `Services.prefs.setCharPref()`
+- 条件付き依存: `if (moduleAvailability == "on")` → `Services.prefs.getBoolPref()`
+- 条件付き依存: `if (moduleAvailability == "off")` → `Services.prefs.setCharPref()`
+- 条件付き依存: `if (existingDataVersion < 124)` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if (existingDataVersion < 125)` → `Services.xulStore.removeValue()`
+- 条件付き依存: `if (existingDataVersion < 125)` → `console.error()`
+- 条件付き依存: `if (existingDataVersion < 130)` → `migrateXULAttributeToStyle()`
+- 条件付き依存: `if (existingDataVersion < 132)` → `xulStore.removeValue()`
+- 条件付き依存: `if (existingDataVersion < 133)` → `xulStore.removeValue()`
+- 条件付き依存: `if (existingDataVersion < 135 && AppConstants.platform == "linux")` → `Services.prefs.prefHasUserValue()`
+- 条件付き依存: `if (!Services.prefs.prefHasUserValue("browser.tabs.inTitlebar"))` → `de.includes()`
+- 条件付き依存: `if (!oldDefault)` → `Services.prefs.setIntPref()`
+- 条件付き依存: `if (existingDataVersion < 135 && AppConstants.platform == "linux")` → `console.error()`
+- 条件付き依存: `if (existingDataVersion < 136)` → `migrateXULAttributeToStyle()`
+- 条件付き依存: `if (existingDataVersion < 137)` → `Services.prefs.prefHasUserValue()`
+- 条件付き依存: `if ( !Services.prefs.prefHasUserValue("general.smoothScroll") && Services.appinfo.prefersReducedMotion )` → `Services.prefs.setBoolPref()`
+- 条件付き依存: `if (existingDataVersion < 138)` → `Services.perms .getAllByTypes(["https-only-load-insecure"]) .filter()`
+- 条件付き依存: `if (existingDataVersion < 138)` → `Services.perms .getAllByTypes()`
+- 条件付き依存: `if (existingDataVersion < 138)` → `permission.principal.schemeIs()`
+- 条件付き依存: `if (existingDataVersion < 138)` → `permission.principal.URI.mutate() .setScheme("http") .finalize()`
+- 条件付き依存: `if (existingDataVersion < 138)` → `permission.principal.URI.mutate() .setScheme()`
+- 条件付き依存: `if (existingDataVersion < 138)` → `permission.principal.URI.mutate()`
+- 条件付き依存: `if (existingDataVersion < 138)` → `Services.scriptSecurityManager.createContentPrincipal()`
+- 条件付き依存: `if (existingDataVersion < 138)` → `Services.perms.removePermission()`
+- 条件付き依存: `if (existingDataVersion < 138)` → `Services.perms.addFromPrincipal()`
+- 条件付き依存: `if (existingDataVersion < 138)` → `console.error()`
+- 条件付き依存: `if (existingDataVersion < 139)` → `Services.perms.testPermissionFromPrincipal()`
+- 条件付き依存: `if (existingDataVersion < 139)` → `Services.scriptSecurityManager.createContentPrincipalFromOrigin()`
+- 条件付き依存: `if ( Services.perms.UNKNOWN_ACTION == Services.perms.testPermissionFromPrincipal( Services.scriptSecurityManager.createContentPrincipalFromOrigin( originInfo[0] ...)` → `Services.perms.addFromPrincipal()`
+- 条件付き依存: `if ( Services.perms.UNKNOWN_ACTION == Services.perms.testPermissionFromPrincipal( Services.scriptSecurityManager.createContentPrincipalFromOrigin( originInfo[0] ...)` → `Services.scriptSecurityManager.createContentPrincipalFromOrigin()`
+- 条件付き依存: `if (existingDataVersion < 140)` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if (existingDataVersion < 141)` → `PathUtils.join()`
+- 条件付き依存: `if (existingDataVersion < 141)` → `IOUtils.remove(filePath, { ignoreAbsent: true }).catch()`
+- 条件付き依存: `if (existingDataVersion < 141)` → `IOUtils.remove()`
+- 条件付き依存: `if (existingDataVersion < 142)` → `xulStore.getValue()`
+- 条件付き依存: `if (value)` → `value .split(";") .filter(v => !v.trim().startsWith("--")) .join()`
+- 条件付き依存: `if (value)` → `value .split(";") .filter()`
+- 条件付き依存: `if (value)` → `value .split()`
+- 条件付き依存: `if (value)` → `v.trim().startsWith()`
+- 条件付き依存: `if (value)` → `v.trim()`
+- 条件付き依存: `if (value)` → `xulStore.setValue()`
+- 条件付き依存: `if (existingDataVersion < 142)` → `console.error()`
+- 条件付き依存: `if (existingDataVersion < 144)` → `PathUtils.join()`
+- 条件付き依存: `if (existingDataVersion < 144)` → `IOUtils.remove(filePath, { ignoreAbsent: true }).catch()`
+- 条件付き依存: `if (existingDataVersion < 144)` → `IOUtils.remove()`
+- 条件付き依存: `if (AppConstants.platform == "win")` → `lazy.FirefoxBridgeExtensionUtils.maybeDeleteBridgeProtocolRegistryEntries()`
+- 条件付き依存: `if (AppConstants.platform == "win")` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if (existingDataVersion < 147)` → `Services.prefs.getBoolPref()`
+- 条件付き依存: `if (existingDataVersion < 147)` → `Services.prefs.setBoolPref()`
+- 条件付き依存: `if (existingDataVersion < 147)` → `Services.prefs.lockPref()`
+- 条件付き依存: `if (existingDataVersion < 147)` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if (existingDataVersion < 148)` → `lazy.AddonManager.getAddonByID()`
+- 条件付き依存: `if (existingDataVersion < 148)` → `Services.env.exists()`
+- 条件付き依存: `if (!Services.env.exists("XPCSHELL_TEST_PROFILE_DIR"))` → `console.error()`
+- 条件付き依存: `if (existingDataVersion < 148)` → `addonPromise?.then(addon => addon?.uninstall()).catch()`
+- 条件付き依存: `if (existingDataVersion < 148)` → `addonPromise?.then()`
+- 条件付き依存: `if (existingDataVersion < 148)` → `addon?.uninstall()`
+- 条件付き依存: `if (existingDataVersion < 149)` → `Services.perms.removeByType()`
+- 条件付き依存: `if (existingDataVersion < 150)` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if (existingDataVersion < 151)` → `lazy.UsageReporting.adoptDataReportingPreference()`
+- 条件付き依存: `if ( existingDataVersion < 152 && Services.prefs.getBoolPref("sidebar.revamp") && !Services.prefs.getBoolPref("browser.ml.chat.enabled") )` → `Services.prefs.getCharPref()`
+- 条件付き依存: `if ( existingDataVersion < 152 && Services.prefs.getBoolPref("sidebar.revamp") && !Services.prefs.getBoolPref("browser.ml.chat.enabled") )` → `tools?.includes()`
+- 条件付き依存: `if (tools?.includes("aichat"))` → `tools .split(",") .filter(t => t != "aichat") .join()`
+- 条件付き依存: `if (tools?.includes("aichat"))` → `tools .split(",") .filter()`
+- 条件付き依存: `if (tools?.includes("aichat"))` → `tools .split()`
+- 条件付き依存: `if (tools?.includes("aichat"))` → `Services.prefs.setCharPref()`
+- 条件付き依存: `if ( existingDataVersion < 153 && Services.prefs.getBoolPref("sidebar.revamp") && !Services.prefs.prefHasUserValue("sidebar.main.tools") )` → `Services.prefs.setCharPref()`
+- 条件付き依存: `if (existingDataVersion < 154)` → `Services.prefs .getCharPref(kPref, "") .split(",") .filter()`
+- 条件付き依存: `if (existingDataVersion < 154)` → `Services.prefs .getCharPref(kPref, "") .split()`
+- 条件付き依存: `if (existingDataVersion < 154)` → `Services.prefs .getCharPref()`
+- 条件付き依存: `if (existingDataVersion < 154)` → `migrations.push()`
+- 条件付き依存: `if (existingDataVersion < 154)` → `Services.prefs.setCharPref()`
+- 条件付き依存: `if (existingDataVersion < 154)` → `migrations.join()`
+- 条件付き依存: `if (existingDataVersion < 155)` → `Services.xulStore.removeValue()`
+- 条件付き依存: `if (existingDataVersion < 156)` → `Services.prefs.getBoolPref()`
+- 条件付き依存: `if (customBlockListEnabled)` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if (!hasRun146Migration)` → `Services.prefs.getStringPref()`
+- 条件付き依存: `if (!hasRun146Migration)` → `lazy.LoginHelper.setOSAuthEnabled()`
+- 条件付き依存: `if (!hasRun146Migration)` → `lazy.FormAutofillUtils.setOSAuthEnabled()`
+- 条件付き依存: `if (!hasRun146Migration)` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if (AppConstants.NIGHTLY_BUILD && existingDataVersion === 158)` → `lazy.LoginHelper.setOSAuthEnabled()`
+- 条件付き依存: `if (AppConstants.NIGHTLY_BUILD && existingDataVersion === 158)` → `lazy.FormAutofillUtils.setOSAuthEnabled()`
+- 条件付き依存: `if (existingDataVersion < 159)` → `Services.xulStore.getValue()`
+- 条件付き依存: `if (menubarWasEnabled)` → `Services.xulStore.setValue()`
+- 条件付き依存: `if (existingDataVersion < 160)` → `Services.prefs.setBoolPref()`
+- 条件付き依存: `if (existingDataVersion < 164)` → `Services.prefs.getChildList()`
+- 条件付き依存: `if (existingDataVersion < 164)` → `Services.prefs.getPrefType()`
+- 条件付き依存: `if (existingDataVersion < 164)` → `Services.prefs.prefHasUserValue()`
+- 条件付き依存: `if (existingDataVersion < 164)` → `Object.hasOwn()`
+- 条件付き依存: `if (existingDataVersion < 164)` → `oldPref.substring()`
+- 条件付き依存: `if (existingDataVersion < 164)` → `Services.prefs[setter]()`
+- 条件付き依存: `if (existingDataVersion < 164)` → `Services.prefs[getter]()`
+- 条件付き依存: `if (existingDataVersion < 164)` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if (existingDataVersion < 166)` → `Services.perms.getAllByTypes(["localhost"]).forEach()`
+- 条件付き依存: `if (existingDataVersion < 166)` → `Services.perms.getAllByTypes()`
+- 条件付き依存: `if (existingDataVersion < 166)` → `Services.perms.removePermission()`
+- 条件付き依存: `if (existingDataVersion < 166)` → `Services.perms.addFromPrincipal()`
+- 条件付き依存: `if (existingDataVersion < 166)` → `console.error()`
+- 条件付き依存: `if (existingDataVersion < 166)` → `Services.prefs.getIntPref()`
+- 条件付き依存: `if (existingDataVersion < 166)` → `Services.prefs.setIntPref()`
+- 条件付き依存: `if (existingDataVersion < 166)` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if (existingDataVersion < 169)` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if (existingDataVersion < 172)` → `Services.prefs.getBoolPref()`
+- 条件付き依存: `if (Services.prefs.getBoolPref("browser.smartwindow.enabled", false))` → `Services.prefs.setBoolPref()`
+- 条件付き依存: `if (existingDataVersion < 174)` → `Services.perms.getAllWithTypePrefix()`
+- 条件付き依存: `if (existingDataVersion < 174)` → `perm.type.substring()`
+- 条件付き依存: `if (existingDataVersion < 174)` → `Services.eTLD.getSite()`
+- 条件付き依存: `if (typeSite === originSite)` → `Services.perms.removePermission()`
+- 条件付き依存: `if (existingDataVersion < 175)` → `Services.prefs.setBoolPref()`
+- 条件付き依存: `if (existingDataVersion < 176)` → `Services.perms.getAllByTypes(["cookie"]).forEach()`
+- 条件付き依存: `if (existingDataVersion < 176)` → `Services.perms.getAllByTypes()`
+- 条件付き依存: `if (p.capability == Ci.nsICookiePermission.ACCESS_ALLOW)` → `Services.perms.addFromPrincipal()`
+- 条件付き依存: `if ( existingDataVersion < 177 && !Services.prefs.getBoolPref("sidebar.verticalTabs", false) && Services.prefs.getStringPref("sidebar.visibility", "") === "hide-...)` → `Services.prefs.setStringPref()`
+- 条件付き依存: `if (existingDataVersion < 178)` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if (existingDataVersion < 179)` → `Cc["@mozilla.org/content-pref/service;1"].getService()`
+- 条件付き依存: `if (existingDataVersion < 179)` → `contentPrefs.removeByName()`
+- 条件付き依存: `if (existingDataVersion < 179)` → `console.error()`
+- 条件付き依存: `if (existingDataVersion < 179)` → `Services.prefs.clearUserBranch()`
+- 条件付き依存: `if (existingDataVersion < 180)` → `Services.prefs.prefHasUserValue()`
+- 条件付き依存: `if (!Services.prefs.prefHasUserValue(IPP_HAS_SEEN_FEATURE_PREF))` → `Services.prefs.setBoolPref()`
+- 条件付き依存: `if (existingDataVersion < 181)` → `Services.prefs.prefHasUserValue()`
+- 条件付き依存: `if (existingDataVersion < 181)` → `Services.prefs.getBoolPref()`
+- 条件付き依存: `if ( AppConstants.MOZ_MAINTENANCE_SERVICE && Services.prefs.prefHasUserValue("app.update.service.enabled") && !Services.prefs.getBoolPref("app.update.service.ena...)` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if ( AppConstants.MOZ_MAINTENANCE_SERVICE && Services.prefs.prefHasUserValue("app.update.service.enabled") && !Services.prefs.getBoolPref("app.update.service.ena...)` → `Glean.update.autoReenableStagedUpdates.record()`
+- 条件付き依存: `if (existingDataVersion < 182)` → `Services.prefs.getBoolPref()`
+- 条件付き依存: `if (existingDataVersion < 182)` → `Services.prefs.setBoolPref()`
+- 条件付き依存: `if (uiEnabled && Services.prefs.getBoolPref(OLD_ENABLED_PREF, true))` → `Services.prefs.setBoolPref()`
+- 条件付き依存: `if (existingDataVersion < 182)` → `Services.prefs.clearUserPref()`
+- 条件付き依存: `if (existingDataVersion < 183)` → `Services.prefs.getBoolPref()`
+- 条件付き依存: `if ( Services.prefs.getBoolPref("sidebar.old-sidebar.has-used") && (!Services.prefs.getBoolPref("sidebar.new-sidebar.has-used") || !Services.prefs.getBoolPref("s...)` → `Services.prefs.setCharPref()`
+- 条件付き依存: `if (existingDataVersion < 183)` → `Services.prefs.clearUserPref()`
+- 参照: `"3rdPartyFrameStorage^".length`, `AppConstants.BROWSER_CHROME_URL`, `AppConstants.MOZ_MAINTENANCE_SERVICE`, `AppConstants.NIGHTLY_BUILD`, `AppConstants.platform`, `Ci.nsIContentPrefService2`, `Ci.nsICookiePermission.ACCESS_ALLOW`, `OLD_PREFIX.length`, `PathUtils.profileDir`, `Services.appinfo.desktopEnvironment`, `Services.appinfo.prefersReducedMotion`, `Services.perms.ALLOW_ACTION`, `Services.perms.EXPIRE_NEVER`, `Services.perms.UNKNOWN_ACTION`, `Services.prefs`, `Services.prefs.PREF_BOOL`, `Services.xulStore`, `addon.isActive`, `console.error`, `lazy.FirefoxBridgeExtensionUtils.OLD_PRIVATE_PROTOCOL`, `lazy.FirefoxBridgeExtensionUtils.OLD_PUBLIC_PROTOCOL`, `lazy.FirefoxBridgeExtensionUtils.PRIVATE_PROTOCOL`, `lazy.FirefoxBridgeExtensionUtils.PUBLIC_PROTOCOL`, `p.capability`, `p.expireType`, `p.principal`, `perm.principal.URI`, `permission.capability`, `permission.expireTime`, `permission.expireType`, `permission.principal`
+- XPCOM: [`nsIContentPrefService2`](../../dom/interfaces/base/nsIContentPrefService2.idl.md) / [`nsICookiePermission`](../../netwerk/cookie/nsICookiePermission.idl.md) / `@mozilla.org/content-pref/service;1` → `ContentPrefService2` (toolkit/components/contentprefs/components.conf) / `Services.appinfo` / `Services.eTLD` / `Services.env` / `Services.perms` / `Services.prefs` / `Services.scriptSecurityManager` / `Services.xulStore`
+
+## enableProfilerButton()
+- 位置: L133-149
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `Services.prefs.setBoolPref()`
+- 条件付き依存: `if (wasAddonActive)` → `ChromeUtils.importESModule()`
+- 条件付き依存: `if (wasAddonActive)` → `ProfilerMenuButton.isInNavbar()`
+- 条件付き依存: `if (!ProfilerMenuButton.isInNavbar())` → `ProfilerMenuButton.addToNavbar()`
+- XPCOM: `Services.prefs`
+
+## migrateXULAttributeToStyle()
+- 位置: L484-493
+- 役割: (未記入)
+- 触るとき: (未記入)
+- 呼び出し先: `Services.xulStore.getValue()`, `console.error()`
+- 条件付き依存: `if (value)` → `Services.xulStore.setValue()`
+- XPCOM: `Services.xulStore`
