@@ -5,78 +5,78 @@ source-hash: 9fa4c8e8ccd31587442cec02e0563099dc65cd51
 lines: 9611
 
 ## <module>
-- 役割: (未記入)
+- 役割: ウィンドウ・タブ・タブグループの状態を追跡し、セッションをまたいで復元する SessionStore 本体。
 - 呼び出し先: `ChromeUtils.generateQI()`, `Date.now()`, `Promise.withResolvers()`, `Services.prefs.getBoolPref()`, `XPCOMUtils.declareLazy()`
 
 ## blankURI()
 - 位置: L365-365
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: about:blank の nsIURI を生成して返す。
+- 触るとき: 復元や新規タブで空白ページの URI を作る箇所の挙動を変えるとき。
 - 呼び出し先: `Services.io.newURI()`
 - XPCOM: `Services.io`
 
 ## _SessionStore.resetNextClosedId()
 - 位置: L402-404
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じたタブ・ウィンドウに振る ID のカウンタを 0 に戻す(テスト専用)。
+- 触るとき: テストで閉じたアイテムの ID を毎回同じ値から始めたいとき。本番コードからは使わない。
 - 参照: `this.#nextClosedId`
 
 ## _SessionStore.getNextSplitViewId()
 - 位置: L512-518
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 分割表示(split view)用の一意な整数 ID を払い出し、上限到達時は例外を投げる。
+- 触るとき: 分割表示の ID 採番や、ID の再利用・移行処理を変えるとき。
 - 参照: `Number.MAX_SAFE_INTEGER`, `this.#maxSplitViewId`
 
 ## _SessionStore.savedGroups()
 - 位置: L530-532
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 保存済みおよび閉じたタブグループの状態配列 #savedGroups を返す getter。
+- 触るとき: 保存済みタブグループの一覧を呼び出し側が参照する経路を調べるとき。
 - 参照: `this.#savedGroups`
 
 ## _SessionStore.shouldRestoreLastSession()
 - 位置: L556-558
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 次に通常ウィンドウが開いたときに前回セッションを復元すべきかを示すフラグを返す。
+- 触るとき: タスクバータブが残ったままウィンドウを閉じた後に前回セッションを戻すか判定する処理を調べるとき。
 - 参照: `this.#shouldRestoreLastSession`
 
 ## _SessionStore.#removeClosedAction()
 - 位置: L586-594
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: #lastClosedActions から、種別と closedId が一致する最初の要素を 1 件削除する。
+- 触るとき: 閉じたタブやウィンドウを復元や忘却で取り除いたときに、直前に閉じた操作の記録を整合させる箇所を変えるとき。
 - 呼び出し先: `this.#lastClosedActions.findIndex()`
 - 条件付き依存: `if (closedActionIndex > -1)` → `this.#lastClosedActions.splice()`
 - 参照: `obj.closedId`, `obj.type`
 
 ## _SessionStore.#addClosedAction()
 - 位置: L604-614
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じた操作を #lastClosedActions の末尾に追加し、上限(タブ数×ウィンドウ数)を超えた分を先頭から切り捨てる。
+- 触るとき: 最近閉じた操作の履歴上限を変えたり、閉じた操作の記録タイミングを調べるとき。
 - 呼び出し先: `this.#lastClosedActions.push()`
 - 条件付き依存: `if (this.#lastClosedActions.length > maxLength)` → `this.#lastClosedActions.slice()`
 - 参照: `this.#lastClosedActions`, `this.#lastClosedActions.length`, `this.#max_tabs_undo`, `this.#max_windows_undo`
 
 ## _SessionStore.lastClosedActions()
 - 位置: L621-623
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 最近閉じた操作の配列のコピーを古い順で返す getter。
+- 触るとき: 「閉じたタブを開き直す」の対象を決めるために履歴の並びを確認するとき。
 - 参照: `this.#lastClosedActions`
 
 ## _SessionStore.popLastClosedAction()
 - 位置: L633-635
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 最も新しい閉じた操作を配列から取り出して返す。
+- 触るとき: 直前に閉じたタブやウィンドウを開き直す処理(restoreLastClosedTabOrWindowOrSession 相当)の動きを変えるとき。
 - 呼び出し先: `this.#lastClosedActions.pop()`
 
 ## _SessionStore.resetLastClosedActions()
 - 位置: L640-642
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 閉じた操作の履歴を空にする(テスト専用)。
+- 触るとき: テストの前提状態として閉じた操作の履歴を消したいとき。
 - 参照: `this.#lastClosedActions`
 
 ## _SessionStore.logger()
 - 位置: L655-657
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: SessionStoreLogger を返す getter。初期化前は null を返す。
+- 触るとき: ログ出力先や初期化順序を確認するとき、初期化前にロガーを参照していないかを調べるとき。
 - 参照: `this.#log`
 
 ## _SessionStore.promiseAllWindowsRestored()

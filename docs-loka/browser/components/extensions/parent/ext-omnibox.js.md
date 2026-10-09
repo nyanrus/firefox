@@ -17,21 +17,21 @@ lines: 178
 
 ## listener()
 - 位置: L16-18
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: MSG_INPUT_STARTED を受けて fire.sync() を呼び、拡張へ入力開始を通知する。
+- 触るとき: onInputStarted が発火しない、または引数なしで届くべきところで別の値が出るときに見る。
 - 呼び出し先: `fire.sync()`
 
 ## unregister()
 - 位置: L21-23
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: MSG_INPUT_STARTED のリスナーを extension から外す。
+- 触るとき: 拡張を無効化した後も onInputStarted が届き続けるときに、解除が呼ばれているか確認する。
 - 呼び出し先: `extension.off()`
 - 参照: `ExtensionSearchHandler.MSG_INPUT_STARTED`
 
 ## convert()
 - 位置: L24-26
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 永続イベントの再接続時に fire を新しいものへ差し替える。
+- 触るとき: 拡張の background が再起動した後、古い fire に送られて通知が届かないときに見る。
 
 ## onInputCancelled()
 - 位置: L29-43
@@ -42,21 +42,21 @@ lines: 178
 
 ## listener()
 - 位置: L31-33
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: MSG_INPUT_CANCELLED を受けて fire.sync() を呼び、入力キャンセルを通知する。
+- 触るとき: onInputCancelled が発火しないときに見る。
 - 呼び出し先: `fire.sync()`
 
 ## unregister()
 - 位置: L36-38
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: MSG_INPUT_CANCELLED のリスナーを extension から外す。
+- 触るとき: 無効化後もキャンセル通知が届くときに解除を確認する。
 - 呼び出し先: `extension.off()`
 - 参照: `ExtensionSearchHandler.MSG_INPUT_CANCELLED`
 
 ## convert()
 - 位置: L39-41
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 永続イベントの再接続時に onInputCancelled の fire を差し替える。
+- 触るとき: 再起動後に onInputCancelled が古い fire へ送られるときに見る。
 
 ## onInputEntered()
 - 位置: L44-59
@@ -67,21 +67,21 @@ lines: 178
 
 ## listener()
 - 位置: L46-49
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: MSG_INPUT_ENTERED を受けて、拡張のアクティブタブ権限を付与し、text と disposition を fire.sync() する。
+- 触るとき: 確定入力で拡張がタブ操作できない、または権限が付与されないタイミングを調べるとき。
 - 呼び出し先: `extension.tabManager.addActiveTabPermission()`, `fire.sync()`
 
 ## unregister()
 - 位置: L52-54
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: MSG_INPUT_ENTERED のリスナーを extension から外す。
+- 触るとき: 無効化後も確定入力が拡張へ届くときに解除を確認する。
 - 呼び出し先: `extension.off()`
 - 参照: `ExtensionSearchHandler.MSG_INPUT_ENTERED`
 
 ## convert()
 - 位置: L55-57
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 永続イベントの再接続時に onInputEntered の fire を差し替える。
+- 触るとき: 再起動後に確定入力が古い fire へ送られるときに見る。
 
 ## onInputChanged()
 - 位置: L60-74
@@ -92,21 +92,21 @@ lines: 178
 
 ## listener()
 - 位置: L62-64
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: MSG_INPUT_CHANGED を受けて text と id を fire.sync() する。
+- 触るとき: 入力変更イベントの引数が想定と違うときに見る。
 - 呼び出し先: `fire.sync()`
 
 ## unregister()
 - 位置: L67-69
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: MSG_INPUT_CHANGED のリスナーを extension から外す。
+- 触るとき: 無効化後も入力変更が届くときに解除を確認する。
 - 呼び出し先: `extension.off()`
 - 参照: `ExtensionSearchHandler.MSG_INPUT_CHANGED`
 
 ## convert()
 - 位置: L70-72
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 永続イベントの再接続時に onInputChanged の fire を差し替える。
+- 触るとき: 再起動後に入力変更が古い fire へ送られるときに見る。
 
 ## onDeleteSuggestion()
 - 位置: L75-89
@@ -117,21 +117,21 @@ lines: 178
 
 ## listener()
 - 位置: L77-79
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: MSG_INPUT_DELETED を受けて削除された text を fire.sync() する。
+- 触るとき: 候補削除が拡張に通知されないときに見る。
 - 呼び出し先: `fire.sync()`
 
 ## unregister()
 - 位置: L82-84
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: MSG_INPUT_DELETED のリスナーを extension から外す。
+- 触るとき: 無効化後も削除通知が届くときに解除を確認する。
 - 呼び出し先: `extension.off()`
 - 参照: `ExtensionSearchHandler.MSG_INPUT_DELETED`
 
 ## convert()
 - 位置: L85-87
-- 役割: (未記入)
-- 触るとき: (未記入)
+- 役割: 永続イベントの再接続時に onDeleteSuggestion の fire を差し替える。
+- 触るとき: 再起動後に削除通知が古い fire へ送られるときに見る。
 
 ## onManifestEntry()
 - 位置: L92-104
