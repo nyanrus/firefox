@@ -4,8 +4,11 @@
 
 """Generate and check the source index under docs-loka/.
 
-  build.py generate <dir-or-file>...   write index docs for JS files and the
-                                       XPCOM interfaces they use
+  build.py generate [--force] <dir-or-file>...
+                                       write index docs for JS files and the
+                                       XPCOM interfaces they use; docs whose
+                                       source-hash is unchanged are kept
+                                       unless --force is given
   build.py check                       list index docs whose source changed
   build.py check-links                 list links in index docs that do not
                                        resolve to a file
@@ -175,7 +178,16 @@ def write(path, content):
         f.write(content)
 
 
-def generate(targets):
+def is_current(path, source_hash):
+    full = os.path.join(TOPSRC, path)
+    if not os.path.exists(full):
+        return False
+    with open(full, encoding="utf-8") as f:
+        m = HASH_RE.search(f.read())
+    return bool(m) and m.group(1) == source_hash
+
+
+def generate(targets, force=False):
     js_files = collect_js(targets)
     idl_index = build_idl_index()
     contract_index = build_contract_index()
@@ -188,11 +200,15 @@ def generate(targets):
             for iface in fn["xpcom_interfaces"]:
                 idl_users.setdefault(iface, set()).add(data["path"])
     for data in extracted:
+        if not force and is_current(doc_path(data["path"]), data["source_hash"]):
+            continue
         write(doc_path(data["path"]), render_js(data, idl_index, contract_index, idl_users))
     used_idls = {idl_index[i] for i in idl_users if i in idl_index}
     for idl in sorted(used_idls):
         data = extract_idl.extract(os.path.join(TOPSRC, idl))
         data["path"] = idl
+        if not force and is_current(doc_path(idl), data["source_hash"]):
+            continue
         write(doc_path(idl), render_idl(data, contract_index, idl_users))
     print(f"wrote {len(extracted)} JS docs and {len(used_idls)} IDL docs")
 
@@ -244,7 +260,8 @@ if __name__ == "__main__":
     if len(sys.argv) == 2 and sys.argv[1] == "check-links":
         sys.exit(check_links())
     if len(sys.argv) >= 3 and sys.argv[1] == "generate":
-        generate(sys.argv[2:])
+        args = [a for a in sys.argv[2:] if a != "--force"]
+        generate(args, force="--force" in sys.argv[2:])
     elif len(sys.argv) == 2 and sys.argv[1] == "check":
         sys.exit(check())
     else:
