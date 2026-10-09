@@ -19,6 +19,7 @@ lines: 76
 - 触るとき: 大量タブを開く警告の条件、文言、設定(browser.tabs.warnOnOpen など)の挙動を変える・調べるとき。
 - 呼び出し先: `Services.prefs.getBoolPref()`, `Services.prefs.getIntPref()`, `Services.prompt.confirmEx()`, `lazy.l10n.formatMessagesSync()`
 - 条件付き依存: `if (reallyOpen && !warnOnOpen.value)` → `Services.prefs.setBoolPref()`
+- 参照: `Services.prompt.BUTTON_POS_0`, `Services.prompt.BUTTON_POS_1`, `Services.prompt.BUTTON_TITLE_CANCEL`, `Services.prompt.BUTTON_TITLE_IS_STRING`, `button.value`, `checkbox.value`, `message.value`, `title.value`, `warnOnOpen.value`
 - XPCOM: `Services.prefs` / `Services.prompt`
 
 ## promiseConfirmOpenInTabs()

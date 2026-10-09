@@ -20,6 +20,7 @@ lines: 1792
 - 触るとき: タブ列の起動時の状態、初期化順、関連プリファレンスの扱いを変更・調査するとき。
 - 呼び出し先: `CustomizableUI.addListener()`, `DynamicShortcutTooltip.getText()`, `Math.max()`, `Object.defineProperty()`, `Services.prefs.addObserver()`, `Services.prefs.getIntPref()`, `Services.startup.getStartupInfo()`, `Services.startup.getStartupInfo().start.getTime()`, `XPCOMUtils.defineLazyPreferenceGetter()`, `document .getElementById()`, `document .getElementById("tabs-newtab-button") .addEventListener()`, `document .getElementById("vertical-tabs-newtab-button") .addEventListener()`, `document.getElementById()`, `this.#updateTabMinWidth()`, `this._fullscreenMutationObserver.observe()`, `this._updateNewTabVisibility()`, `this.arrowScrollbox.addEventListener()`, `this.baseConnect()`, `this.getAttribute()`, `this.newTabButton.setAttribute()`, `this.observe()`, `this.pinnedTabsContainer.setAttribute()`, `this.querySelector()`, `this.tabDragAndDrop.init()`, `this.updateWheelListeners()`, `window.addEventListener()`
 - 条件付き依存: `if (gMultiProcessBrowser)` → `this.tabbox.tabpanels.setAttribute()`
+- 参照: `document.documentElement`, `this._animateElement`, `this._blockDblClick`, `this._closeButtonsUpdatePending`, `this._closingTabsSpacer`, `this._fullscreenMutationObserver`, `this._hasTabTempMaxWidth`, `this._hiddenSoundPlayingTabs`, `this._lastTabClosedByMouse`, `this._scrollButtonWidth`, `this._tabClipWidth`, `this._tabDefaultMaxWidth`, `this._tabMinWidthPref`, `this.allTabs`, `this.allTabs[0].label`, `this.arrowScrollbox`, `this.arrowScrollbox._canScrollToElement`, `this.arrowScrollbox._getScrollableElements`, `this.boundObserve`, `this.emptyTabTitle`, `this.pinnedTabsContainer`, `this.previewPanel`, `this.startupTime`, `this.tabDragAndDrop`, `this.tooltip`, `window.TabDragAndDrop`
 - XPCOM: `Services.prefs` / `Services.startup`
 
 ## this.arrowScrollbox._getScrollableElements()
@@ -30,17 +31,20 @@ lines: 1792
 - 条件付き依存: `if (this.arrowScrollbox._canScrollToElement(item))` → `elements.push()`
 - 条件付き依存: `if (this.arrowScrollbox._canScrollToElement(item))` → `isTab()`
 - 条件付き依存: `if ( isTab(item) && item.group && item.group.collapsed && item.selected )` → `elements.push()`
+- 参照: `item.group`, `item.group.collapsed`, `item.group.overflowContainer`, `item.selected`
 
 ## this.arrowScrollbox._canScrollToElement()
 - 位置: L88-93
 - 役割: 固定タブ以外の要素をスクロール先にできると判定する。
 - 触るとき: 固定タブがスクロール対象に含まれる/含まれない問題を調べるとき。
 - 呼び出し先: `isTab()`
+- 参照: `element.pinned`
 
 ## get()
 - 位置: L104-104
 - 役割: マウスホイール1回分のスクロール量としてタブの最小幅の設定値を返す。
 - 触るとき: タブ列のホイールスクロール量を変えるとき。
+- 参照: `this._tabMinWidthPref`
 
 ## handleResize()
 - 位置: L128-131
@@ -70,6 +74,7 @@ lines: 1792
 - 呼び出し先: `document.getElementById()`, `this.#isMovingTab()`, `this.previewPanel?.deactivate()`
 - 条件付き依存: `if ( document.getElementById("tabContextMenu").state != "open" && !this.#isMovingTab() )` → `this._unlockTabSizing()`
 - 条件付き依存: `if (methodName in this)` → `this[methodName]()`
+- 参照: `aEvent.relatedTarget`, `aEvent.type`, `document.getElementById("tabContextMenu").state`, `relatedTarget.ownerDocument`
 
 ## MozTabbrowserTabs.on_TabSelect()
 - 位置: L261-273
@@ -77,12 +82,14 @@ lines: 1792
 - 触るとき: タブ選択後の可視タブ一覧やスクロール位置の問題を調べるとき。
 - 呼び出し先: `this._handleTabSelect()`
 - 条件付き依存: `if (previousTab.group?.collapsed || newTab.group?.collapsed)` → `this._invalidateCachedVisibleTabs()`
+- 参照: `newTab.group?.collapsed`, `previousTab.group?.collapsed`
 
 ## MozTabbrowserTabs.on_TabClose()
 - 位置: L275-277
 - 役割: 閉じられたタブについて、非表示で音を出していたタブの状態更新を依頼する。
 - 触るとき: 音を出す非表示タブを閉じたときの表示を調べるとき。
 - 呼び出し先: `this._hiddenSoundPlayingStatusChanged()`
+- 参照: `event.target`
 
 ## MozTabbrowserTabs.on_TabAttrModified()
 - 位置: L279-293
@@ -91,36 +98,42 @@ lines: 1792
 - 呼び出し先: `event.detail.changed.includes()`
 - 条件付き依存: `if ( event.detail.changed.includes("soundplaying") && !event.target.visible )` → `this._hiddenSoundPlayingStatusChanged()`
 - 条件付き依存: `if ( event.detail.changed.includes("soundplaying") || event.detail.changed.includes("muted") || event.detail.changed.includes("activemedia-blocked") )` → `this.updateTabSoundLabel()`
+- 参照: `event.target`, `event.target.visible`
 
 ## MozTabbrowserTabs.on_TabHide()
 - 位置: L295-299
 - 役割: 音を出しているタブが隠れたとき、非表示タブの音状態を更新する。
 - 触るとき: タブを隠したときの音アイコン表示を調べるとき。
 - 条件付き依存: `if (event.target.soundPlaying)` → `this._hiddenSoundPlayingStatusChanged()`
+- 参照: `event.target`, `event.target.soundPlaying`
 
 ## MozTabbrowserTabs.on_TabShow()
 - 位置: L301-305
 - 役割: 音を出しているタブが再表示されたとき、非表示タブの音状態を更新する。
 - 触るとき: タブを再表示したときの音アイコン表示を調べるとき。
 - 条件付き依存: `if (event.target.soundPlaying)` → `this._hiddenSoundPlayingStatusChanged()`
+- 参照: `event.target`, `event.target.soundPlaying`
 
 ## MozTabbrowserTabs.on_TabHoverStart()
 - 位置: L307-313
 - 役割: タブのホバープレビューが有効なら、プレビューパネルを読み込んでそのタブ用に開始する。
 - 触るとき: タブのホバープレビューの出方や有効条件を変えるとき。
 - 呼び出し先: `this.ensureTabPreviewPanelLoaded()`, `this.previewPanel.activate()`
+- 参照: `event.target`, `this._showTabHoverPreview`
 
 ## MozTabbrowserTabs.on_TabHoverEnd()
 - 位置: L315-317
 - 役割: ホバーが終わったタブのプレビューパネルを止める。
 - 触るとき: ホバープレビューが消えない/早く消える問題を調べるとき。
 - 呼び出し先: `this.previewPanel?.deactivate()`
+- 参照: `event.target`
 
 ## MozTabbrowserTabs.on_TabNoteIconHoverStart()
 - 位置: L319-328
 - 役割: タブのメモアイコンにホバーしたとき、メモ用のプレビューパネルを開始する。
 - 触るとき: メモアイコンのホバー表示を変更・調査するとき。
 - 呼び出し先: `this.ensureTabPreviewPanelLoaded()`, `this.previewPanel.activateNotePanel()`
+- 参照: `event.detail.noteIconElement`, `event.target`, `this._showTabHoverPreview`
 
 ## MozTabbrowserTabs.on_TabNoteIconHoverEnd()
 - 位置: L330-335
@@ -128,6 +141,7 @@ lines: 1792
 - 触るとき: メモパネルとタブプレビューの切り替わりを調べるとき。
 - 呼び出し先: `this.previewPanel?.deactivateNotePanel()`
 - 条件付き依存: `if (event.detail.returningToTab)` → `this.previewPanel?.activate()`
+- 参照: `event.detail.returningToTab`, `event.target`
 
 ## MozTabbrowserTabs.cancelTabGroupPreview()
 - 位置: L337-339
@@ -140,36 +154,42 @@ lines: 1792
 - 役割: グループのホバープレビューが有効なら、そのグループのプレビューを開く。
 - 触るとき: タブグループのプレビュー表示条件を変えるとき。
 - 呼び出し先: `this.ensureTabPreviewPanelLoaded()`, `this.previewPanel.activate()`
+- 参照: `this._showTabGroupHoverPreview`
 
 ## MozTabbrowserTabs.on_TabGroupLabelHoverStart()
 - 位置: L349-351
 - 役割: グループラベルへのホバー開始時にそのグループのプレビューを表示する。
 - 触るとき: グループラベルにホバーしたときの挙動を変えるとき。
 - 呼び出し先: `this.showTabGroupPreview()`
+- 参照: `event.target.group`
 
 ## MozTabbrowserTabs.on_TabGroupLabelHoverEnd()
 - 位置: L353-355
 - 役割: グループラベルからホバーが外れたときにグループのプレビューを止める。
 - 触るとき: グループのプレビューが残る問題を調べるとき。
 - 呼び出し先: `this.previewPanel?.deactivate()`
+- 参照: `event.target.group`
 
 ## MozTabbrowserTabs.on_TabGroupExpand()
 - 位置: L357-360
 - 役割: グループ展開時に可視タブのキャッシュを破棄し、そのグループをアニメーション中として記録する。
 - 触るとき: グループ展開時のスクロールやオーバーフロー判定の問題を調べるとき。
 - 呼び出し先: `this.#animatingGroups.add()`, `this._invalidateCachedVisibleTabs()`
+- 参照: `event.target.id`
 
 ## MozTabbrowserTabs.on_TabGroupCollapse()
 - 位置: L362-366
 - 役割: グループ折りたたみ時に可視タブのキャッシュ破棄、タブ幅ロック解除、アニメーション中の記録を行う。
 - 触るとき: グループ折りたたみ時のタブ幅やスクロールの挙動を調べるとき。
 - 呼び出し先: `this.#animatingGroups.add()`, `this._invalidateCachedVisibleTabs()`, `this._unlockTabSizing()`
+- 参照: `event.target.id`
 
 ## MozTabbrowserTabs.on_TabGroupAnimationComplete()
 - 位置: L368-374
 - 役割: グループのアニメーション完了後、次のフレームでアニメーション中の記録を消す。
 - 触るとき: アニメーション直後のオーバーフロー処理の順序を調べるとき。
 - 呼び出し先: `this.#animatingGroups.delete()`, `window.requestAnimationFrame()`
+- 参照: `event.target.id`
 
 ## MozTabbrowserTabs.on_TabGroupCreate()
 - 位置: L376-378
@@ -204,6 +224,7 @@ lines: 1792
 - 条件付き依存: `if (this.openAnimationFinished(tab))` → `this._updateCloseButtons()`
 - 条件付き依存: `if (!(this.openAnimationFinished(tab)))` → `this._handleNewTab()`
 - 条件付き依存: `if (tab.closing)` → `gBrowser._endRemoveTab()`
+- 参照: `event.propertyName`, `tab.closing`
 
 ## MozTabbrowserTabs.on_dblclick()
 - 位置: L420-443
@@ -211,6 +232,7 @@ lines: 1792
 - 触るとき: タブバーのダブルクリックで新規タブが開く条件を変えるとき。
 - 呼び出し先: `event.preventDefault()`
 - 条件付き依存: `if (!this._blockDblClick)` → `BrowserCommands.openTab()`
+- 参照: `CustomTitlebar.enabled`, `event.button`, `event.composedTarget.localName`, `event.target`, `this._blockDblClick`, `this.arrowScrollbox`, `this.verticalMode`
 
 ## MozTabbrowserTabs.on_click()
 - 位置: L445-550
@@ -232,6 +254,7 @@ lines: 1792
 - 条件付き依存: `if ( (this.verticalMode && event.clientY > endOfTab) || (!this.verticalMode && (this.#rtlMode ? event.clientX < endOfTab : event.clientX > endOfTab)) )` → `BrowserCommands.openTab()`
 - 条件付き依存: `if (event.eventPhase == Event.BUBBLING_PHASE && event.button == 1)` → `event.preventDefault()`
 - 条件付き依存: `if (event.eventPhase == Event.BUBBLING_PHASE && event.button == 1)` → `event.stopPropagation()`
+- 参照: `Event.BUBBLING_PHASE`, `Event.CAPTURING_PHASE`, `event.button`, `event.clientX`, `event.clientY`, `event.detail`, `event.eventPhase`, `event.originalTarget`, `event.target`, `gBrowser.TabMetrics.METRIC_SOURCE.MIDDLE_CLICK`, `tab.multiselected`, `target._ignoredCloseButtonClicks`, `this.#rtlMode`, `this._blockDblClick`, `this._clickedTabBarOnce`, `this.verticalMode`, `this.visibleTabs`, `window.windowUtils`
 - XPCOM: `Services.prefs`
 
 ## MozTabbrowserTabs.on_keydown()
@@ -259,6 +282,7 @@ lines: 1792
 - 条件付き依存: `if (ariaFocusedItem.multiselected)` → `gBrowser.removeFromMultiSelectedTabs()`
 - 条件付き依存: `if (!(ariaFocusedItem.multiselected))` → `gBrowser.addToMultiSelectedTabs()`
 - 条件付き依存: `if (keyComboForFocus)` → `event.preventDefault()`
+- 参照: `AppConstants.platform`, `KeyEvent.DOM_VK_DOWN`, `KeyEvent.DOM_VK_END`, `KeyEvent.DOM_VK_HOME`, `KeyEvent.DOM_VK_LEFT`, `KeyEvent.DOM_VK_RETURN`, `KeyEvent.DOM_VK_RIGHT`, `KeyEvent.DOM_VK_SPACE`, `KeyEvent.DOM_VK_UP`, `ariaFocusedItem.multiselected`, `event.ctrlKey`, `event.keyCode`, `event.metaKey`, `gBrowser.TabMetrics.METRIC_SOURCE.KEYBOARD`, `this.ariaFocusedItem`
 
 ## MozTabbrowserTabs.on_focusin()
 - 位置: L670-691
@@ -266,12 +290,14 @@ lines: 1792
 - 触るとき: タブ列のキーボードフォーカスの初期位置やプレビュー表示を調べるとき。
 - 呼び出し先: `event.relatedTarget?.classList.contains()`, `isTabGroupLabel()`
 - 条件付き依存: `if ( !focusReturnedFromGroupPanel && this.tablistHasFocus && isTabGroupLabel(this.ariaFocusedItem) )` → `this.showTabGroupPreview()`
+- 参照: `event.target`, `this.ariaFocusedItem`, `this.ariaFocusedItem.group`, `this.selectedItem`, `this.tablistHasFocus`
 
 ## MozTabbrowserTabs.on_focusout()
 - 位置: L696-701
 - 役割: フォーカスが外れたときグループのプレビューを取り消し、選択中タブならフォーカス状態を解除する。
 - 触るとき: フォーカスが外れた後の状態が残る問題を調べるとき。
 - 呼び出し先: `this.cancelTabGroupPreview()`
+- 参照: `event.target`, `this.selectedItem`, `this.tablistHasFocus`
 
 ## MozTabbrowserTabs.on_keypress()
 - 位置: L703-711
@@ -279,6 +305,7 @@ lines: 1792
 - 触るとき: 新規タブボタンのキーボード操作を調べるとき。
 - 条件付き依存: `if (event.key == " " || event.key == "Enter")` → `event.preventDefault()`
 - 条件付き依存: `if (event.key == " " || event.key == "Enter")` → `event.target.click()`
+- 参照: `event.defaultPrevented`, `event.key`
 
 ## MozTabbrowserTabs.on_dragstart()
 - 位置: L713-715
@@ -323,6 +350,7 @@ lines: 1792
 - 呼び出し先: `super.updateWheelListeners()`
 - 条件付き依存: `if (this.switchByScrolling)` → `this.arrowScrollbox.addEventListener()`
 - 条件付き依存: `if (!(this.switchByScrolling))` → `this.arrowScrollbox.removeEventListener()`
+- 参照: `this.arrowScrollbox`, `this.switchByScrolling`
 
 ## MozTabbrowserTabs.on_overflow()
 - 位置: L757-773
@@ -330,6 +358,7 @@ lines: 1792
 - 触るとき: タブがあふれたときの表示やスクロールの挙動を調べるとき。
 - 呼び出し先: `document .getElementById()`, `document .getElementById("tab-preview-panel") ?.setAttribute()`, `this._updateCloseButtons()`, `this.toggleAttribute()`
 - 条件付き依存: `if (!this.#animatingGroups.size)` → `this._handleTabSelect()`
+- 参照: `event.target`, `this.#animatingGroups.size`, `this.arrowScrollbox`
 
 ## MozTabbrowserTabs.on_underflow()
 - 位置: L775-798
@@ -337,6 +366,7 @@ lines: 1792
 - 触るとき: タブの数が減ってあふれが解消したときの挙動を調べるとき。
 - 呼び出し先: `document .getElementById()`, `document .getElementById("tab-preview-panel") ?.removeAttribute()`, `gBrowser.removeTab()`, `this._updateCloseButtons()`, `this.removeAttribute()`
 - 条件付き依存: `if (this._lastTabClosedByMouse)` → `this._expandSpacerBy()`
+- 参照: `event.target`, `gBrowser._removingTabs`, `this._lastTabClosedByMouse`, `this._scrollButtonWidth`, `this.arrowScrollbox`, `this.overflowing`
 
 ## MozTabbrowserTabs.on_contextmenu()
 - 位置: L800-809
@@ -345,6 +375,7 @@ lines: 1792
 - 呼び出し先: `isTabGroupLabel()`
 - 条件付き依存: `if (event.button == 0 && isTabGroupLabel(this.ariaFocusedItem))` → `gBrowser.tabGroupMenu.openEditModal()`
 - 条件付き依存: `if (event.button == 0 && isTabGroupLabel(this.ariaFocusedItem))` → `event.preventDefault()`
+- 参照: `event.button`, `this.ariaFocusedItem`, `this.ariaFocusedItem.group`
 
 ## MozTabbrowserTabs.on_uidensitychanged()
 - 位置: L811-814
@@ -381,11 +412,13 @@ lines: 1792
 - 位置: L840-842
 - 役割: サイドバーの表示設定がホバーで展開かどうかを返す。
 - 触るとき: ホバー展開時のタブ列の挙動を調べるとき。
+- 参照: `this._sidebarVisibility`
 
 ## MozTabbrowserTabs.#rtlMode()
 - 位置: L844-846
 - 役割: 横タブかつ右から左の UI かどうかを返す。
 - 触るとき: RTL 表示でのクリック位置やキー方向の判定を調べるとき。
+- 参照: `this.verticalMode`
 
 ## MozTabbrowserTabs.overflowing()
 - 位置: L848-850
@@ -400,12 +433,14 @@ lines: 1792
 - 呼び出し先: `Array.from()`, `pinnedChildren?.at()`, `unpinnedChildren.pop()`
 - 条件付き依存: `if (pinnedChildren?.at(-1)?.id == "pinned-tabs-container-periphery")` → `pinnedChildren.pop()`
 - 条件付き依存: `if ( unpinnedChildren[i].tagName == "tab-group" || unpinnedChildren[i].tagName == "tab-split-view-wrapper" )` → `unpinnedChildren.splice()`
+- 参照: `pinnedChildren?.at(-1)?.id`, `this.#allTabs`, `this.arrowScrollbox.children`, `this.pinnedTabsContainer.children`, `unpinnedChildren.length`, `unpinnedChildren[i].tabs`, `unpinnedChildren[i].tagName`
 
 ## MozTabbrowserTabs.allGroups()
 - 位置: L882-887
 - 役割: スクロールボックス直下のタブグループ要素を返す。
 - 触るとき: グループ一覧の取得を調べるとき。
 - 呼び出し先: `Array.from()`, `children.filter()`
+- 参照: `node.tagName`, `this.arrowScrollbox.children`
 
 ## MozTabbrowserTabs.allSplitViews()
 - 位置: L889-904
@@ -416,24 +451,28 @@ lines: 1792
 - 条件付き依存: `if (node.tagName == "tab-group")` → `splitViews.push()`
 - 条件付き依存: `if (node.tagName == "tab-group")` → `Array.from(node.children).filter()`
 - 条件付き依存: `if (node.tagName == "tab-group")` → `Array.from()`
+- 参照: `child.tagName`, `node.children`, `node.tagName`, `this.arrowScrollbox.children`
 
 ## MozTabbrowserTabs.openTabs()
 - 位置: L910-915
 - 役割: 閉じ途中のタブと Firefox View を除く全タブをキャッシュ付きで返す。
 - 触るとき: 開いているタブの集合の定義を調べるとき。
 - 条件付き依存: `if (!this.#openTabs)` → `this.allTabs.filter()`
+- 参照: `tab.isOpen`, `this.#openTabs`
 
 ## MozTabbrowserTabs.nonHiddenTabs()
 - 位置: L921-926
 - 役割: openTabs から隠しタブを除いたものをキャッシュ付きで返す。
 - 触るとき: 隠しタブを除いた一覧の定義を調べるとき。
 - 条件付き依存: `if (!this.#nonHiddenTabs)` → `this.openTabs.filter()`
+- 参照: `tab.hidden`, `this.#nonHiddenTabs`
 
 ## MozTabbrowserTabs.visibleTabs()
 - 位置: L932-937
 - 役割: 隠しタブと折りたたみグループ内のタブを除いた可視タブをキャッシュ付きで返す。
 - 触るとき: 可視タブの定義や、キャッシュが古くなる問題を調べるとき。
 - 条件付き依存: `if (!this.#visibleTabs)` → `this.openTabs.filter()`
+- 参照: `tab.visible`, `this.#visibleTabs`
 
 ## MozTabbrowserTabs.tablistHasFocus()
 - 位置: L943-945
@@ -459,6 +498,7 @@ lines: 1792
 - 条件付き依存: `if (isTabGroup(child))` → `child.tabs.filter()`
 - 条件付き依存: `if (child.tagName == "tab-split-view-wrapper")` → `child.tabs.filter()`
 - 条件付き依存: `if (child.tagName == "tab-split-view-wrapper")` → `focusableItems.push()`
+- 参照: `child.labelElement`, `child.tagName`, `child.visible`, `tab.visible`, `this.#focusableItems`, `this.arrowScrollbox.children`, `this.pinnedTabsContainer.children`
 
 ## MozTabbrowserTabs.dragAndDropElements()
 - 位置: L1010-1051
@@ -469,6 +509,7 @@ lines: 1792
 - 条件付き依存: `if (isTabGroup(child))` → `child.tabsAndSplitViews.filter()`
 - 条件付き依存: `if (isTabGroup(child))` → `tabsAndSplitViews.forEach()`
 - 条件付き依存: `if (!(isTabGroup(child)))` → `dragAndDropElements.push()`
+- 参照: `child.elementIndex`, `child.labelElement`, `child.labelElement.elementIndex`, `child.visible`, `ele.elementIndex`, `node.visible`, `this.#dragAndDropElements`, `this.arrowScrollbox.children`, `this.pinnedTabsContainer.children`
 
 ## MozTabbrowserTabs.#advanceFocus()
 - 位置: L1059-1077
@@ -476,17 +517,20 @@ lines: 1792
 - 触るとき: Ctrl+矢印でのフォーカス移動の端の挙動を調べるとき。
 - 呼び出し先: `Math.max()`, `Math.min()`, `isTabGroupLabel()`, `this.ariaFocusableItems.indexOf()`
 - 条件付き依存: `if (isTabGroupLabel(this.ariaFocusedItem))` → `this.showTabGroupPreview()`
+- 参照: `this.ariaFocusableItems`, `this.ariaFocusableItems.length`, `this.ariaFocusedItem`, `this.ariaFocusedItem.group`
 
 ## MozTabbrowserTabs._invalidateCachedTabs()
 - 位置: L1079-1082
 - 役割: 全タブのキャッシュと可視タブ系のキャッシュを破棄する。
 - 触るとき: タブ構成の変更後に古い一覧が残る問題を調べるとき。
 - 呼び出し先: `this._invalidateCachedVisibleTabs()`
+- 参照: `this.#allTabs`
 
 ## MozTabbrowserTabs._invalidateCachedVisibleTabs()
 - 位置: L1084-1093
 - 役割: 開いている/非表示でない/可視タブ、フォーカス対象、ドラッグ対象のキャッシュを破棄する。
 - 触るとき: 可視性が変わった後の一覧の不整合を調べるとき。
+- 参照: `this.#dragAndDropElements`, `this.#focusableItems`, `this.#nonHiddenTabs`, `this.#openTabs`, `this.#visibleTabs`
 
 ## MozTabbrowserTabs.#isMovingTab()
 - 位置: L1095-1097
@@ -499,6 +543,7 @@ lines: 1792
 - 役割: 固定タブが縦タブの展開時グリッド表示の中にあるかを返す。
 - 触るとき: 縦タブでの固定タブのグリッド表示条件を調べるとき。
 - 呼び出し先: `this.hasAttribute()`
+- 参照: `tab.pinned`, `this.expandOnHover`, `this.verticalMode`
 
 ## MozTabbrowserTabs.advanceSelectedTab()
 - 位置: L1114-1125
@@ -508,6 +553,7 @@ lines: 1792
 - 条件付き依存: `if (gBrowser.selectedTab !== prevTab)` → `gBrowser.recordTabMetrics()`
 - 条件付き依存: `if (gBrowser.selectedTab !== prevTab)` → `gBrowser.TabMetrics.userTriggeredContext()`
 - 条件付き依存: `if (gBrowser.selectedTab !== prevTab)` → `gBrowser.TabMetrics.sourceForEvent()`
+- 参照: `gBrowser.TabMetrics.METRIC_ACTION.ACTIVATE`, `gBrowser.selectedTab`
 
 ## MozTabbrowserTabs.advanceSelectedItem()
 - 位置: L1138-1201
@@ -521,12 +567,14 @@ lines: 1792
 - 条件付き依存: `if (gBrowser.selectedTab !== prevTab)` → `gBrowser.recordTabMetrics()`
 - 条件付き依存: `if (gBrowser.selectedTab !== prevTab)` → `gBrowser.TabMetrics.userTriggeredContext()`
 - 条件付き依存: `if (isTabGroupLabel(this.ariaFocusedItem))` → `this.showTabGroupPreview()`
+- 参照: `ariaFocusableItems.length`, `gBrowser.TabMetrics.METRIC_ACTION.ACTIVATE`, `gBrowser.TabMetrics.METRIC_SOURCE.KEYBOARD`, `gBrowser.selectedTab`, `groupPanel.isActive`, `this.ariaFocusedItem`, `this.ariaFocusedItem.group`, `this.previewPanel?.tabGroupPanel`, `this.selectedItem`
 
 ## MozTabbrowserTabs.ensureTabPreviewPanelLoaded()
 - 位置: L1203-1210
 - 役割: タブのホバープレビュー用モジュールを初回だけ読み込み、パネルを作る。
 - 触るとき: プレビューパネルの遅延読み込みを調べるとき。
 - 条件付き依存: `if (!this.previewPanel)` → `ChromeUtils.importESModule()`
+- 参照: `ChromeUtils.importESModule( "chrome://browser/content/tabbrowser/tab-hover-preview.mjs" ).default`, `this.previewPanel`
 
 ## MozTabbrowserTabs.appendChild()
 - 位置: L1212-1214
@@ -539,12 +587,14 @@ lines: 1792
 - 役割: 指定ノードの前(未指定なら末尾の周辺要素の前)にタブを挿入する。
 - 触るとき: タブ要素の挿入位置を調べるとき。
 - 呼び出し先: `node.before()`
+- 参照: `this.arrowScrollbox`, `this.arrowScrollbox.lastChild`
 
 ## MozTabbrowserTabs.#updateTabMinWidth()
 - 位置: L1229-1234
 - 役割: タブ最小幅の設定値を CSS 変数 --tab-min-width-pref に反映する。
 - 触るとき: タブの最小幅の設定が見た目に反映される経路を調べるとき。
 - 呼び出し先: `this.style.setProperty()`
+- 参照: `this._tabMinWidthPref`
 
 ## MozTabbrowserTabs._isCustomizing()
 - 位置: L1236-1238
@@ -575,6 +625,7 @@ lines: 1792
 - 条件付き依存: `if (!(containersEnabled))` → `button.removeAttribute()`
 - 条件付き依存: `if (containersEnabled && !newTabLeftClickOpensContainersMenu)` → `gClickAndHoldListenersOnElement.add()`
 - 条件付き依存: `if (!(containersEnabled && !newTabLeftClickOpensContainersMenu))` → `gClickAndHoldListenersOnElement.remove()`
+- 参照: `DynamicShortcutTooltip.nodeToTooltipMap`, `button.id`, `button.menupopup`, `popup.className`, `this.newTabButton`
 - XPCOM: `Services.prefs`
 
 ## MozTabbrowserTabs._updateCloseButtons()
@@ -585,6 +636,7 @@ lines: 1792
 - 条件付き依存: `if (this.overflowing)` → `this.setAttribute()`
 - 条件付き依存: `if (tab && rect(tab).width <= this._tabClipWidth)` → `this.setAttribute()`
 - 条件付き依存: `if (!(tab && rect(tab).width <= this._tabClipWidth))` → `this.removeAttribute()`
+- 参照: `gBrowser.pinnedTabCount`, `rect(tab).width`, `t.splitview`, `this._closeButtonsUpdatePending`, `this._tabClipWidth`, `this.overflowing`
 
 ## rect()
 - 位置: L1350-1352
@@ -597,6 +649,7 @@ lines: 1792
 - 役割: 選択タブがスクロールで見えるようにし、選択済みフラグを更新する。
 - 触るとき: タブ選択後のスクロール追従を調べるとき。
 - 呼び出し先: `this.#ensureTabIsVisible()`
+- 参照: `selectedTab._notselectedsinceload`, `this.selectedItem`
 
 ## MozTabbrowserTabs.#ensureTabIsVisible()
 - 位置: L1381-1386
@@ -604,6 +657,7 @@ lines: 1792
 - 触るとき: 選択・新規タブが画面外に隠れる問題を調べるとき。
 - 呼び出し先: `tab.closest()`
 - 条件付き依存: `if (arrowScrollbox?.overflowing)` → `arrowScrollbox.ensureElementIsVisible()`
+- 参照: `arrowScrollbox?.overflowing`
 
 ## MozTabbrowserTabs._lockTabSizing()
 - 位置: L1391-1477
@@ -622,12 +676,14 @@ lines: 1792
 - 条件付き依存: `if (tabsToReset.length)` → `window.requestAnimationFrame()`
 - 条件付き依存: `if (!(this.overflowing))` → `gBrowser.addEventListener()`
 - 条件付き依存: `if (!(this.overflowing))` → `window.addEventListener()`
+- 参照: `aClosingTab.index`, `aClosingTab?.owner`, `gBrowser.pinnedTabCount`, `tab.animationsEnabled`, `tabs.at(-1).index`, `tabs.length`, `tabsToReset.length`, `this._hasTabTempMaxWidth`, `this._lastTabClosedByMouse`, `this._scrollButtonWidth`, `this._tabDefaultMaxWidth`, `this.arrowScrollbox._scrollButtonDown`, `this.overflowing`, `this.verticalMode`, `this.visibleTabs`, `window.getComputedStyle(tabs[numPinned]).maxWidth`, `window.windowUtils.getBoundsWithoutFlushing( tabs[numPinned] ).width`, `window.windowUtils.getBoundsWithoutFlushing( this.arrowScrollbox._scrollButtonDown ).width`
 
 ## MozTabbrowserTabs._expandSpacerBy()
 - 位置: L1479-1485
 - 役割: 閉じ中タブ用スペーサーの幅を指定ピクセル分広げ、マウス移動の監視を始める。
 - 触るとき: あふれ中にタブを閉じたときの余白の挙動を調べるとき。
 - 呼び出し先: `gBrowser.addEventListener()`, `parseFloat()`, `this.toggleAttribute()`, `window.addEventListener()`
+- 参照: `spacer.style.width`, `this._closingTabsSpacer`
 
 ## MozTabbrowserTabs._unlockTabSizing()
 - 位置: L1487-1506
@@ -635,6 +691,7 @@ lines: 1792
 - 触るとき: タブ幅の固定が解除されない/早すぎる問題を調べるとき。
 - 呼び出し先: `gBrowser.removeEventListener()`, `this.hasAttribute()`, `window.removeEventListener()`
 - 条件付き依存: `if (this.hasAttribute("using-closing-tabs-spacer"))` → `this.removeAttribute()`
+- 参照: `tabs.length`, `tabs[i].style.maxWidth`, `this._closingTabsSpacer.style.width`, `this._hasTabTempMaxWidth`, `this.allTabs`
 
 ## MozTabbrowserTabs._notifyBackgroundTab()
 - 位置: L1508-1601
@@ -651,11 +708,13 @@ lines: 1792
 - 条件付き依存: `if (!this._animateElement.hasAttribute("highlight"))` → `this._animateElement.toggleAttribute()`
 - 条件付き依存: `if (!this._animateElement.hasAttribute("highlight"))` → `setTimeout()`
 - 条件付き依存: `if (!this._animateElement.hasAttribute("highlight"))` → `ele.removeAttribute()`
+- 参照: `aTab.pinned`, `aTab.visible`, `scrollRect.bottom`, `scrollRect.height`, `scrollRect.left`, `scrollRect.right`, `scrollRect.top`, `scrollRect.width`, `selectedRect.bottom`, `selectedRect.left`, `selectedRect.right`, `selectedRect.top`, `selectedTab.bottom`, `selectedTab.left`, `selectedTab.pinned`, `selectedTab.right`, `selectedTab.top`, `tabRect.bottom`, `tabRect.left`, `tabRect.right`, `tabRect.top`, `this.#rtlMode`, `this._animateElement`, `this._backgroundTabScrollPromise`, `this._lastTabToScrollIntoView`, `this.arrowScrollbox.scrollClientRect`, `this.arrowScrollbox.smoothScroll`, `this.overflowing`, `this.selectedItem`, `this.verticalMode`
 
 ## MozTabbrowserTabs.tabAnimationsInProgress()
 - 位置: L1609-1611
 - 役割: 開く途中のタブと閉じる途中のタブの合計数を返す。
 - 触るとき: タブのアニメーション中かの判定を参照するとき。
+- 参照: `gBrowser._removingTabs.size`, `this.#openingTabs.size`
 
 ## MozTabbrowserTabs.openAnimationFinished()
 - 位置: L1619-1621
@@ -685,11 +744,13 @@ lines: 1792
 - 条件付き依存: `if (!tab.hasAttribute("skipbackgroundnotify"))` → `this._notifyBackgroundTab()`
 - 条件付き依存: `if (tab.linkedPanel)` → `NewTabPagePreloading.maybeCreatePreloadedBrowser()`
 - 条件付き依存: `if (UserInteraction.running("browser.tabs.opening", window))` → `UserInteraction.finish()`
+- 参照: `tab.container`, `tab.linkedPanel`
 
 ## MozTabbrowserTabs._canAdvanceToTab()
 - 位置: L1667-1669
 - 役割: 閉じ途中でないタブだけを選択移動の対象にする。
 - 触るとき: キーボードでのタブ切替で飛ばす対象を調べるとき。
+- 参照: `aTab.closing`
 
 ## MozTabbrowserTabs.getRelatedElement()
 - 位置: L1676-1698
@@ -697,34 +758,40 @@ lines: 1792
 - 触るとき: タブとパネルの対応や遅延ブラウザーの接続タイミングを調べるとき。
 - 呼び出し先: `document.getElementById()`
 - 条件付き依存: `if (!aTab.linkedPanel)` → `gBrowser.insertBrowser()`
+- 参照: `aTab.linkedPanel`, `aTab.selected`, `gBrowser._initialized`, `this.tabbox.tabpanels.firstElementChild`
 
 ## MozTabbrowserTabs._updateNewTabVisibility()
 - 位置: L1700-1724
 - 役割: 新規タブボタンがタブ列に隣接しているかを調べ、hasadjacentnewtabbutton 属性を切り替える。
 - 触るとき: 新規タブボタンの位置とインライン表示の条件を調べるとき。
 - 呼び出し先: `this.toggleAttribute()`, `unwrap()`, `wrap()`
+- 参照: `sib.hidden`, `sib.id`, `wrap(sib).nextElementSibling`
 
 ## wrap()
 - 位置: L1702-1703
 - 役割: カスタマイズ時のパレット項目の包みがあればそれを返す補助関数。
 - 触るとき: カスタマイズモードでの隣接判定を調べるとき。
+- 参照: `n.parentNode`, `n.parentNode.localName`
 
 ## unwrap()
 - 位置: L1704-1705
 - 役割: パレット項目の包みから中の要素を取り出す補助関数。
 - 触るとき: カスタマイズモードでの隣接判定を調べるとき。
+- 参照: `n.firstElementChild`, `n.localName`
 
 ## MozTabbrowserTabs.onWidgetAfterDOMChange()
 - 位置: L1726-1733
 - 役割: タブツールバーのカスタマイズ対象で変更があったとき、新規タブボタンの隣接状態を更新する。
 - 触るとき: ツールバーのカスタマイズ後に新規タブボタンの表示が崩れるとき。
 - 条件付き依存: `if ( aContainer.ownerDocument == document && aContainer.id == "TabsToolbar-customization-target" )` → `this._updateNewTabVisibility()`
+- 参照: `aContainer.id`, `aContainer.ownerDocument`
 
 ## MozTabbrowserTabs.onAreaNodeRegistered()
 - 位置: L1735-1739
 - 役割: TabsToolbar 領域の登録時に、新規タブボタンの隣接状態を更新する。
 - 触るとき: ツールバー領域の登録時の新規タブボタン表示を調べるとき。
 - 条件付き依存: `if (aContainer.ownerDocument == document && aArea == "TabsToolbar")` → `this._updateNewTabVisibility()`
+- 参照: `aContainer.ownerDocument`
 
 ## MozTabbrowserTabs.onAreaReset()
 - 位置: L1741-1743
@@ -740,6 +807,7 @@ lines: 1792
 - 条件付き依存: `if (!isClosed && tab.soundPlaying && !tab.visible)` → `this.toggleAttribute()`
 - 条件付き依存: `if (!(!isClosed && tab.soundPlaying && !tab.visible))` → `this._hiddenSoundPlayingTabs.delete()`
 - 条件付き依存: `if (this._hiddenSoundPlayingTabs.size == 0)` → `this.removeAttribute()`
+- 参照: `opts.closed`, `tab.soundPlaying`, `tab.visible`, `this._hiddenSoundPlayingTabs.size`
 
 ## MozTabbrowserTabs.destroy()
 - 位置: L1758-1764
@@ -747,6 +815,7 @@ lines: 1792
 - 触るとき: 終了時の後始末やリスナーの解除漏れを調べるとき。
 - 呼び出し先: `CustomizableUI.removeListener()`, `this.previewPanel?.forceReset()`
 - 条件付き依存: `if (this.boundObserve)` → `Services.prefs.removeObserver()`
+- 参照: `this.boundObserve`
 - XPCOM: `Services.prefs`
 
 ## MozTabbrowserTabs.updateTabSoundLabel()
@@ -758,3 +827,4 @@ lines: 1792
 - 条件付き依存: `if (tab.hasAttribute("muted") || tab.hasAttribute("soundplaying"))` → `tab.audioButton.setAttribute()`
 - 条件付き依存: `if (!(tab.hasAttribute("muted") || tab.hasAttribute("soundplaying")))` → `tab.hasAttribute()`
 - 条件付き依存: `if (tab.hasAttribute("activemedia-blocked"))` → `tab.audioButton.setAttribute()`
+- 参照: `mute.attributes`, `mute.attributes[0].value`, `tab.audioButton`, `tab.linkedBrowser.audioMuted`, `unblock.attributes`, `unblock.attributes[0].value`, `unmute.attributes`, `unmute.attributes[0].value`

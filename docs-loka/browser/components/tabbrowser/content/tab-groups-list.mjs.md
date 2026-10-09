@@ -13,6 +13,7 @@ lines: 197
 - 役割: 行の role、開いている/保存済みグループ、既定名の初期値を空にする。
 - 触るとき: 要素のプロパティの初期値を変えるとき。
 - 呼び出し先: `super()`
+- 参照: `this._defaultGroupName`, `this._openGroups`, `this._savedGroups`, `this.rowRole`
 
 ## TabGroupsList.createRenderRoot()
 - 位置: L40-42
@@ -23,6 +24,7 @@ lines: 197
 - 位置: L44-46
 - 役割: この要素が属するウィンドウ(documentGlobal)を返す。
 - 触るとき: ウィンドウ参照の取得方法を確認するとき。
+- 参照: `this.documentGlobal`
 
 ## TabGroupsList.connectedCallback()
 - 位置: L48-51
@@ -35,12 +37,14 @@ lines: 197
 - 役割: 初回描画後に名前なしグループ用の既定名を l10n から取得する。
 - 触るとき: 名前のないグループの表示名を調べるとき。
 - 呼び出し先: `this.ownerDocument.l10n.formatValues()`
+- 参照: `this._defaultGroupName`
 
 ## TabGroupsList.#populate()
 - 位置: L59-69
 - 役割: 開いているグループを最終アクティブ順に、保存済みを閉じた日時の新しい順に取得する(プライベートウィンドウでは保存済みなし)。
 - 触るとき: 一覧に出るグループや並び順を変えるとき。
 - 呼び出し先: `lazy.PrivateBrowsingUtils.isWindowPrivate()`, `win.SessionStore.savedGroups.toSorted()`, `win.gBrowser.getAllTabGroups()`
+- 参照: `a.closedAt`, `b.closedAt`, `this.#win`, `this._openGroups`, `this._savedGroups`
 
 ## TabGroupsList.#handleGroupClick()
 - 位置: L71-81
@@ -50,30 +54,35 @@ lines: 197
 - 条件付き依存: `if (isOpen)` → `group.select()`
 - 条件付き依存: `if (isOpen)` → `group.documentGlobal.focus()`
 - 条件付き依存: `if (!(isOpen))` → `this.#win.SessionStore.openSavedTabGroup()`
+- 参照: `group.id`, `lazy.TabMetrics.METRIC_SOURCE.TAB_OVERFLOW_MENU`, `this.#win`
 
 ## TabGroupsList.#handleContextMenu()
 - 位置: L83-92
 - 役割: 右クリック時に、開いている/保存済みに応じたコンテキストメニューをクリック位置に表示する。
 - 触るとき: グループ行の右クリックメニューを調べるとき。
 - 呼び出し先: `event.preventDefault()`, `popup.openPopupAtScreen()`, `this.ownerDocument.getElementById()`
+- 参照: `event.screenX`, `event.screenY`
 
 ## TabGroupsList.#groupRow()
 - 位置: L94-130
 - 役割: グループ一つ分のボタン行(色、アイコン、名前、イベント)を描画するテンプレートを返す。
 - 触るとき: グループ行の見た目や属性を変えるとき。
 - 呼び出し先: `JSON.stringify()`, `classMap()`, `html()`, `styleMap()`, `this.#handleContextMenu()`, `this.#handleGroupClick()`
+- 参照: `group.color`, `group.id`, `group.name`, `this._defaultGroupName`, `this.rowRole`
 
 ## TabGroupsList.#emptyState()
 - 位置: L132-157
 - 役割: グループが無いときの案内表示(画像、文言、作成ボタン)のテンプレートを返す。
 - 触るとき: 空状態の表示を変えるとき。
 - 呼び出し先: `html()`
+- 参照: `this.#handleCreateTabGroup`
 
 ## TabGroupsList.#handleCreateTabGroup()
 - 位置: L159-168
 - 役割: パネルを閉じ、新規タブを作ってそれを含む新しいタブグループを作成する。
 - 触るとき: 一覧からのグループ新規作成の挙動を変えるとき。
 - 呼び出し先: `(this.closest("panel"))?.hidePopup()`, `this.closest()`, `win.gBrowser.TabMetrics.userTriggeredContext()`, `win.gBrowser.addTabGroup()`, `win.gBrowser.addTrustedTab()`
+- 参照: `this.#win`, `win.BROWSER_NEW_TAB_URL`, `win.gBrowser.TabMetrics.METRIC_SOURCE.TAB_OVERFLOW_MENU`
 
 ## TabGroupsList.render()
 - 位置: L170-193
@@ -81,3 +90,4 @@ lines: 197
 - 触るとき: 一覧全体の構成を変えるとき。
 - 呼び出し先: `html()`, `repeat()`, `this.#groupRow()`
 - 条件付き依存: `if (!this._openGroups.length && !this._savedGroups.length)` → `this.#emptyState()`
+- 参照: `group.id`, `this.#handleCreateTabGroup`, `this._openGroups`, `this._openGroups.length`, `this._savedGroups`, `this._savedGroups.length`

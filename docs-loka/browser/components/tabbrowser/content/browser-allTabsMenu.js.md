@@ -13,12 +13,14 @@ lines: 270
 - 役割: テンプレートを展開し、kElements の ID から各要素を取得して保持する(一度だけ)。
 - 触るとき: すべてのタブパネルの要素 ID を追加・変更するとき。
 - 呼び出し先: `Object.entries()`, `document.getElementById()`, `template.replaceWith()`
+- 参照: `template.content`, `this._initializedElements`, `this.kElements`
 
 ## hasHiddenTabsExcludingFxView()
 - 位置: L43-48
 - 役割: Firefox View を除いて非表示のタブがあるかを返す。
 - 触るとき: 非表示タブのボタンを出す条件を調べるとき。
 - 呼び出し先: `gBrowser.tabs.some()`
+- 参照: `FirefoxViewHandler.tab`, `tab.hidden`
 
 ## init()
 - 位置: L50-210
@@ -29,28 +31,33 @@ lines: 270
 - 条件付き依存: `if (!(hasHiddenAudioTabs))` → `this.allTabsViewTabs.append()`
 - 条件付き依存: `if (identity.name)` → `menuitem.setAttribute()`
 - 条件付き依存: `if (!(identity.name))` → `document.l10n.setAttributes()`
+- 参照: `closeDuplicateTabsItem.hidden`, `document.getElementById("allTabsMenu-containerTabsButton").hidden`, `gBrowser.getAllDuplicateTabsToClose().length`, `hiddenTabsButton.hidden`, `hiddenTabsSeparator.hidden`, `identity.color`, `identity.icon`, `identity.l10nId`, `identity.name`, `identity.userContextId`, `target.documentGlobal`, `target.id`, `this._initialized`, `this.allTabsPanel`, `this.allTabsView`, `this.allTabsViewTabs`, `this.dropIndicator`, `this.groupsPanel`, `this.groupsSubView`, `this.groupsView`, `this.hiddenAudioTabs`, `this.hiddenAudioTabs.hidden`, `this.hiddenAudioTabsPopup`, `this.hiddenTabsPopup`, `this.hiddenTabsView`, `this.hiddenTabsViewTabs`, `this.kElements.containerTabsView`, `this.kElements.groupsSubView`, `this.kElements.hiddenTabsView`, `this.showAllGroupsPanel`
 - XPCOM: `Services.prefs`
 
 ## filterFn()
 - 位置: L60-60
 - 役割: 音を出している、またはミュート中のタブだけを通す。
 - 触るとき: 非表示タブのうち音声タブを上部に出す条件を変えるとき。
+- 参照: `tab.muted`, `tab.soundPlaying`
 
 ## filterFn()
 - 位置: L66-66
 - 役割: 非表示でないタブだけを通す。
 - 触るとき: すべてのタブ一覧に載せるタブの条件を変えるとき。
+- 参照: `tab.hidden`
 
 ## filterFn()
 - 位置: L205-205
 - 役割: Firefox View 以外のタブを通す。
 - 触るとき: 非表示タブ一覧に載せるタブの条件を変えるとき。
+- 参照: `FirefoxViewHandler.tab`
 
 ## canOpen()
 - 位置: L212-215
 - 役割: 要素を初期化し、すべてのタブボタンが表示されているかを返す。
 - 触るとき: ボタンが見えないときパネルを開けない理由を調べるとき。
 - 呼び出し先: `isElementVisible()`, `this.initElements()`
+- 参照: `this.allTabsButton`
 
 ## showAllTabsPanel()
 - 位置: L217-237
@@ -60,6 +67,7 @@ lines: 270
 - 条件付き依存: `if (this.canOpen)` → `Glean.browserUiInteraction.allTabsPanelEntrypoint[entrypoint].add()`
 - 条件付き依存: `if (this.canOpen)` → `BrowserUsageTelemetry.recordInteractionEvent()`
 - 条件付き依存: `if (this.canOpen)` → `PanelUI.showSubView()`
+- 参照: `Glean.browserUiInteraction.allTabsPanelEntrypoint`, `event.key`, `event?.type`, `this.allTabsButton`, `this.canOpen`, `this.kElements.allTabsView`
 
 ## hideAllTabsPanel()
 - 位置: L239-244
@@ -73,9 +81,11 @@ lines: 270
 - 役割: すべてのタブパネルを開いた後に、非表示タブのサブビューを開く。
 - 触るとき: 非表示タブ一覧への直接の入口を調べるとき。
 - 呼び出し先: `PanelUI.showSubView()`, `this.allTabsView.addEventListener()`, `this.init()`, `this.showAllTabsPanel()`
+- 参照: `this.canOpen`, `this.hiddenTabsButton`, `this.kElements.hiddenTabsView`
 
 ## searchTabs()
 - 位置: L264-268
 - 役割: アドレスバーをオープンタブ検索モードで開く。
 - 触るとき: パネルからのタブ検索の動作を変えるとき。
 - 呼び出し先: `gURLBar.search()`
+- 参照: `UrlbarShared.RESTRICT_TOKENS.OPENPAGE`

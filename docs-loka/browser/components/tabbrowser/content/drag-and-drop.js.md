@@ -14,23 +14,27 @@ lines: 2970
 - 触るとき: ドラッグ中の要素の位置や大きさの基準要素を調べるとき。
 - 呼び出し先: `isSplitViewWrapper()`, `isTab()`, `isTabGroupLabel()`
 - 条件付き依存: `if (isTabGroupLabel(element))` → `element.closest()`
+- 参照: `element.tagName`
 
 ## constructor()
 - 位置: L69-71
 - 役割: 親の tabbrowser-tabs 要素を保持する。
 - 触るとき: このクラスの生成元や保持する参照を確認するとき。
+- 参照: `this._tabbrowserTabs`
 
 ## init()
 - 位置: L73-83
 - 役割: ピン留めドロップ表示、ピン留め促進カード、ドロップインジケータの要素を取得する。
 - 触るとき: ドラッグ用 UI 要素の取得元を変えるとき。
 - 呼び出し先: `document.getElementById()`, `this._tabbrowserTabs.querySelector()`
+- 参照: `this._dragToPinPromoCard`, `this._pinnedDropIndicator`, `this._tabDropIndicator`
 
 ## handle_dragstart()
 - 位置: L87-107
 - 役割: ドラッグ開始時に対象のタブ、グループラベル、分割ビューを特定し、startTabDrag を呼ぶ。
 - 触るとき: どの要素からドラッグを始められるかを変えるとき。
 - 呼び出し先: `isSplitViewWrapper()`, `this._getDragTarget()`, `this._tabbrowserTabs.previewPanel?.deactivate()`, `this.startTabDrag()`
+- 参照: `tab.splitview`, `tab.visible`, `this._tabbrowserTabs._isCustomizing`
 
 ## handle_dragover()
 - 位置: L109-275
@@ -58,6 +62,7 @@ lines: 2970
 - 条件付き依存: `if (newIndex == children.length)` → `children.at(-1).getBoundingClientRect()`
 - 条件付き依存: `if (newIndex == children.length)` → `children.at()`
 - 条件付き依存: `if (!(newIndex == children.length))` → `children[newIndex].getBoundingClientRect()`
+- 参照: `arrowScrollbox._scrollButtonDown`, `arrowScrollbox._scrollButtonUp`, `arrowScrollbox.scrollClientRect`, `arrowScrollbox.scrollIncrement`, `children.length`, `draggedTab._dragData.expandGroupOnDrop`, `draggedTab._dragData.fromTabList`, `draggedTab.group.collapsed`, `draggedTab.group.collapsedByDrag`, `draggedTab.ownerDocument`, `event.originalTarget`, `gBrowser.pinnedTabCount`, `ind.clientHeight`, `ind.clientWidth`, `ind.hidden`, `ind.style.transform`, `itemRect.bottom`, `itemRect.left`, `itemRect.right`, `rect.left`, `rect.right`, `rect.top`, `scrollRect.bottom`, `scrollRect.height`, `scrollRect.left`, `scrollRect.right`, `scrollRect.top`, `scrollRect.width`, `target.group.collapsed`, `this.#dragTime`, `this._rtlMode`, `this._tabDropIndicator`, `this._tabbrowserTabs.arrowScrollbox`, `this._tabbrowserTabs.clientWidth`, `this._tabbrowserTabs.dragAndDropElements`, `this._tabbrowserTabs.overflowing`, `this._tabbrowserTabs.selectedItem`, `this._tabbrowserTabs.verticalMode`
 - XPCOM: `Services.prefs`
 
 ## handle_drop()
@@ -151,6 +156,7 @@ lines: 2970
 - 条件付き依存: `if (!(draggedTab))` → `Services.prefs.getIntPref()`
 - 条件付き依存: `if ( urls.length >= Services.prefs.getIntPref("browser.tabs.maxOpenBeforeWarn") )` → `lazy.OpenInTabsUtils.promiseConfirmOpenInTabs()`
 - 条件付き依存: `if (!(draggedTab))` → `gBrowser.loadTabs()`
+- 参照: `activeEntry.hasUserInteraction`, `draggedTab._dragData`, `draggedTab._dragData.movingTabs`, `draggedTab._dragData.tabGroupCreationColor`, `draggedTab._dragData.tabHeight`, `draggedTab._dragData.tabWidth`, `draggedTab._dragData.translateX`, `draggedTab._dragData.translateY`, `draggedTab.container`, `draggedTab.currentIndex`, `draggedTab.group`, `draggedTab.pinned`, `dropElement.group`, `dt.dropEffect`, `event.dataTransfer`, `event.shiftKey`, `event.target`, `gBrowser.TabMetrics.METRIC_ACTION.ADOPT`, `gBrowser.TabMetrics.METRIC_SOURCE.DRAG_AND_DROP`, `gBrowser.pinnedTabCount`, `item.style.transform`, `link.url`, `links.length`, `movingTabs.length`, `movingTabs[0].elementIndex`, `nextItem.group`, `tab.currentIndex`, `tab.selected`, `tabs.length`, `tabs[tabs.length - 1].currentIndex`, `tabs[tabs.length - 1].elementIndex`, `targetTab?.linkedBrowser?.browsingContext ?.activeSessionHistoryEntry`, `this.#dropAnimationEndTime`, `this._dragToPinPromoCard`, `this._rtlMode`, `this._tabDropIndicator.hidden`, `this._tabbrowserTabs`, `this._tabbrowserTabs.dragAndDropElements`, `this._tabbrowserTabs.pinnedTabsContainer`, `this._tabbrowserTabs.selectedItem`, `this._tabbrowserTabs.verticalMode`, `unpinnedSplitViews.length`, `urls.length`
 - XPCOM: `Services.droppedLinkHandler` / `Services.prefs`
 
 ## moveTabs()
@@ -162,6 +168,7 @@ lines: 2970
 - 条件付き依存: `if (!(fromTabList && isSplitViewWrapper(tab)))` → `gBrowser.moveTabTo()`
 - 条件付き依存: `if (dropElement && dropBefore)` → `gBrowser.moveTabsBefore()`
 - 条件付き依存: `if (dropElement && dropBefore != undefined)` → `gBrowser.moveTabsAfter()`
+- 参照: `this._tabbrowserTabs.dragAndDropElements`
 
 ## postTransitionCleanup()
 - 位置: L504-507
@@ -174,6 +181,7 @@ lines: 2970
 - 役割: 対象要素の transform の遷移終了を待ち、リスナーを外して後始末を呼ぶ。
 - 触るとき: ドロップアニメーションの完了検知を調べるとき。
 - 呼び出し先: `item.removeEventListener()`, `postTransitionCleanup()`
+- 参照: `transitionendEvent.originalTarget`, `transitionendEvent.propertyName`
 
 ## handle_dragend()
 - 位置: L752-921
@@ -188,6 +196,7 @@ lines: 2970
 - 条件付き依存: `if (gBrowser.tabs.length == 1)` → `window.focus()`
 - 条件付き依存: `if (!(gBrowser.tabs.length == 1))` → `gBrowser.TabMetrics.userTriggeredContext()`
 - 条件付き依存: `if (!(gBrowser.tabs.length == 1))` → `gBrowser.replaceTabsWithWindow()`
+- 参照: `availHeight.value`, `availWidth.value`, `availX.value`, `availY.value`, `draggedTab._dragData`, `draggedTab._dragData.offsetX`, `draggedTab._dragData.offsetY`, `draggedTab.group`, `dt.dropEffect`, `dt.mozUserCancelled`, `event.dataTransfer`, `event.screen`, `event.screenX`, `event.screenY`, `gBrowser.TabMetrics.METRIC_SOURCE.DRAG_AND_DROP`, `gBrowser.tabs.length`, `props.screenX`, `props.screenY`, `props.suppressinitialfullscreen`, `rect.height`, `rect.left`, `rect.right`, `rect.top`, `rect.width`, `screen.contentsScaleFactor`, `screen.defaultCSSScaleFactor`, `this._tabbrowserTabs .verticalMode`, `this._tabbrowserTabs._isCustomizing`, `this._tabbrowserTabs._sidebarPositionStart`, `this._tabbrowserTabs.arrowScrollbox`, `this._tabbrowserTabs.verticalMode`, `window.desktopToDeviceScale`, `window.devicePixelRatio`, `window.fullScreen`, `window.mozInnerScreenX`, `window.mozInnerScreenY`, `window.outerHeight`, `window.outerWidth`, `window.screenX`, `window.screenY`
 - XPCOM: `Services.prefs`
 
 ## handle_dragleave()
@@ -195,11 +204,13 @@ lines: 2970
 - 役割: ドラッグがタブストリップから出たらドロップインジケータを隠す。
 - 触るとき: ドラッグ離脱時の表示解除を調べるとき。
 - 呼び出し先: `event.stopPropagation()`
+- 参照: `event.relatedTarget`, `target.parentNode`, `this.#dragTime`, `this._tabDropIndicator.hidden`, `this._tabbrowserTabs`
 
 ## _rtlMode()
 - 位置: L941-943
 - 役割: 横並びで RTL UI のときに真を返す getter。
 - 触るとき: RTL 時に左右を反転する箇所を調べるとき。
+- 参照: `this._tabbrowserTabs.verticalMode`
 
 ## #setMovingTabMode()
 - 位置: L945-954
@@ -214,6 +225,7 @@ lines: 2970
 - 役割: このウィンドウの現在のドラッグセッションを nsIDragService から取得する。
 - 触るとき: ドラッグセッションの有無の判定を調べるとき。
 - 呼び出し先: `Cc["@mozilla.org/widget/dragservice;1"] .getService()`, `Cc["@mozilla.org/widget/dragservice;1"] .getService(Ci.nsIDragService) .getCurrentSession()`
+- 参照: `Ci.nsIDragService`
 - XPCOM: `nsIDragService` / `@mozilla.org/widget/dragservice;1`
 
 ## #startStaleDragCheck()
@@ -222,18 +234,21 @@ lines: 2970
 - 触るとき: ドラッグ後にタブバーが操作不能になる問題を調べるとき。
 - 呼び出し先: `setInterval()`, `window.addEventListener()`
 - 条件付き依存: `if (!this.#dragSession)` → `this.#recoverFromStaleDrag()`
+- 参照: `this.#dragSession`, `this.#onMouseDown`, `this.#staleDragCheckTimer`
 
 ## #stopStaleDragCheck()
 - 位置: L983-993
 - 役割: 古いドラッグの監視タイマーと mousedown リスナーを止める。
 - 触るとき: 古いドラッグ監視の停止条件を調べるとき。
 - 呼び出し先: `clearInterval()`, `window.removeEventListener()`
+- 参照: `this.#dropAnimationEndTime`, `this.#onMouseDown`, `this.#staleDragCheckTimer`
 
 ## #onMouseDown()
 - 位置: L995-1002
 - 役割: 主ボタンの押下を、ドラッグが終了している証拠として復旧処理を呼ぶ。
 - 触るとき: ドラッグ終了イベントが来ない場合の復旧経路を調べるとき。
 - 条件付き依存: `if (event.button == 0)` → `this.#recoverFromStaleDrag()`
+- 参照: `event.button`
 
 ## #recoverFromStaleDrag()
 - 位置: L1004-1041
@@ -244,6 +259,7 @@ lines: 2970
 - 条件付き依存: `if (draggedItem)` → `isTabGroupLabel()`
 - 条件付き依存: `if (isTabGroupLabel(draggedItem))` → `this._setIsDraggingTabGroup()`
 - 条件付き依存: `if (isTabGroupLabel(draggedItem))` → `this._expandGroupOnDrop()`
+- 参照: `Glean.tab.staleDragRecovery`, `draggedItem._dragData`, `draggedItem.group`, `item._dragData`, `this.#dragSession`, `this.#dropAnimationEndTime`
 
 ## _getDropIndex()
 - 位置: L1043-1068
@@ -252,6 +268,7 @@ lines: 2970
 - 呼び出し先: `elementToMove()`, `this._getDragTarget()`
 - 条件付き依存: `if (this._tabbrowserTabs.verticalMode)` → `elementForSize.getBoundingClientRect()`
 - 条件付き依存: `if (!(this._tabbrowserTabs.verticalMode))` → `elementForSize.getBoundingClientRect()`
+- 参照: `elementForSize.getBoundingClientRect().height`, `elementForSize.getBoundingClientRect().width`, `elementForSize.screenX`, `elementForSize.screenY`, `event.screenX`, `event.screenY`, `item.elementIndex`, `item.splitview`, `this._rtlMode`, `this._tabbrowserTabs.dragAndDropElements.length`, `this._tabbrowserTabs.verticalMode`
 
 ## _getDragTarget()
 - 位置: L1087-1135
@@ -264,6 +281,7 @@ lines: 2970
 - 条件付き依存: `if (isTab(target) && target.splitview)` → `target.splitview.tabs.reverse()`
 - 条件付き依存: `if (isTab(target) && target.splitview)` → `lTab.getBoundingClientRect()`
 - 条件付き依存: `if (isTab(target) && target.splitview)` → `rTab.getBoundingClientRect()`
+- 参照: `event.screenX`, `event.screenY`, `lTab.getBoundingClientRect().width`, `lTab.screenX`, `rTab.getBoundingClientRect().width`, `rTab.screenX`, `target.parentNode`, `target.screenX`, `target.screenY`, `target.splitview`, `target.splitview.tabs`, `this._tabbrowserTabs.arrowScrollbox`, `this._tabbrowserTabs.verticalMode`, `window.RTL_UI`
 
 ## #getHorizontalScrollboxDragTarget()
 - 位置: L1150-1159
@@ -276,6 +294,7 @@ lines: 2970
 - 役割: 要素の横幅(必要なら両端25%を除く)の範囲にイベントの X が入るかを返す。
 - 触るとき: 横方向の当たり判定を調べるとき。
 - 呼び出し先: `window.windowUtils.getBoundsWithoutFlushing()`
+- 参照: `el.screenX`, `event.screenX`
 
 ## #isMovingTab()
 - 位置: L1161-1163
@@ -288,12 +307,14 @@ lines: 2970
 - 役割: タブグループのドラッグ中フラグを設定し、表示中タブのキャッシュを無効化する。
 - 触るとき: グループドラッグ中の表示タブ計算を調べるとき。
 - 呼び出し先: `this._tabbrowserTabs._invalidateCachedVisibleTabs()`
+- 参照: `tabGroup.isBeingDragged`
 
 ## _expandGroupOnDrop()
 - 位置: L1189-1211
 - 役割: ドラッグのために畳んだタブグループを、アニメーション完了後に予約領域を解放しつつ展開し直す。
 - 触るとき: グループをドラッグ後に展開が戻る挙動を調べるとき。
 - 呼び出し先: `draggedTab.ownerDocument.getElementById()`, `group.addEventListener()`, `isTabGroupLabel()`, `this.#releaseSpaceInScrolledContent()`
+- 参照: `draggedTab.group`, `group.collapsed`, `group.collapsedByDrag`
 
 ## _triggerDragOverGrouping()
 - 位置: L1216-1222
@@ -306,6 +327,7 @@ lines: 2970
 - 役割: グループ化判定用のタイマーがあれば解除する。
 - 触るとき: グループ化の遅延タイマーの扱いを調べるとき。
 - 条件付き依存: `if (this._dragOverGroupingTimer)` → `clearTimeout()`
+- 参照: `this._dragOverGroupingTimer`
 
 ## _setDragOverGroupColor()
 - 位置: L1231-1254
@@ -356,6 +378,7 @@ lines: 2970
 - 条件付き依存: `if (!(tab.multiselected))` → `isTabGroupLabel()`
 - 条件付き依存: `if (isTabGroupLabel(tab))` → `this._setIsDraggingTabGroup()`
 - 条件付き依存: `if (fromTabList)` → `Glean.browserUiInteraction.allTabsPanelDragstartTabEventCount.add()`
+- 参照: `AppConstants.platform`, `canvas.height`, `canvas.mozOpaque`, `canvas.style.height`, `canvas.style.width`, `canvas.width`, `context.fillStyle`, `dataTransferOrderedTabs.length`, `document.defaultView.SidebarController`, `dt.mozCursor`, `dtBrowser.currentURI.spec`, `dtTab.linkedBrowser`, `event.dataTransfer`, `event.screenX`, `event.screenY`, `gBrowser.pinnedTabCount`, `gBrowser.selectedElements`, `gBrowser.tabGroupMenu.nextUnusedColor`, `rect.left`, `rect.right`, `splitViewTab.linkedBrowser`, `t.pinned`, `t.selected`, `tab._dragData`, `tab.group`, `tab.group.collapsed`, `tab.linkedBrowser`, `tab.multiselected`, `tab.pinned`, `this._maxTabsPerRow`, `this._rtlMode`, `this._tabbrowserTabs`, `this._tabbrowserTabs._dndCanvas`, `this._tabbrowserTabs._dndPanel`, `this._tabbrowserTabs._dndPanel.className`, `this._tabbrowserTabs.arrowScrollbox.scrollPosition`, `this._tabbrowserTabs.pinnedTabsContainer`, `this._tabbrowserTabs.pinnedTabsContainer.scrollPosition`, `this._tabbrowserTabs.selectedItem`, `this._tabbrowserTabs.verticalMode`, `this.expandOnHover`, `window.devicePixelRatio`, `window.screenX`, `window.screenY`, `window.windowUtils.getBoundsWithoutFlushing( this._tabbrowserTabs.pinnedTabsContainer ).right`, `wrapper.style.height`, `wrapper.style.width`
 
 ## captureListener()
 - 位置: L1391-1393
@@ -368,16 +391,19 @@ lines: 2970
 - 役割: 要素の縦または横方向の開始位置(top または left)を返す。
 - 触るとき: ドラッグ開始時のオフセット計算を調べるとき。
 - 呼び出し先: `ele.getBoundingClientRect()`
+- 参照: `rect.left`, `rect.top`, `this._tabbrowserTabs.verticalMode`
 
 ## #reserveSpaceInScrolledContent()
 - 位置: L1500-1506
 - 役割: タブ列末尾の要素にマージンを付け、スクロール内容が縮まないよう領域を確保する。
 - 触るとき: ドラッグ中にスクロール位置がずれる問題を調べるとき。
+- 参照: `periphery.style.marginBlockStart`, `periphery.style.marginInlineStart`, `this._tabbrowserTabs.verticalMode`
 
 ## #releaseSpaceInScrolledContent()
 - 位置: L1511-1514
 - 役割: 確保していた末尾のマージンを解除する。
 - 触るとき: 確保領域が戻らない問題を調べるとき。
+- 参照: `periphery.style.marginBlockStart`, `periphery.style.marginInlineStart`
 
 ## #marginBoxExtent()
 - 位置: L1522-1537
@@ -385,6 +411,7 @@ lines: 2970
 - 触るとき: 確保する領域の長さの計算を調べるとき。
 - 呼び出し先: `parseFloat()`, `window.getComputedStyle()`, `window.windowUtils.getBoundsWithoutFlushing()`
 - 条件付き依存: `if (this._tabbrowserTabs.verticalMode)` → `parseFloat()`
+- 参照: `rect.height`, `rect.width`, `style.marginBlockEnd`, `style.marginBlockStart`, `style.marginInlineEnd`, `style.marginInlineStart`, `this._tabbrowserTabs.verticalMode`
 
 ## _updateTabStylesOnDrag()
 - 位置: L1545-1778
@@ -409,18 +436,21 @@ lines: 2970
 - 条件付き依存: `if (this._tabbrowserTabs.expandOnHover)` → `SidebarController.expandOnHoverComplete.then()`
 - 条件付き依存: `if (this._tabbrowserTabs.expandOnHover)` → `window.promiseDocumentFlushed()`
 - 条件付き依存: `if (this._tabbrowserTabs.expandOnHover)` → `requestAnimationFrame()`
+- 参照: `SidebarController.sidebarMain.clientWidth`, `movingTab.style.height`, `movingTab.style.left`, `movingTab.style.top`, `movingTab.style.width`, `movingTabs.length`, `periphery.style.left`, `periphery.style.top`, `pinnedContainerRect.height`, `pinnedPeriphery.id`, `pinnedPeriphery.style.marginBlockStart`, `pinnedPeriphery.style.width`, `pinnedRect.height`, `pinnedRect.top`, `pinnedRect.width`, `rect.height`, `rect.left`, `rect.top`, `rect.width`, `suppressTransitionsFor.length`, `t.group`, `t.pinned`, `t.style.maxWidth`, `t.style.transition`, `t.style.width`, `tab._dragData`, `tab.documentGlobal`, `tab.group`, `tab.group.tabsAndSplitViews`, `tab.pinned`, `tabContainerRect.top`, `tabRect.width`, `tabStripItemElement.offsetParent`, `tabStripItemElement.style.pointerEvents`, `this._rtlMode`, `this._tabbrowserTabs`, `this._tabbrowserTabs.arrowScrollbox.scrollbox`, `this._tabbrowserTabs.arrowScrollbox.scrollbox.style.height`, `this._tabbrowserTabs.arrowScrollbox.scrollbox.style.width`, `this._tabbrowserTabs.dragAndDropElements`, `this._tabbrowserTabs.expandOnHover`, `this._tabbrowserTabs.overflowing`, `this._tabbrowserTabs.pinnedTabsContainer`, `this._tabbrowserTabs.pinnedTabsContainer.firstChild`, `this._tabbrowserTabs.pinnedTabsContainer.scrollbox`, `this._tabbrowserTabs.pinnedTabsContainer.scrollbox.style.height`, `this._tabbrowserTabs.pinnedTabsContainer.scrollbox.style.width`, `this._tabbrowserTabs.pinnedTabsContainer.style.minHeight`, `this._tabbrowserTabs.verticalMode`, `unpinnedRect.height`, `unpinnedRect.width`, `window.windowUtils.getBoundsWithoutFlushing( tabStripItemElement.offsetParent ).x`
 
 ## setElPosition()
 - 位置: L1702-1713
 - 役割: ドラッグ中のタブの抜けた分、後続の要素を元の位置に見えるようずらす。
 - 触るとき: タブを持ち上げたときの他のタブの位置保持を調べるとき。
 - 呼び出し先: `tabsOrigBounds.get()`
+- 参照: `el.style.left`, `el.style.top`, `origBounds.left`, `origBounds.top`, `rect.height`, `rect.left`, `rect.top`, `rect.width`, `this._rtlMode`, `this._tabbrowserTabs.verticalMode`
 
 ## setGridElPosition()
 - 位置: L1715-1729
 - 役割: ピン留めグリッドで要素を元の位置に見えるよう差分だけずらす。
 - 触るとき: 縦タブのピン留めグリッドでのドラッグ時の位置ずれを調べるとき。
 - 呼び出し先: `el.getBoundingClientRect()`, `tabsOrigBounds.get()`
+- 参照: `el.style.left`, `el.style.top`, `newBounds.x`, `newBounds.y`, `origBounds.x`, `origBounds.y`
 
 ## _moveTogetherSelectedTabs()
 - 位置: L1783-1952
@@ -433,6 +463,7 @@ lines: 2970
 - 条件付き依存: `if (isGrid)` → `this._tabbrowserTabs.dragAndDropElements[ newIndex ].getBoundingClientRect()`
 - 条件付き依存: `if ( !tab._dragData.movingTabsSet.has(item) && (item._moveTogetherSelectedTabsData?.translateX || item._moveTogetherSelectedTabsData?.translateY) && ((item.pinne...)` → `elementToMove()`
 - 条件付き依存: `if ( item._moveTogetherSelectedTabsData?.translateX || item._moveTogetherSelectedTabsData?.translateY )` → `elementToMove()`
+- 参照: `currentRect.height`, `currentRect.width`, `draggedRect.height`, `draggedRect.width`, `element.style.transform`, `gBrowser.selectedElements`, `item._moveTogetherSelectedTabsData.translateX`, `item._moveTogetherSelectedTabsData.translateY`, `item._moveTogetherSelectedTabsData?.translateX`, `item._moveTogetherSelectedTabsData?.translateY`, `item.pinned`, `oldTabRect.x`, `oldTabRect.y`, `selectedElement.elementIndex`, `selectedElements.length`, `t.elementIndex`, `t.pinned`, `tab._moveTogetherSelectedTabsData`, `tab.pinned`, `this._rtlMode`, `this._tabbrowserTabs.dragAndDropElements`, `this._tabbrowserTabs.verticalMode`, `unmovingTab._moveTogetherSelectedTabsData`, `unmovingTab._moveTogetherSelectedTabsData.translateX`, `unmovingTab._moveTogetherSelectedTabsData.translateY`, `unmovingTab.currentIndex`, `unmovingTab.elementIndex`, `unmovingTab.multiselected`, `unmovingTabRect.x`, `unmovingTabRect.y`
 
 ## addAnimationData()
 - 位置: L1801-1835
@@ -441,28 +472,33 @@ lines: 2970
 - 呼び出し先: `movingElement.getBoundingClientRect()`, `movingElement.toggleAttribute()`, `selectedElement.getBoundingClientRect()`
 - 条件付き依存: `if (gReduceMotion)` → `postTransitionCleanup()`
 - 条件付き依存: `if (!(gReduceMotion))` → `movingElement.addEventListener()`
+- 参照: `movingElement._moveTogetherSelectedTabsData`, `movingElement._moveTogetherSelectedTabsData.translateX`, `movingElement._moveTogetherSelectedTabsData.translateY`, `movingTabRect.x`, `movingTabRect.y`, `tabRect.x`, `tabRect.y`
 
 ## postTransitionCleanup()
 - 位置: L1809-1811
 - 役割: 寄せ集めアニメーション中の印(animate)を偽にする。
 - 触るとき: 寄せ集めアニメーション完了の扱いを調べるとき。
+- 参照: `movingElement._moveTogetherSelectedTabsData.animate`
 
 ## onTransitionEnd()
 - 位置: L1815-1824
 - 役割: 対象タブの transform の遷移終了を待ち、リスナーを外して後始末を呼ぶ。
 - 触るとき: 寄せ集めアニメーション完了の検知を調べるとき。
 - 呼び出し先: `movingElement.removeEventListener()`, `postTransitionCleanup()`
+- 参照: `transitionendEvent.originalTarget`, `transitionendEvent.propertyName`
 
 ## #isAnimatingMoveTogetherSelectedTabs()
 - 位置: L1954-1961
 - 役割: 選択タブのどれかが寄せ集めアニメーション中かを返す。
 - 触るとき: アニメーション中にドラッグ処理を待たせる条件を調べるとき。
+- 参照: `element._moveTogetherSelectedTabsData?.animate`, `gBrowser.selectedElements`
 
 ## finishMoveTogetherSelectedTabs()
 - 位置: L1963-1993
 - 役割: 選択タブをドラッグ中のタブの前後へ実際に移動し、一時的な移動データと transform を消す。
 - 触るとき: 寄せ集めの確定処理を調べるとき。
 - 呼び出し先: `elementToMove()`, `gBrowser.moveTabAfter()`, `gBrowser.moveTabBefore()`, `item.removeAttribute()`, `selectedElements.indexOf()`
+- 参照: `gBrowser.selectedElements`, `item._moveTogetherSelectedTabsData`, `item.style.transform`, `selectedElements.length`, `tab._moveTogetherSelectedTabsData`, `tab._moveTogetherSelectedTabsData.finished`, `this._tabbrowserTabs.dragAndDropElements`
 
 ## _animateExpandedPinnedTabMove()
 - 位置: L1997-2179
@@ -470,6 +506,7 @@ lines: 2970
 - 触るとき: 縦タブのピン留めグリッドでのドラッグ並べ替えの不具合を調べるとき。
 - 呼び出し先: `Math.floor()`, `Math.max()`, `Math.min()`, `document.getElementById()`, `draggedTab.getBoundingClientRect()`, `event.dataTransfer.mozGetDataAt()`, `getTabShift()`, `movingTabs.includes()`, `tabs.filter()`, `this._tabbrowserTabs.visibleTabs.slice()`, `window.windowUtils.getBoundsWithoutFlushing()`
 - 条件付き依存: `if (tab != draggedTab)` → `getTabShift()`
+- 参照: `dragData.animDropElementIndex`, `dragData.animLastScreenX`, `dragData.animLastScreenY`, `dragData.dropBefore`, `dragData.dropElement`, `dragData.movingTabs`, `dragData.screenX`, `dragData.screenY`, `dragData.tabHeight`, `dragData.tabWidth`, `dragData.translateX`, `dragData.translateY`, `draggedTab._dragData`, `draggedTab.elementIndex`, `draggedTab.screenX`, `draggedTab.screenY`, `event.screenX`, `event.screenY`, `gBrowser.pinnedTabCount`, `periphery.screenY`, `tab.style.transform`, `tabs.length`, `tabs[mid].currentIndex`, `tabs[mid].screenX`, `tabs[mid].screenY`, `this._maxTabsPerRow`, `this._tabbrowserTabs`, `this._tabbrowserTabs.screenX`, `this._tabbrowserTabs.screenY`, `window.windowUtils.getBoundsWithoutFlushing(this._tabbrowserTabs) .width`
 
 ## getTabShift()
 - 位置: L2081-2120
@@ -477,6 +514,7 @@ lines: 2970
 - 触るとき: グリッド上のタブのずれ量の計算を調べるとき。
 - 条件付き依存: `if ( tab.currentIndex < draggedTab.elementIndex && tab.currentIndex >= dropIndex )` → `Math.ceil()`
 - 条件付き依存: `if ( tab.currentIndex > draggedTab.elementIndex && tab.currentIndex < dropIndex )` → `Math.floor()`
+- 参照: `draggedTab.elementIndex`, `tab.currentIndex`, `tab.elementIndex`, `tab?.currentIndex`, `this._maxTabsPerRow`
 
 ## _animateTabMove()
 - 位置: L2182-2713
@@ -528,6 +566,7 @@ lines: 2970
 - 条件付き依存: `if (!( isTab(dropElement) && dropElementGroup && dropElement == lastUnmovingTabInGroup && !dropBefore && overlapPercent < dragOverGroupingThreshold ))` → `isTabGroupLabel()`
 - 条件付き依存: `if (!(shouldDropIntoCollapsedTabGroup))` → `this._setDragOverGroupColor()`
 - 条件付き依存: `if (!(shouldDropIntoCollapsedTabGroup))` → `this._tabbrowserTabs.toggleAttribute()`
+- 参照: `Tabbrowser.prefs.tabGroupsEnabled`, `dragData.animDropElementIndex`, `dragData.animLastScreenPos`, `dragData.dropBefore`, `dragData.dropElement`, `dragData.movingTabs`, `dragData.movingTabsSet`, `dragData.screenX`, `dragData.screenY`, `dragData.shouldCreateGroupOnDrop`, `dragData.shouldDropIntoCollapsedTabGroup`, `dragData.tabGroupCreationColor`, `dragData.tabHeight`, `dragData.tabWidth`, `dragData.translatePos`, `dragData.translateX`, `dragData.translateY`, `draggedTab._dragData`, `draggedTab.elementIndex`, `draggedTab.pinned`, `dropElement.elementIndex`, `dropElement.group`, `dropElement.group.collapsed`, `dropElement.group.color`, `dropElement.group.hasActiveTab`, `dropElement?.currentIndex`, `dropElement?.group`, `dropElementGroup.collapsed`, `dropElementGroup.tabs`, `dropElementGroup?.color`, `ele.visible`, `event.screenX`, `event.screenY`, `gBrowser.pinnedTabCount`, `item.style.transform`, `lastPossibleDropElement?.currentIndex`, `lastPossibleDropElement?.elementIndex`, `lastVisibleTabInGroup.elementIndex`, `lastVisibleTabInGroup?.currentIndex`, `this._dragOverGroupingTimer`, `this._dragToPinPromoCard.shouldRender`, `this._pinnedDropIndicator`, `this._rtlMode`, `this._tabbrowserTabs`, `this._tabbrowserTabs.arrowScrollbox`, `this._tabbrowserTabs.dragAndDropElements`, `this._tabbrowserTabs.verticalMode`, `window.getComputedStyle(this._pinnedDropIndicator).marginInline`
 - XPCOM: `Services.prefs`
 
 ## bounds()
@@ -546,6 +585,7 @@ lines: 2970
 - 位置: L2318-2335
 - 役割: ドロップ位置に応じて、各要素がどれだけ前後にずれるかを返す。
 - 触るとき: ドラッグ中に他のタブが避ける量の計算を調べるとき。
+- 参照: `draggedTab.elementIndex`, `item.currentIndex`, `item.elementIndex`, `item?.currentIndex`, `this._rtlMode`
 
 ## greatestOverlap()
 - 位置: L2381-2400
@@ -559,6 +599,7 @@ lines: 2970
 - 触るとき: ドラッグ中にどのタブの上にいるかの判定を調べるとき。
 - 呼び出し先: `Math.floor()`, `elementToMove()`, `getTabShift()`
 - 条件付き依存: `if (!(screen > point))` → `bounds()`
+- 参照: `tabs.length`
 
 ## _checkWithinPinnedContainerBounds()
 - 位置: L2715-2778
@@ -574,6 +615,7 @@ lines: 2970
 - 条件付き依存: `if (!this.#pinnedDropIndicatorTimeout)` → `this.#isMovingTab()`
 - 条件付き依存: `if (this.#isMovingTab())` → `this._pinnedDropIndicator.setAttribute()`
 - 条件付き依存: `if (!inPinnedRange)` → `this._pinnedDropIndicator.removeAttribute()`
+- 参照: `tabbrowserTabsRect.width`, `this.#pinnedDropIndicatorTimeout`, `this._rtlMode`, `this._tabbrowserTabs`, `this._tabbrowserTabs.style.maxWidth`, `this._tabbrowserTabs.verticalMode`
 - XPCOM: `Services.prefs`
 
 ## #clearPinnedDropIndicatorTimer()
@@ -581,6 +623,7 @@ lines: 2970
 - 役割: ピン留めドロップ表示の待機タイマーがあれば解除する。
 - 触るとき: ピン留め表示の遅延タイマーの扱いを調べるとき。
 - 条件付き依存: `if (this.#pinnedDropIndicatorTimeout)` → `clearTimeout()`
+- 参照: `this.#pinnedDropIndicatorTimeout`
 
 ## #resetPinnedDropIndicator()
 - 位置: L2787-2791
@@ -593,6 +636,7 @@ lines: 2970
 - 役割: 移動モードを終えて、transform、グループ化関連の属性、ピン留め表示を元に戻す。
 - 触るとき: ドラッグ終了後に見た目が残る問題を調べるとき。
 - 呼び出し先: `elementToMove()`, `this.#isMovingTab()`, `this.#resetPinnedDropIndicator()`, `this.#setMovingTabMode()`, `this._clearDragOverGroupingTimer()`, `this._resetGroupTarget()`, `this._setDragOverGroupColor()`, `this._tabbrowserTabs.removeAttribute()`
+- 参照: `item.style.transform`, `this._tabbrowserTabs.dragAndDropElements`
 
 ## _resetTabsAfterDrop()
 - 位置: L2820-2908
@@ -601,6 +645,7 @@ lines: 2970
 - 呼び出し先: `draggedTabContainer.getElementsByClassName()`, `draggedTabContainer.getElementsByTagName()`, `draggedTabDocument.defaultView.SidebarController.updatePinnedTabsHeightOnResize()`, `draggedTabDocument.getElementById()`, `draggedTabDocument.getElementsByClassName()`, `isTabGroupLabel()`, `label.removeAttribute()`, `pinnedDropIndicator.removeAttribute()`, `pinnedTabsContainer.removeAttribute()`, `pinnedTabsContainer.removeChild()`, `splitviewWrapper.removeAttribute()`, `tab.removeAttribute()`
 - 条件付き依存: `if (this._tabbrowserTabs.expandOnHover)` → `MousePosTracker.addListener()`
 - 条件付き依存: `if (!isTabGroupLabel(draggedTab) || !draggedTab.group.collapsedByDrag)` → `this.#releaseSpaceInScrolledContent()`
+- 参照: `arrowScrollbox.scrollbox.style.height`, `arrowScrollbox.scrollbox.style.width`, `document.defaultView.SidebarController`, `draggedTab.group.collapsedByDrag`, `draggedTab?.ownerDocument`, `draggedTabContainer.style.maxWidth`, `draggedTabDocument.documentGlobal.gBrowser.tabContainer`, `groupLabel.style.left`, `groupLabel.style.top`, `label.currentIndex`, `label.style.height`, `label.style.left`, `label.style.maxWidth`, `label.style.pointerEvents`, `label.style.top`, `label.style.width`, `periphery.style.left`, `periphery.style.top`, `pinnedTabsContainer.scrollbox.style.height`, `pinnedTabsContainer.scrollbox.style.width`, `pinnedTabsContainer.style.minHeight`, `splitviewWrapper.style.height`, `splitviewWrapper.style.left`, `splitviewWrapper.style.maxWidth`, `splitviewWrapper.style.pointerEvents`, `splitviewWrapper.style.top`, `splitviewWrapper.style.width`, `tab.style.left`, `tab.style.maxWidth`, `tab.style.pointerEvents`, `tab.style.top`, `tab.style.width`, `this._tabbrowserTabs.expandOnHover`
 
 ## getDropEffectForTabDrag()
 - 位置: L2914-2967
@@ -613,4 +658,5 @@ lines: 2970
 - 条件付き依存: `if (isMovingTab)` → `isSplitViewWrapper()`
 - 条件付き依存: `if (isMovingTab)` → `sourceNode.ownerDocument.documentElement.getAttribute()`
 - 条件付き依存: `if ( (isTab(sourceNode) || isTabGroupLabel(sourceNode) || isSplitViewWrapper(sourceNode)) && sourceNode.documentGlobal.isChromeWindow && sourceNode.ownerDocument...)` → `PrivateBrowsingUtils.isWindowPrivate()`
+- 参照: `dt.dropEffect`, `dt.mozItemCount`, `event.dataTransfer`, `sourceNode.documentGlobal`, `sourceNode.documentGlobal.gFissionBrowser`, `sourceNode.documentGlobal.gMultiProcessBrowser`, `sourceNode.documentGlobal.isChromeWindow`, `window.gFissionBrowser`, `window.gMultiProcessBrowser`
 - XPCOM: `Services.droppedLinkHandler`

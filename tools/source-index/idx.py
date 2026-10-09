@@ -7,6 +7,9 @@
 
   idx.py callers PATTERN   functions that call something matching PATTERN
   idx.py callees PATTERN   what the functions whose name matches PATTERN call
+  idx.py refs PATTERN      functions that call or read a property matching
+                           PATTERN, e.g. `gBrowser.tabGroupMenu.openEditModal()`
+                           and a plain read of `gBrowser.tabGroupMenu.panel`
   idx.py fn PATTERN        functions whose name matches PATTERN
   idx.py uses PATTERN      functions using an XPCOM interface, contract ID or
                            Services.xxx matching PATTERN
@@ -69,6 +72,7 @@ def parse_doc(path):
                 "role": "",
                 "calls": [],
                 "conditional": [],
+                "refs": [],
                 "xpcom": [],
             }
             continue
@@ -81,6 +85,8 @@ def parse_doc(path):
             entry["role"] = line[len("- 役割: "):]
         elif line.startswith("- 呼び出し先: "):
             entry["calls"] = CALL_RE.findall(line[len("- 呼び出し先: "):])
+        elif line.startswith("- 参照: "):
+            entry["refs"] = CODE_RE.findall(line[len("- 参照: "):])
         elif line.startswith("- 条件付き依存: "):
             m = COND_RE.match(line)
             if m:
@@ -129,6 +135,16 @@ def matches(args, entry, rx):
         for cond, c in entry["conditional"]:
             if rx.search(c):
                 yield "conditional", c, cond
+    elif args.command == "refs":
+        for c in entry["calls"]:
+            if rx.search(c):
+                yield "call", c, None
+        for cond, c in entry["conditional"]:
+            if rx.search(c):
+                yield "conditional", c, cond
+        for r in entry["refs"]:
+            if rx.search(r):
+                yield "ref", r, None
     elif args.command == "uses":
         for x in entry["xpcom"]:
             if rx.search(x):
@@ -150,7 +166,7 @@ def format_text(hit, summary):
 
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    p.add_argument("command", choices=["callers", "callees", "fn", "uses"])
+    p.add_argument("command", choices=["callers", "callees", "refs", "fn", "uses"])
     p.add_argument("pattern")
     p.add_argument("-i", "--ignore-case", action="store_true")
     p.add_argument("-F", "--fixed", action="store_true",

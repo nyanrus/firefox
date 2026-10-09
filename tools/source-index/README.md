@@ -17,9 +17,13 @@ index, so it needs no parser. Matching is by name, not by resolved type.
 
     python3 tools/source-index/idx.py callers -w addTabGroup     # who calls it
     python3 tools/source-index/idx.py callees -w handle_drop     # what it calls
+    python3 tools/source-index/idx.py refs -w tabGroupMenu       # calls and plain property reads
     python3 tools/source-index/idx.py fn -s 'moveTabs|ToGroup'   # find definitions
     python3 tools/source-index/idx.py uses -w nsIDragService     # XPCOM users
     python3 tools/source-index/idx.py callers addTabGroup --json | jq .path
+
+`callers` sees call targets only; `refs` also sees property reads such as
+`gBrowser.tabGroupMenu.nextUnusedColor`.
 
 Options follow rg: `-i`, `-F`, `-w`, `-l`, `-c`, `-g GLOB` on the source path.
 `--json` prints one object per match, `-s` appends each function's role line.

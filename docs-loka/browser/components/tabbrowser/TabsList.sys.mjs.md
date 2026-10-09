@@ -21,12 +21,14 @@ lines: 976
 - 役割: 行またはその子要素から対応するタブを返す。
 - 触るとき: 行からタブを引く処理を調べるとき。
 - 呼び出し先: `element.closest()`
+- 参照: `element.closest("toolbaritem")?._tab`
 
 ## getTabGroupFromRow()
 - 位置: L44-46
 - 役割: 行またはその子要素から対応するタブグループを返す。
 - 触るとき: 行からグループを引く処理を調べるとき。
 - 呼び出し先: `element.closest()`
+- 参照: `element.closest("toolbaritem")?._tabGroup`
 
 ## getRowVariant()
 - 位置: L54-56
@@ -39,12 +41,14 @@ lines: 976
 - 役割: 進行中の DOM 再描画の完了を待つ Promise を返す。
 - 触るとき: 再描画完了を待つテストや処理を調べるとき。
 - 呼び出し先: `Promise.resolve()`
+- 参照: `this.#domRefreshPromise`
 
 ## TabsListBase.constructor()
 - 位置: L78-111
 - 役割: フィルタ関数、コンテナ、ドロップ指示子などを受け取り内部状態を初期化する。
 - 触るとき: 一覧の生成時の設定を調べるとき。
 - 呼び出し先: `filterFn()`
+- 参照: `containerNode.ownerDocument`, `tab.hidden`, `this.className`, `this.containerNode`, `this.doc`, `this.doc.defaultView.gBrowser`, `this.dropIndicator`, `this.dropTargetDirection`, `this.dropTargetRow`, `this.filterFn`, `this.gBrowser`, `this.listenersRegistered`, `this.onlyHiddenTabs`
 
 ## TabsListBase.rows()
 - 位置: L114-116
@@ -57,6 +61,7 @@ lines: 976
 - 役割: 入れ子の一覧で、イベントの行がこの一覧のものかを判定する。
 - 触るとき: 入れ子の一覧でイベントが二重処理される時。
 - 呼び出し先: `event.target.closest()`
+- 参照: `row.parentNode`, `this.containerNode`
 
 ## TabsListBase.handleEvent()
 - 位置: L131-178
@@ -64,6 +69,7 @@ lines: 976
 - 触るとき: 一覧が更新される契機や操作の経路を調べるとき。
 - 呼び出し先: `this.#handleCommand()`, `this.#ownsEvent()`, `this._moveTab()`, `this._onClick()`, `this._onDragEnd()`, `this._onDragLeave()`, `this._onDragOver()`, `this._onDragStart()`, `this._onDrop()`, `this._refreshDOM()`, `this._tabAttrModified()`, `this._tabClose()`, `this.filterFn()`
 - 条件付き依存: `if (!this.filterFn(event.target))` → `this._tabClose()`
+- 参照: `event.target`, `event.type`
 
 ## TabsListBase.#handleCommand()
 - 位置: L183-206
@@ -81,6 +87,7 @@ lines: 976
 - 条件付き依存: `if (tab)` → `this._selectTab()`
 - 条件付き依存: `if (rowVariant == ROW_VARIANT_TAB_GROUP)` → `getTabGroupFromRow(event.target)?.select()`
 - 条件付き依存: `if (rowVariant == ROW_VARIANT_TAB_GROUP)` → `getTabGroupFromRow()`
+- 参照: `event.target`, `lazy.TabMetrics.METRIC_SOURCE.TAB_OVERFLOW_MENU`
 
 ## TabsListBase._selectTab()
 - 位置: L208-219
@@ -89,6 +96,7 @@ lines: 976
 - 条件付き依存: `if (this.gBrowser.selectedTab != tab)` → `this.gBrowser.setSelectedTab()`
 - 条件付き依存: `if (this.gBrowser.selectedTab != tab)` → `this.gBrowser.TabMetrics.userTriggeredContext()`
 - 条件付き依存: `if (!(this.gBrowser.selectedTab != tab))` → `this.gBrowser.tabContainer._handleTabSelect()`
+- 参照: `this.gBrowser.TabMetrics.METRIC_SOURCE.TAB_OVERFLOW_MENU`, `this.gBrowser.selectedTab`
 
 ## TabsListBase._populate()
 - 位置: L224-227
@@ -105,6 +113,7 @@ lines: 976
 - 条件付き依存: `if (tab.group && tab.group.id != currentGroupId)` → `this._createGroupRow()`
 - 条件付き依存: `if (!tabHiddenByGroup || this.onlyHiddenTabs)` → `fragment.appendChild()`
 - 条件付き依存: `if (!tabHiddenByGroup || this.onlyHiddenTabs)` → `this._createRow()`
+- 参照: `tab.group`, `tab.group.id`, `tab.group?.collapsed`, `tab.selected`, `this.gBrowser.tabs`, `this.onlyHiddenTabs`
 
 ## TabsListBase._addElement()
 - 位置: L253-255
@@ -123,6 +132,7 @@ lines: 976
 - 役割: コンテナ内の行を消してタブと行の対応を空にする。
 - 触るとき: 行の削除処理を調べるとき。
 - 呼び出し先: `node.remove()`, `this.containerNode .querySelectorAll()`, `this.containerNode .querySelectorAll(":scope toolbaritem") .forEach()`
+- 参照: `this.tabToElement`
 
 ## TabsListBase._refreshDOM()
 - 位置: L273-289
@@ -132,6 +142,7 @@ lines: 976
 - 条件付き依存: `if (this.listenersRegistered)` → `this._cleanupDOM()`
 - 条件付き依存: `if (this.listenersRegistered)` → `this._populateDOM()`
 - 条件付き依存: `if (this.#domRefreshPromise)` → `resolve()`
+- 参照: `this.#domRefreshPromise`, `this.listenersRegistered`
 
 ## TabsListBase._setupListeners()
 - 位置: L291-316
@@ -139,6 +150,7 @@ lines: 976
 - 触るとき: どのイベントを監視するかを調べるとき。
 - 呼び出し先: `this.containerNode.addEventListener()`, `this.gBrowser.tabContainer.addEventListener()`
 - 条件付き依存: `if (this.dropIndicator)` → `this.containerNode.addEventListener()`
+- 参照: `this.dropIndicator`, `this.listenersRegistered`
 
 ## TabsListBase._cleanupListeners()
 - 位置: L318-343
@@ -146,6 +158,7 @@ lines: 976
 - 触るとき: リスナー解除漏れを調べるとき。
 - 呼び出し先: `this.containerNode.removeEventListener()`, `this.gBrowser.tabContainer.removeEventListener()`
 - 条件付き依存: `if (this.dropIndicator)` → `this.containerNode.removeEventListener()`
+- 参照: `this.dropIndicator`, `this.listenersRegistered`
 
 ## TabsListBase._tabAttrModified()
 - 位置: L348-361
@@ -165,6 +178,7 @@ lines: 976
 - 呼び出し先: `this.tabToElement.get()`
 - 条件付き依存: `if (item)` → `this._removeItem()`
 - 条件付き依存: `if (item)` → `this._addTab()`
+- 参照: `tab.splitview?.tabs`
 
 ## TabsListBase._addTab()
 - 位置: L379-415
@@ -177,6 +191,7 @@ lines: 976
 - 条件付き依存: `if (!(!newTab.group && nextTab.group))` → `this.tabToElement.get()`
 - 条件付き依存: `if (!nextRow)` → `this._addElement()`
 - 条件付き依存: `if (!(!nextRow))` → `this.containerNode.insertBefore()`
+- 参照: `newTab.group`, `newTab.group?.collapsed`, `nextTab.group`, `nextTab.group.id`, `this.filterFn`, `this.onlyHiddenTabs`
 
 ## TabsListBase._tabClose()
 - 位置: L417-422
@@ -192,12 +207,14 @@ lines: 976
 - 呼び出し先: `item.remove()`, `this.tabToElement.delete()`, `this.tabToElement.keys()`, `this.tabToElement.keys().some()`
 - 条件付き依存: `if ( tab.group && !this.tabToElement.keys().some(t => t.group == tab.group) )` → `this.containerNode .querySelector(`:scope [tab-group-id="${tab.group.id}"]`) ?.remove()`
 - 条件付き依存: `if ( tab.group && !this.tabToElement.keys().some(t => t.group == tab.group) )` → `this.containerNode .querySelector()`
+- 参照: `t.group`, `tab.group`, `tab.group.id`
 
 ## TabsPanel.constructor()
 - 位置: L459-467
 - 役割: 親の初期化にビューの先頭要素をコンテナとして渡し、表示イベントを待ち受ける。
 - 触るとき: パネル版一覧の生成を調べるとき。
 - 呼び出し先: `super()`, `this.view.addEventListener()`
+- 参照: `TABS_PANEL_EVENTS.show`, `opts.containerNode`, `opts.view`, `opts.view.firstElementChild`, `this.panelMultiView`, `this.view`
 
 ## TabsPanel.handleEvent()
 - 位置: L469-488
@@ -207,6 +224,7 @@ lines: 976
 - 条件付き依存: `if (event.target == this.panelMultiView)` → `this._cleanup()`
 - 条件付き依存: `if (!this.listenersRegistered && event.target == this.view)` → `this._populate()`
 - 条件付き依存: `if (!this.listenersRegistered && event.target == this.view)` → `this.gBrowser.translateTabContextMenu()`
+- 参照: `TABS_PANEL_EVENTS.hide`, `TABS_PANEL_EVENTS.show`, `event.target`, `event.type`, `this.listenersRegistered`, `this.panelMultiView`, `this.view`, `this.view.panelMultiView`
 
 ## TabsPanel._populate()
 - 位置: L490-501
@@ -215,6 +233,7 @@ lines: 976
 - 呼び出し先: `getRowVariant()`, `super._populate()`
 - 条件付き依存: `if (getRowVariant(row) == ROW_VARIANT_TAB)` → `this._setImageAttributes()`
 - 条件付き依存: `if (getRowVariant(row) == ROW_VARIANT_TAB)` → `getTabFromRow()`
+- 参照: `this.rows`
 
 ## TabsPanel._selectTab()
 - 位置: L503-506
@@ -227,12 +246,14 @@ lines: 976
 - 役割: 基底の登録に加えて非表示イベントを待ち受ける。
 - 触るとき: パネル非表示の検知を調べるとき。
 - 呼び出し先: `super._setupListeners()`, `this.panelMultiView.addEventListener()`
+- 参照: `TABS_PANEL_EVENTS.hide`
 
 ## TabsPanel._cleanupListeners()
 - 位置: L513-516
 - 役割: 基底の解除に加えて非表示イベントの待ち受けを外す。
 - 触るとき: パネル用リスナーの解除を調べるとき。
 - 呼び出し先: `super._cleanupListeners()`, `this.panelMultiView.removeEventListener()`
+- 参照: `TABS_PANEL_EVENTS.hide`
 
 ## TabsPanel._createRow()
 - 位置: L522-599
@@ -250,6 +271,7 @@ lines: 976
 - 条件付き依存: `if (!tab.pinned)` → `closeButton.setAttribute()`
 - 条件付き依存: `if (!tab.pinned)` → `doc.l10n.setAttributes()`
 - 条件付き依存: `if (!tab.pinned)` → `row.appendChild()`
+- 参照: `button.tab`, `row._tab`, `tab.group`, `tab.pinned`, `tab.userContextId`, `this.className`
 
 ## TabsPanel._createGroupRow()
 - 位置: L605-671
@@ -261,6 +283,7 @@ lines: 976
 - 条件付き依存: `if (!(group.label))` → `doc.l10n .formatValues([{ id: "tab-group-name-default" }]) .then()`
 - 条件付き依存: `if (!(group.label))` → `doc.l10n .formatValues()`
 - 条件付き依存: `if (!(group.label))` → `setName()`
+- 参照: `button.dataset.tabGroupId`, `group.collapsed`, `group.color`, `group.id`, `group.label`, `row._tabGroup`
 
 ## setName()
 - 位置: L652-658
@@ -273,6 +296,7 @@ lines: 976
 - 役割: タブの状態に合わせて行とボタンの属性、ミュートボタンを更新する。
 - 触るとき: 行の選択・読み込み・ミュート表示を調べるとき。
 - 呼び出し先: `row.querySelector()`, `setAttributes()`, `tab.getAttribute()`, `this._setImageAttributes()`, `this.doc.l10n.setAttributes()`, `this.gBrowser.getTabTooltip()`
+- 参照: `row.firstElementChild`, `tab.label`, `tab.muted`, `tab.selected`, `tab.soundPlaying`
 
 ## TabsPanel._setImageAttributes()
 - 位置: L709-723
@@ -282,12 +306,14 @@ lines: 976
 - 条件付き依存: `if (image)` → `setAttributes()`
 - 条件付き依存: `if (busy)` → `image.classList.add()`
 - 条件付き依存: `if (!(busy))` → `image.classList.remove()`
+- 参照: `button.icon`, `row.firstElementChild`
 
 ## TabsPanel._onDragStart()
 - 位置: L728-746
 - 役割: 行のタブまたはグループのドラッグを開始する。
 - 触るとき: 一覧からのドラッグ開始を調べるとき。
 - 呼び出し先: `getRowVariant()`, `getTabFromRow()`, `getTabGroupFromRow()`, `this._getTargetRowFromEvent()`, `this.gBrowser.tabContainer.tabDragAndDrop.startTabDrag()`
+- 参照: `elementToDrag.splitview`, `getTabGroupFromRow(row).labelElement`
 
 ## TabsPanel._getTargetRowFromEvent()
 - 位置: L752-754
@@ -312,6 +338,7 @@ lines: 976
 - 役割: 行がコンテナの子の何番目かを返す。
 - 触るとき: 行の位置の算出を調べるとき。
 - 呼び出し先: `Array.prototype.indexOf.call()`
+- 参照: `this.containerNode.children`
 
 ## TabsPanel._onDrop()
 - 位置: L793-832
@@ -321,12 +348,14 @@ lines: 976
 - 条件付き依存: `if (draggedElement === targetElement)` → `this._clearDropTarget()`
 - 条件付き依存: `if (this.dropTargetDirection == -1)` → `this.gBrowser.moveTabBefore()`
 - 条件付き依存: `if (!(this.dropTargetDirection == -1))` → `this.gBrowser.moveTabAfter()`
+- 参照: `getTabGroupFromRow(this.dropTargetRow).labelElement`, `lazy.TabMetrics.METRIC_SOURCE.TAB_OVERFLOW_MENU`, `this.dropTargetDirection`, `this.dropTargetRow`
 
 ## TabsPanel._onDragLeave()
 - 位置: L837-851
 - 役割: ドラッグがコンテナ外へ出たらドロップ先表示を消す。
 - 触るとき: ドロップ指示が残る不具合を調べるとき。
 - 呼び出し先: `this._clearDropTarget()`, `this._isMovingTabs()`
+- 参照: `event.relatedTarget`, `target.parentNode`, `this.containerNode`
 
 ## TabsPanel._onDragEnd()
 - 位置: L856-862
@@ -343,6 +372,7 @@ lines: 976
 - 条件付き依存: `if (tab == tab.splitview.tabs[0])` → `this._setDropTarget()`
 - 条件付き依存: `if (tab == tab.splitview.tabs[1])` → `this._setDropTarget()`
 - 条件付き依存: `if (!( getRowVariant(row) === ROW_VARIANT_TAB && getTabFromRow(row).splitview ))` → `this._setDropTarget()`
+- 参照: `event.clientY`, `getTabFromRow(row).splitview`, `rect.height`, `rect.top`, `tab.splitview.tabs`
 
 ## TabsPanel._setDropTarget()
 - 位置: L903-933
@@ -352,11 +382,13 @@ lines: 976
 - 条件付き依存: `if (this.dropTargetRow.previousSibling)` → `this.dropTargetRow.previousSibling.getBoundingClientRect()`
 - 条件付き依存: `if (!(this.dropTargetRow.previousSibling))` → `this.dropTargetRow.getBoundingClientRect()`
 - 条件付き依存: `if (!(this.dropTargetDirection === -1))` → `this.dropTargetRow.getBoundingClientRect()`
+- 参照: `holder.getBoundingClientRect().top`, `holder.parentNode`, `rect.height`, `rect.top`, `subViewBodyRect.bottom`, `this.dropIndicator.collapsed`, `this.dropIndicator.parentNode`, `this.dropIndicator.style.top`, `this.dropTargetDirection`, `this.dropTargetRow`, `this.dropTargetRow.previousSibling`
 
 ## TabsPanel._clearDropTarget()
 - 位置: L935-944
 - 役割: ドロップ先を解除して指示子を隠す。
 - 触るとき: ドロップ指示の解除を調べるとき。
+- 参照: `this.dropIndicator`, `this.dropIndicator.collapsed`, `this.dropIndicator.style.top`, `this.dropTargetRow`
 
 ## TabsPanel._onClick()
 - 位置: L949-974
@@ -370,3 +402,4 @@ lines: 976
 - 条件付き依存: `if (rowVariant == ROW_VARIANT_TAB_GROUP)` → `getTabGroupFromRow(row)?.saveAndClose()`
 - 条件付き依存: `if (rowVariant == ROW_VARIANT_TAB_GROUP)` → `getTabGroupFromRow()`
 - 条件付き依存: `if (rowVariant == ROW_VARIANT_TAB_GROUP)` → `lazy.TabMetrics.userTriggeredContext()`
+- 参照: `event.button`, `lazy.TabMetrics.METRIC_SOURCE.TAB_OVERFLOW_MENU`

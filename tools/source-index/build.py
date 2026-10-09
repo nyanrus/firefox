@@ -8,7 +8,10 @@
                                        write index docs for JS files and the
                                        XPCOM interfaces they use; docs whose
                                        source-hash is unchanged are kept
-                                       unless --force is given
+                                       unless --force is given; summaries
+                                       already written are carried over, and
+                                       IDL docs are only rewritten when their
+                                       source changed
   build.py check                       list index docs whose source changed
   build.py check-links                 list links in index docs that do not
                                        resolve to a file
@@ -104,6 +107,47 @@ def doc_path(source):
     return f"{INDEX_ROOT}/{source}.md"
 
 
+def read_summaries(path):
+    """Return {section key: (role line, when line)} from an existing doc."""
+    full = os.path.join(TOPSRC, path)
+    if not os.path.exists(full):
+        return {}
+    with open(full, encoding="utf-8") as f:
+        lines = f.read().split("\n")
+    found, key, role, when = {}, None, None, None
+    for line in lines + ["## "]:
+        if line.startswith("## "):
+            if key and (role or when):
+                found[key] = (role, when)
+            name = line[3:]
+            key, role, when = (name[:-2] if name.endswith("()") else name), None, None
+        elif line.startswith("- 位置: "):
+            m = re.search(r"L(\d+)-", line)
+            key = f"{key}@{m.group(1)}" if m and key else key
+        elif line.startswith("- 役割: ") and line != f"- 役割: {TODO}":
+            role = line
+        elif line.startswith("- 触るとき: ") and line != f"- 触るとき: {TODO}":
+            when = line
+    return found
+
+
+def keep_summaries(rendered, old):
+    """Put the summaries of an older doc back into a freshly rendered one."""
+    lines, key = rendered.split("\n"), None
+    for i, line in enumerate(lines):
+        if line.startswith("## "):
+            name = line[3:]
+            key = name[:-2] if name.endswith("()") else name
+        elif line.startswith("- 位置: "):
+            m = re.search(r"L(\d+)-", line)
+            key = f"{key}@{m.group(1)}" if m and key else key
+        elif key in old and line == f"- 役割: {TODO}" and old[key][0]:
+            lines[i] = old[key][0]
+        elif key in old and line == f"- 触るとき: {TODO}" and old[key][1]:
+            lines[i] = old[key][1]
+    return "\n".join(lines)
+
+
 def render_js(data, idl_index, contract_index, idl_users):
     path = data["path"]
     me = doc_path(path)
@@ -125,6 +169,8 @@ def render_js(data, idl_index, contract_index, idl_users):
             out.append("- 呼び出し先: " + ", ".join(f"`{c}()`" for c in fn["calls"]))
         for cc in fn["conditional_calls"]:
             out.append(f"- 条件付き依存: `if ({cc['condition']})` → `{cc['call']}()`")
+        if fn["refs"]:
+            out.append("- 参照: " + ", ".join(f"`{r}`" for r in fn["refs"]))
         xp = []
         for iface in fn["xpcom_interfaces"]:
             idl = idl_index.get(iface)
@@ -200,14 +246,16 @@ def generate(targets, force=False):
             for iface in fn["xpcom_interfaces"]:
                 idl_users.setdefault(iface, set()).add(data["path"])
     for data in extracted:
-        if not force and is_current(doc_path(data["path"]), data["source_hash"]):
+        path = doc_path(data["path"])
+        if not force and is_current(path, data["source_hash"]):
             continue
-        write(doc_path(data["path"]), render_js(data, idl_index, contract_index, idl_users))
+        rendered = render_js(data, idl_index, contract_index, idl_users)
+        write(path, keep_summaries(rendered, read_summaries(path)))
     used_idls = {idl_index[i] for i in idl_users if i in idl_index}
     for idl in sorted(used_idls):
         data = extract_idl.extract(os.path.join(TOPSRC, idl))
         data["path"] = idl
-        if not force and is_current(doc_path(idl), data["source_hash"]):
+        if is_current(doc_path(idl), data["source_hash"]):
             continue
         write(doc_path(idl), render_idl(data, contract_index, idl_users))
     print(f"wrote {len(extracted)} JS docs and {len(used_idls)} IDL docs")

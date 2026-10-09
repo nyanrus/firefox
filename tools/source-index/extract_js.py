@@ -91,6 +91,7 @@ class FunctionInfo:
         self.xpcom_interfaces = set()
         self.xpcom_contracts = set()
         self.services = set()
+        self.refs = set()
 
     def add_call(self, name, condition):
         if condition is None:
@@ -115,6 +116,7 @@ class FunctionInfo:
             "xpcom_interfaces": sorted(self.xpcom_interfaces),
             "xpcom_contracts": sorted(self.xpcom_contracts),
             "services": sorted(self.services),
+            "refs": sorted(self.refs),
         }
 
 
@@ -130,6 +132,22 @@ class Extractor:
         result = [f.as_dict() for f in self.functions]
         module = self.top_level.as_dict()
         return module, result
+
+    def record_ref(self, node, info):
+        """Record a property read that is not a call target or a chain prefix."""
+        parent = node.parent
+        if parent is not None:
+            if parent.type == "call_expression" and (
+                parent.child_by_field_name("function") == node
+            ):
+                return
+            if parent.type == "member_expression" and (
+                parent.child_by_field_name("object") == node
+            ):
+                return
+        t = " ".join(text(node).split())
+        if len(t) <= 120 and "\n" not in t:
+            info.refs.add(t)
 
     def record_xpcom(self, node, info):
         t = " ".join(text(node).split())
@@ -165,6 +183,8 @@ class Extractor:
                 info.add_call(name, condition)
         elif t in {"member_expression", "subscript_expression"}:
             self.record_xpcom(node, info)
+            if t == "member_expression":
+                self.record_ref(node, info)
         if t == "if_statement":
             cond = normalize_condition(node.child_by_field_name("condition"))
             for c in node.children:

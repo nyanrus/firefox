@@ -12,6 +12,7 @@ lines: 229
 - 役割: ビューやコンテナを保持し、ViewShowing を待ち受ける。
 - 触るとき: パネルの生成と初期状態を調べるとき。
 - 呼び出し先: `this.view.addEventListener()`
+- 参照: `containerNode.documentGlobal`, `containerNode.ownerDocument`, `this.#showAll`, `this.containerNode`, `this.doc`, `this.panelMultiView`, `this.view`, `this.win`
 
 ## GroupsPanel.handleEvent()
 - 位置: L21-47
@@ -24,6 +25,7 @@ lines: 229
 - 条件付き依存: `if ((this.panelMultiView = event.target))` → `this.#cleanup()`
 - 条件付き依存: `if ((this.panelMultiView = event.target))` → `this.#removeObservers()`
 - 条件付き依存: `if (this.panelMultiView)` → `this.#removeObservers()`
+- 参照: `event.target`, `event.type`, `this.panelMultiView`, `this.view`, `this.view.panelMultiView`
 
 ## GroupsPanel.#addObservers()
 - 位置: L49-52
@@ -50,6 +52,7 @@ lines: 229
 - 役割: 行ボタンの command に応じて開いているグループを選択するか保存済みグループを復元する。
 - 触るとき: 行クリック時の動作を変えるとき。
 - 呼び出し先: `group.documentGlobal.focus()`, `group.select()`, `this.win.SessionStore.openSavedTabGroup()`, `this.win.gBrowser.getTabGroupById()`
+- 参照: `TabMetrics.METRIC_SOURCE.TAB_OVERFLOW_MENU`, `event.target.dataset`, `this.win`
 
 ## GroupsPanel.#setupListeners()
 - 位置: L88-91
@@ -62,6 +65,7 @@ lines: 229
 - 役割: コンテナの中身を空にして command リスナーを外す。
 - 触るとき: 一覧の破棄処理を調べるとき。
 - 呼び出し先: `this.view.removeEventListener()`
+- 参照: `this.containerNode.innerHTML`
 
 ## GroupsPanel.#populate()
 - 位置: L99-155
@@ -77,6 +81,7 @@ lines: 229
 - 条件付き依存: `if (addShowAllButton)` → `button.setAttribute()`
 - 条件付き依存: `if (addShowAllButton)` → `this.doc.l10n.setAttributes()`
 - 条件付き依存: `if (addShowAllButton)` → `fragment.appendChild()`
+- 参照: `group1.closedAt`, `group2.closedAt`, `openGroups.length`, `savedGroups.length`, `this.#showAll`, `this.win`
 
 ## GroupsPanel.#createRow()
 - 位置: L164-227
@@ -90,6 +95,7 @@ lines: 229
 - 条件付き依存: `if (!(group.name))` → `doc.l10n .formatValues([{ id: "tab-group-name-default" }]) .then()`
 - 条件付き依存: `if (!(group.name))` → `doc.l10n .formatValues()`
 - 条件付き依存: `if (!(group.name))` → `setName()`
+- 参照: `button.dataset.command`, `button.dataset.tabGroupId`, `group.color`, `group.id`, `group.name`
 
 ## setName()
 - 位置: L205-214

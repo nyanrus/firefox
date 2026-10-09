@@ -14,6 +14,7 @@ lines: 242
 - 触るとき: プライベートウィンドウでの対象タブの選び方を調べるとき。
 - 呼び出し先: `lazy.PrivateBrowsingUtils.isWindowPrivate()`, `super()`
 - 条件付き依存: `if (lazy.PrivateBrowsingUtils.isWindowPrivate(this.currentWindow))` → `lazy.getTabsTargetForWindow()`
+- 参照: `( this.documentGlobal.top.browsingContext ).embedderWindowGlobal.browsingContext.window`, `lazy.NonPrivateTabs`, `lazy.OpenTabsController`, `this.controller`, `this.currentWindow`, `this.documentGlobal.top.browsingContext`, `this.listenersAdded`, `this.openTabsTarget`, `this.searchQuery`
 
 ## OpenTabsInSplitView.connectedCallback()
 - 位置: L53-57
@@ -33,12 +34,14 @@ lines: 242
 - 触るとき: タブ一覧の自動更新が働かないとき。
 - 条件付き依存: `if (!this.listenersAdded)` → `this.openTabsTarget.addEventListener()`
 - 条件付き依存: `if (!skipUpdate)` → `this.requestUpdate()`
+- 参照: `this.listenersAdded`
 
 ## OpenTabsInSplitView.removeListeners()
 - 位置: L75-80
 - 役割: 登録済みなら TabChange の監視を解除する。
 - 触るとき: 不要な更新を止める処理を調べるとき。
 - 条件付き依存: `if (this.listenersAdded)` → `this.openTabsTarget.removeEventListener()`
+- 参照: `this.listenersAdded`
 
 ## OpenTabsInSplitView.handleEvent()
 - 位置: L82-96
@@ -48,17 +51,20 @@ lines: 242
 - 条件付き依存: `if (this.currentSplitView)` → `this.addListeners()`
 - 条件付き依存: `if (this.currentSplitView)` → `this.requestUpdate()`
 - 条件付き依存: `if (!(this.currentSplitView))` → `this.removeListeners()`
+- 参照: `e.type`, `this.currentSplitView`
 
 ## OpenTabsInSplitView.getWindow()
 - 位置: L98-101
 - 役割: このページを埋め込んでいる親のブラウザウィンドウを返す。
 - 触るとき: gBrowser など親ウィンドウへのアクセス方法を調べるとき。
+- 参照: `(window.browsingContext) .embedderWindowGlobal.browsingContext.window`, `window.browsingContext`
 
 ## OpenTabsInSplitView.currentSplitView()
 - 位置: L103-106
 - 役割: 選択中タブが属する分割ビューを返す。
 - 触るとき: 現在の分割ビューの取得元を調べるとき。
 - 呼び出し先: `this.getWindow()`
+- 参照: `gBrowser.selectedTab.splitview`
 
 ## OpenTabsInSplitView.onTabListRowClick()
 - 位置: L108-117
@@ -67,12 +73,14 @@ lines: 242
 - 呼び出し先: `this.getWindow()`
 - 条件付き依存: `if (this.currentSplitView)` → `gBrowser.getTabForBrowser()`
 - 条件付き依存: `if (this.currentSplitView)` → `this.currentSplitView.replaceTab()`
+- 参照: `event.originalTarget.tabElement`, `this.currentSplitView`, `window.browsingContext.embedderElement`
 
 ## OpenTabsInSplitView.allAvailableTabs()
 - 位置: L119-128
 - 役割: 可視タブのうち、ピン留め・分割済み・about:opentabs を除いたものを返す。
 - 触るとき: 一覧に出すタブの条件を変えるとき。
 - 呼び出し先: `gBrowser.visibleTabs.filter()`, `this.getWindow()`
+- 参照: `tab.pinned`, `tab.splitview`, `tab?.linkedBrowser?.currentURI?.spec`
 
 ## OpenTabsInSplitView.nonSplitViewUnpinnedTabs()
 - 位置: L130-143
@@ -84,11 +92,13 @@ lines: 242
 - 条件付き依存: `if (this.searchQuery)` → `tab.linkedBrowser?.currentURI?.spec?.toLowerCase()`
 - 条件付き依存: `if (this.searchQuery)` → `title.includes()`
 - 条件付き依存: `if (this.searchQuery)` → `url.includes()`
+- 参照: `this.allAvailableTabs`, `this.searchQuery`
 
 ## OpenTabsInSplitView.onSearchQuery()
 - 位置: L145-147
 - 役割: 検索イベントの文字列を searchQuery に設定する。
 - 触るとき: 検索入力の反映を調べるとき。
+- 参照: `e.detail.query`, `this.searchQuery`
 
 ## OpenTabsInSplitView.render()
 - 位置: L149-229
@@ -98,3 +108,4 @@ lines: 242
 - 条件付き依存: `if ( !allTabs.length || (gBrowser.selectedTab.linkedBrowser.currentURI.spec === BROWSER_OPEN_TABS_URL && !this.currentSplitView) )` → `queueMicrotask()`
 - 条件付き依存: `if ( !allTabs.length || (gBrowser.selectedTab.linkedBrowser.currentURI.spec === BROWSER_OPEN_TABS_URL && !this.currentSplitView) )` → `this.getWindow().openTrustedLinkIn()`
 - 条件付き依存: `if ( !allTabs.length || (gBrowser.selectedTab.linkedBrowser.currentURI.spec === BROWSER_OPEN_TABS_URL && !this.currentSplitView) )` → `this.getWindow()`
+- 参照: `allTabs.length`, `filteredTabs.length`, `gBrowser.selectedTab.linkedBrowser.currentURI.spec`, `this.allAvailableTabs`, `this.currentSplitView`, `this.nonSplitViewUnpinnedTabs`, `this.onSearchQuery`, `this.onTabListRowClick`, `this.searchQuery`

@@ -14,6 +14,7 @@ lines: 1495
 - 触るとき: メニュー項目の並びや classic と代替構成の切り替えを変えるとき。
 - 呼び出し先: `console.error()`, `new this.MenuSectionLayout(layout, { dynamicItemSelectors: this.DYNAMIC_MENU_ITEM_SELECTORS, }).arrange()`, `this._hideUnusedSectionItems()`, `this._updateL10nIds()`
 - 条件付き依存: `if (!this._altTabContextMenuPrefObserved)` → `XPCOMUtils.defineLazyPreferenceGetter()`
+- 参照: `this.DYNAMIC_MENU_ITEM_SELECTORS`, `this.MENU_SECTIONS.altstructure`, `this.MENU_SECTIONS.classic`, `this.MenuSectionLayout`, `this._altTabContextMenu`, `this._altTabContextMenuPrefObserved`, `this._tabContextMenuArranged`
 
 ## _updateL10nIds()
 - 位置: L397-409
@@ -22,18 +23,21 @@ lines: 1495
 - 呼び出し先: `aPopupMenu.querySelectorAll()`
 - 条件付き依存: `if (item._classicL10nId == null)` → `item.getAttribute()`
 - 条件付き依存: `if (id)` → `item.setAttribute()`
+- 参照: `item._classicL10nId`, `item.dataset.altL10nId`
 
 ## _hideUnusedSectionItems()
 - 位置: L412-426
 - 役割: レイアウトで unused に置かれた項目をすべて非表示にする。
 - 触るとき: 代替構成で特定項目を隠したい、または意図せず隠れるとき。
 - 呼び出し先: `document.querySelector()`, `this.MenuSectionLayout.placementsFor()`
+- 参照: `item.hidden`, `layout.tabContextMenu`, `section.name`
 
 ## _updateMoveTabToFlattenedVisibility()
 - 位置: L438-479
 - 役割: 「タブを移動」サブメニューの共有ノードと区切り線の表示を、classic と代替構成に合わせて毎回設定する。
 - 触るとき: 移動サブメニュー内のグループ項目や区切り線の表示がおかしいとき。
 - 呼び出し先: `byId()`
+- 参照: `byId("context_moveSplitViewToNewGroup").hidden`, `byId("context_moveTabToGroup").hidden`, `byId("context_moveTabToNewGroup").hidden`, `groupSeparator.hidden`, `lowerSeparator.hidden`, `newGroup.hidden`, `savedGroups.hidden`, `selectAllSeparator.hidden`, `this._altTabContextMenu`, `upperSeparator.hidden`
 
 ## byId()
 - 位置: L443-443
@@ -111,6 +115,7 @@ lines: 1495
 - 条件付き依存: `if (!(this._altTabContextMenu))` → `document.l10n.setAttributes()`
 - 条件付き依存: `if (this._altTabContextMenu)` → `document .getElementById("context_sendTabToDevice") .setAttribute()`
 - 条件付き依存: `if (this._altTabContextMenu)` → `document .getElementById()`
+- 参照: `ContentSharingUtils.isEnabled`, `TabContextMenu.AITAB_ENABLED`, `TabContextMenu.Tabbrowser.prefs.tabGroupsEnabled`, `aPopupMenu.triggerNode`, `aPopupMenu.triggerNode.tab`, `array.length`, `array[index + 1].index`, `bookmarkMultiSelectedTabs.hidden`, `bookmarkTab.hidden`, `closeDuplicateTabsItem.disabled`, `closeOtherTabsItem.disabled`, `closeTabsToTheEndItem.disabled`, `closeTabsToTheStartItem.disabled`, `contentSharingShareTabs.hidden`, `contextAddNote.disabled`, `contextAddNote.hidden`, `contextEditNote.disabled`, `contextEditNote.hidden`, `contextMoveSplitViewToNewGroup.hidden`, `contextMoveTabOptions.disabled`, `contextMoveTabToEnd.disabled`, `contextMoveTabToGroup.hidden`, `contextMoveTabToNewGroup.hidden`, `contextMoveTabToNewSplitView.disabled`, `contextMoveTabToNewSplitView.hidden`, `contextMoveTabToStart.disabled`, `contextPinSelectedTabs.hidden`, `contextPinTab.hidden`, `contextReverseSplitView.hidden`, `contextSeparateSplitView.hidden`, `contextTab.splitview`, `contextUngroupSplitView.hidden`, `contextUngroupTab.hidden`, `contextUnpinSelectedTabs.hidden`, `contextUnpinTab.hidden`, `customizeTabs.length`, `document.getElementById("context_aiSeparator").hidden`, `document.getElementById("context_askChat").hidden`, `document.getElementById("context_askChatSummarize").hidden`, `document.getElementById("context_closeTabOptions").disabled`, `document.getElementById("context_createAITab").hidden`, `document.getElementById("context_duplicateTab").hidden`, `document.getElementById("context_duplicateTabs").hidden`, `document.getElementById("context_openTabInMiniWindow").hidden`, `document.getElementById("context_openTabInWindow").disabled`, `document.getElementById("context_playSelectedTabs").hidden`, `document.getElementById("context_playTab").hidden`, `document.getElementById("context_reloadSelectedTabs").hidden`, `document.getElementById("context_reloadTab").hidden`, `document.getElementById("context_shareSelectedTabsSeparator").hidden`, `element.index`, `gBrowser._getTabsToTheEndFrom(this.contextTab).length`, `gBrowser._getTabsToTheStartFrom(this.contextTab) .length`, `gBrowser.getDuplicateTabsToClose( this.contextTab ).length`, `gBrowser.openTabs.filter( t => !t.multiselected && !t.pinned && !t.hidden ).length`, `gBrowser.openTabs.filter( t => t != this.contextTab && !t.pinned && !t.hidden ).length`, `gBrowser.pinnedTabCount`, `gBrowser.selectedTab`, `gBrowser.selectedTabs`, `gBrowser.tabContainer?.verticalMode`, `gBrowser.tabs.length`, `gBrowser.visibleTabs.length`, `lastTabToMove.group`, `lastTabToMove.pinned`, `lowerSeparator.hidden`, `menuItem.disabled`, `openGroupsToMoveTo.length`, `pinnedTabs.length`, `reopenInContainer.disabled`, `reopenInContainer.hidden`, `savedGroupsMenu.disabled`, `savedGroupsToMoveTo.length`, `selectAllTabs.disabled`, `sibling.pinned`, `splitViews.size`, `t.canonicalUrl`, `t.group`, `t.hidden`, `t.isOpen`, `t.linkedBrowser`, `t.linkedBrowser.currentURI.spec`, `t.linkedBrowser?.isRemoteBrowser`, `t.linkedPanel`, `t.multiselected`, `t.pinned`, `tab.linkedBrowser`, `tab.linkedBrowser.currentURI.scheme`, `tab.splitview`, `this._altTabContextMenu`, `this._tabNotesEnabled`, `this._unloadTabInContextMenu`, `this.contextTab`, `this.contextTab.activeMediaBlocked`, `this.contextTab.hidden`, `this.contextTab.linkedBrowser`, `this.contextTab.multiselected`, `this.contextTab.pinned`, `this.contextTab.splitview`, `this.contextTab.splitview.tabs`, `this.contextTab.toggleMultiSelectMuteMenuItem`, `this.contextTab.toggleMuteMenuItem`, `this.contextTabs`, `this.contextTabs.length`, `this.contextTabs[0].canonicalUrl`, `this.contextTabs[0].group`, `this.multiselected`, `toggleMultiSelectMute.hidden`, `toggleMute.hidden`, `unloadTabItem.hidden`, `unloadableTabs.length`, `upperSeparator.parentNode`, `visibleOrCollapsedTabs.length`
 - XPCOM: `Services.prefs`
 
 ## _createTabGroupMenuItem()
@@ -121,6 +126,7 @@ lines: 1495
 - 条件付き依存: `if (label)` → `item.setAttribute()`
 - 条件付き依存: `if (!(label))` → `document.l10n.setAttributes()`
 - 条件付き依存: `if (isSaved)` → `item.classList.add()`
+- 参照: `group.color`, `group.id`, `group.label`, `group.name`
 
 ## handleEvent()
 - 位置: L1153-1170
@@ -128,6 +134,7 @@ lines: 1495
 - 触るとき: メニューを閉じた後の後始末や、表示中のタブ属性変化への追従を調べるとき。
 - 呼び出し先: `aEvent.detail.changed.includes()`, `this._updateToggleMuteMenuItems()`
 - 条件付き依存: `if (aEvent.target.id == "tabContextMenu")` → `this.contextTab.removeEventListener()`
+- 参照: `aEvent.target`, `aEvent.target.id`, `aEvent.type`, `this.contextTab`, `this.contextTabs`
 
 ## createReopenInContainerMenu()
 - 位置: L1172-1178
@@ -141,6 +148,7 @@ lines: 1495
 - 触るとき: タブ複製の位置やグループ内複製の telemetry を調べるとき。
 - 呼び出し先: `SessionStore.duplicateTab()`, `gBrowser.moveTabTo()`, `this.contextTabs.at()`
 - 条件付き依存: `if (tab.group)` → `Glean.tabgroup.tabInteractions.duplicate.add()`
+- 参照: `tab.group`, `this.contextTabs`, `this.contextTabs.at(-1).index`
 
 ## reopenInContainer()
 - 位置: L1189-1255
@@ -153,6 +161,7 @@ lines: 1495
 - 条件付き依存: `if (!triggeringPrincipal || triggeringPrincipal.isNullPrincipal)` → `Services.scriptSecurityManager.createNullPrincipal()`
 - 条件付き依存: `if (triggeringPrincipal.isContentPrincipal)` → `Services.scriptSecurityManager.principalWithOA()`
 - 条件付き依存: `if (tab.muted && !newTab.muted)` → `newTab.toggleMuteAudio()`
+- 参照: `gBrowser.selectedTab`, `newTab.muted`, `tab.index`, `tab.linkedBrowser.contentPrincipal`, `tab.linkedBrowser.currentURI.spec`, `tab.linkedPanel`, `tab.muteReason`, `tab.muted`, `tab.pinned`, `tabState.triggeringPrincipal_base64`, `this.contextTabs`, `triggeringPrincipal.isContentPrincipal`, `triggeringPrincipal.isNullPrincipal`
 - XPCOM: `Services.scriptSecurityManager`
 
 ## closeContextTabs()
@@ -163,18 +172,21 @@ lines: 1495
 - 条件付き依存: `if (this.contextTab.multiselected)` → `gBrowser.TabMetrics.userTriggeredContext()`
 - 条件付き依存: `if (!(this.contextTab.multiselected))` → `gBrowser.removeTab()`
 - 条件付き依存: `if (!(this.contextTab.multiselected))` → `gBrowser.TabMetrics.userTriggeredContext()`
+- 参照: `gBrowser.TabMetrics.METRIC_SOURCE.TAB_MENU`, `this.contextTab`, `this.contextTab.multiselected`
 
 ## explicitUnloadTabs()
 - 位置: L1274-1276
 - 役割: 対象タブをアンロードするよう gBrowser に依頼する。
 - 触るとき: メニューからのタブのアンロード動作を調べるとき。
 - 呼び出し先: `gBrowser.explicitUnloadTabs()`
+- 参照: `this.contextTabs`
 
 ## moveTabsToNewGroup()
 - 位置: L1278-1304
 - 役割: 対象タブで新しいタブグループを作り、挿入位置を決めて、すべてタブパネルを閉じる。
 - 触るとき: 新規グループ作成時の挿入位置や選択の挙動を変えるとき。
 - 呼び出し先: `gBrowser.TabMetrics.userTriggeredContext()`, `gBrowser.addTabGroup()`, `gTabsPanel.hideAllTabsPanel()`
+- 参照: `firstUnpinnedTab.splitview`, `gBrowser.TabMetrics.METRIC_SOURCE.TAB_MENU`, `gBrowser.pinnedTabCount`, `gBrowser.selectedTab`, `gBrowser.tabs`, `insertBefore.index`, `this.contextTab`, `this.contextTab.group`, `this.contextTab.splitview`, `this.contextTabs`
 
 ## moveSplitViewToNewGroup()
 - 位置: L1306-1337
@@ -184,12 +196,14 @@ lines: 1495
 - 条件付き依存: `if (contextTab.splitView)` → `tabsAndSplitViews.includes()`
 - 条件付き依存: `if (!tabsAndSplitViews.includes(contextTab.splitView))` → `tabsAndSplitViews.push()`
 - 条件付き依存: `if (!(contextTab.splitView))` → `tabsAndSplitViews.push()`
+- 参照: `contextTab.splitView`, `gBrowser.TabMetrics.METRIC_SOURCE.TAB_MENU`, `gBrowser.pinnedTabCount`, `gBrowser.selectedTab`, `gBrowser.tabs`, `insertBefore.index`, `this.contextTab`, `this.contextTab.group`, `this.contextTab.splitview`, `this.contextTabs`
 
 ## moveTabsToGroup()
 - 位置: L1342-1354
 - 役割: 対象タブ(分割ビューは丸ごと)を既存のタブグループに追加する。
 - 触るとき: 既存グループへの移動動作を変えるとき。
 - 呼び出し先: `Array.from()`, `elementsToMove.add()`, `elementsToMove.values()`, `gBrowser.TabMetrics.userTriggeredContext()`, `group.addTabs()`, `group.documentGlobal.focus()`
+- 参照: `gBrowser.TabMetrics.METRIC_SOURCE.TAB_MENU`, `tab.splitview`, `this.contextTabs`
 
 ## addTabsToSavedGroup()
 - 位置: L1356-1385
@@ -202,6 +216,7 @@ lines: 1495
 - 条件付き依存: `if (!(tab.splitview))` → `seen.has()`
 - 条件付き依存: `if (!seen.has(tab))` → `seen.add()`
 - 条件付き依存: `if (!seen.has(tab))` → `tabs.push()`
+- 参照: `gBrowser.TabMetrics.METRIC_SOURCE.TAB_MENU`, `tab.splitview`, `tab.splitview.tabs`, `this.contextTabs`
 
 ## ungroupTabsAndSplitViews()
 - 位置: L1387-1397
@@ -211,6 +226,7 @@ lines: 1495
 - 条件付き依存: `if (tab.splitview && !splitViews.has(tab.splitview))` → `splitViews.add()`
 - 条件付き依存: `if (tab.splitview && !splitViews.has(tab.splitview))` → `gBrowser.ungroupSplitView()`
 - 条件付き依存: `if (!tab.splitview)` → `gBrowser.ungroupTab()`
+- 参照: `tab.splitview`, `this.contextTabs`
 
 ## moveTabsToSplitView()
 - 位置: L1399-1431
@@ -220,12 +236,14 @@ lines: 1495
 - 条件付き依存: `if (selectedTabIndex > -1 && selectedTabIndex != 0)` → `tabsToAdd.splice()`
 - 条件付き依存: `if (selectedTabIndex > -1 && selectedTabIndex != 0)` → `tabsToAdd.unshift()`
 - 条件付き依存: `if (this.contextTabs.length < 2)` → `gBrowser.addTrustedTab()`
+- 参照: `gBrowser.selectedTab`, `this.contextTabs`, `this.contextTabs.length`
 
 ## unsplitTabs()
 - 位置: L1433-1438
 - 役割: 対象タブが属する分割ビューをすべて分割解除する。
 - 触るとき: メニューからの分割解除を調べるとき。
 - 呼び出し先: `splitview.unsplitTabs()`, `splitviews.forEach()`, `this.contextTabs.map()`, `this.contextTabs.map(tab => tab.splitview).filter()`
+- 参照: `tab.splitview`
 
 ## reverseSplitView()
 - 位置: L1440-1442

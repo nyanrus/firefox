@@ -12,6 +12,7 @@ lines: 155
 - 役割: ステータスパネル要素を初回に取得して transition 終了の監視を付け、以後はその要素を返す。
 - 触るとき: パネル要素の取得や transition 後の処理を調べるとき。
 - 呼び出し先: `document.getElementById()`, `this._onTransitionEnd.bind()`, `this.panel.addEventListener()`
+- 参照: `this.panel`
 
 ## isVisible()
 - 位置: L24-26
@@ -29,12 +30,14 @@ lines: 155
 - 条件付き依存: `if (this._labelElement.value != text || (text && !this.isVisible))` → `this.panel.setAttribute()`
 - 条件付き依存: `if (this._labelElement.value != text || (text && !this.isVisible))` → `this.panel.getAttribute()`
 - 条件付き依存: `if (this._labelElement.value != text || (text && !this.isVisible))` → `this._labelElement.setAttribute()`
+- 参照: `BrowserHandler.kiosk`, `XULBrowserWindow.busyUI`, `text.length`, `this._frozen`, `this._label`, `this._labelElement.value`, `this.isVisible`
 
 ## _labelElement()
 - 位置: L69-72
 - 役割: ラベル要素を初回に取得し、以後は同じ要素を返す。
 - 触るとき: ラベル要素の取得元を調べるとき。
 - 呼び出し先: `document.getElementById()`
+- 参照: `this._labelElement`
 
 ## _label()
 - 位置: L74-109
@@ -48,17 +51,20 @@ lines: 155
 - 条件付き依存: `if (val)` → `MousePosTracker.addListener()`
 - 条件付き依存: `if (!(val))` → `this.panel.setAttribute()`
 - 条件付き依存: `if (!(val))` → `MousePosTracker.removeListener()`
+- 参照: `getComputedStyle(this.panel).display`, `this._labelElement.value`, `this.isVisible`, `this.panel`, `this.panel.hidden`, `this.panel.style.minWidth`, `window.windowUtils.getBoundsWithoutFlushing(this.panel).width`
 
 ## _onTransitionEnd()
 - 位置: L111-115
 - 役割: transition 終了時に非表示状態ならパネルを hidden にする。
 - 触るとき: フェードアウト後にパネルが残る問題を調べるとき。
+- 参照: `this.isVisible`, `this.panel.hidden`
 
 ## getMouseTargetRect()
 - 位置: L117-130
 - 役割: RTL を考慮したパネルの矩形をマウス追跡用に返す。
 - 触るとき: マウスがパネルに近づいたときの反応範囲を変えるとき。
 - 呼び出し先: `window.windowUtils.getBoundsWithoutFlushing()`
+- 参照: `containerRect.left`, `containerRect.right`, `panelRect.bottom`, `panelRect.top`, `panelRect.width`, `this.panel`, `this.panel.parentNode`
 
 ## onMouseEnter()
 - 位置: L132-134
@@ -80,3 +86,4 @@ lines: 155
 - 条件付き依存: `if (this.panel.hasAttribute("mirror"))` → `this.panel.removeAttribute()`
 - 条件付き依存: `if (!(this.panel.hasAttribute("mirror")))` → `this.panel.setAttribute()`
 - 条件付き依存: `if (!this.panel.hasAttribute("sizelimit"))` → `this.panel.setAttribute()`
+- 参照: `this._frozen`
